@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<!-- saved from url=(0073)file:///C:/Users/hakki/Downloads/deepseek_html_20251027_9745bd%20(4).html -->
+<html lang="tr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MALIQ - Maliyet Hesaplama</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #0b1220;
+      --accent: #06b6d4;
+      --muted: #94a3b8;
+      color-scheme: dark;
+    }
+    
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: white;
+      margin: 0;
+      padding: 12px;
+      line-height: 1.4;
+    }
+    
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 18px;
+      text-align: center;
+      margin: 0 0 16px 0;
+    }
+    
+    .card {
+      background: var(--card);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .tabs {
+      display: flex;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 16px;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 10px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .tab.active {
+      background: rgba(6,182,212,0.2);
+      color: var(--accent);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .product-card {
+      background: rgba(255,255,255,0.05);
+      padding: 12px 8px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+    }
+    
+    .product-emoji {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    
+    .product-name {
+      font-size: 12px;
+    }
+    
+    /* MALZEME LİSTESİ */
+    .material-item {
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .material-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .material-emoji {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .material-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 16px;
+      padding: 4px;
+      cursor: pointer;
+    }
+    
+    .material-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .quantity-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex: 1;
+    }
+    
+    .quantity-input {
+      width: 60px;
+      padding: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      color: white;
+      font-size: 12px;
+      text-align: center;
+    }
+    
+    .unit-select {
+      padding: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .price-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex: 1;
+    }
+    
+    /* FİYAT INPUT'U - KESİN ÇÖZÜM */
+    .price-input-container {
+      position: relative;
+      width: 80px;
+    }
+    
+    .price-input {
+      width: 100%;
+      padding: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      color: white;
+      font-size: 13px;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .price-input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.15);
+    }
+    
+    /* Input boşken arkaplanda "0.00" göster */
+    .price-input.empty::before {
+      content: "0.00";
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      color: rgba(255,255,255,0.5);
+      pointer-events: none;
+    }
+    
+    .price-unit {
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+      min-width: 35px;
+    }
+    
+    .material-cost {
+      text-align: right;
+      min-width: 70px;
+    }
+    
+    .cost-amount {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    
+    .cost-label {
+      font-size: 10px;
+      color: var(--muted);
+    }
+    
+    .total-cost {
+      background: rgba(6,182,212,0.1);
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 16px;
+      border: 1px solid rgba(6,182,212,0.2);
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      width: 100%;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+    
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--muted);
+    }
+    
+    /* MODAL */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .material-option {
+      background: rgba(255,255,255,0.05);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+    }
+    
+    .material-option:active {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 12px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      color: white;
+      font-size: 14px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .modal-actions .btn {
+      flex: 1;
+      margin: 0;
+    }
+    
+    /* KAYIT LİSTESİ */
+    .saved-item {
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+    }
+    
+    .saved-item.expanded {
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .saved-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .saved-name {
+      font-weight: 500;
+      font-size: 14px;
+    }
+    
+    .saved-cost {
+      font-weight: bold;
+      color: var(--accent);
+      font-size: 16px;
+    }
+    
+    .saved-date {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    
+    .saved-materials {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: none;
+    }
+    
+    .saved-materials.expanded {
+      display: block;
+    }
+    
+    .saved-material-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 12px;
+    }
+    
+    .saved-material-name {
+      flex: 1;
+    }
+    
+    .saved-material-cost {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    
+    .saved-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .saved-actions .btn {
+      flex: 1;
+      margin: 0;
+      padding: 8px;
+      font-size: 12px;
+    }
+    
+    input, select, button {
+      outline: none;
+    }
+    
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+    
+    .hidden {
+      display: none;
+    }
+  
+/* Added responsive & UI helpers (safe, won't override major styles) */
+@media (max-width:600px) {
+  .product-grid { grid-template-columns: repeat(3, 1fr); gap:6px; }
+  .material-controls { flex-direction: column; align-items: stretch; }
+  .quantity-controls, .price-controls { width:100%; }
+  .price-input-container { width:100%; }
+  .price-unit { text-align:right; }
+  .tabs { flex-wrap: wrap; }
+  .tab { font-size:13px; padding:8px; }
+}
+.small-input { padding:8px; font-size:13px; border-radius:6px; background:rgba(255,255,255,0.06); color:white; border:1px solid rgba(255,255,255,0.06); }
+.theme-toggle { padding:8px; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+.modal-search { width:100%; padding:8px; margin-bottom:8px; border-radius:6px; background:rgba(255,255,255,0.06); color:white; border:1px solid rgba(255,255,255,0.06); }
+.footer { margin-top:20px; text-align:center; font-size:12px; color:var(--muted); }
+.branding { margin-top:6px; text-align:center; font-size:11px; color:var(--muted); }
+
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>MALIQ</h1>
+    
+    <div class="tabs">
+      <button class="tab active" data-tab="products">Ürünler</button>
+      <button class="tab" data-tab="recipe">Hesaplama</button>
+      <button class="tab" data-tab="saved">Maliyet Tablom</button>
+    </div>
+    
+    <!-- ÜRÜN LİSTESİ -->
+    <div class="tab-content active" id="products-tab">
+      <div class="card">
+        <div style="font-size:14px; margin-bottom:8px;">Hazır Ürünler</div>
+        <div class="product-grid" id="productGrid"><div class="product-card">
+          <div class="product-emoji">🥙</div>
+          <div class="product-name">Lahmacun</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍖</div>
+          <div class="product-name">Adana Kebap Porsiyon</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🌯</div>
+          <div class="product-name">Adana Kebap Dürüm</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍗</div>
+          <div class="product-name">Tavuk Döner Ekmek</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🥩</div>
+          <div class="product-name">Dana Döner Ekmek</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🌯</div>
+          <div class="product-name">Hatay Usulü Dürüm</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍔</div>
+          <div class="product-name">Köfte Ekmek</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🌯</div>
+          <div class="product-name">Tantuni Dürüm</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍕</div>
+          <div class="product-name">Pizza</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍔</div>
+          <div class="product-name">Hamburger</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍗</div>
+          <div class="product-name">Tavuk Burger</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🐟</div>
+          <div class="product-name">Balık Ekmek</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍖</div>
+          <div class="product-name">Kokoreç</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🥔</div>
+          <div class="product-name">Kumpir</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍟</div>
+          <div class="product-name">Patso</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🌯</div>
+          <div class="product-name">Çiğ Köfte</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍛</div>
+          <div class="product-name">İskender Kebap</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🌯</div>
+          <div class="product-name">Urfa Kebap Dürüm</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🍗</div>
+          <div class="product-name">Tavuk Şiş Dürüm</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🧀</div>
+          <div class="product-name">Kaşarlı Dürüm</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🌯</div>
+          <div class="product-name">Karışık Dürüm</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🥙</div>
+          <div class="product-name">Sucuklu Kaşarlı Pide</div>
+        </div><div class="product-card">
+          <div class="product-emoji">🥙</div>
+          <div class="product-name">Kıymalı Pide</div>
+        </div></div>
+      </div>
+    </div>
+    
+    <!-- MALİYET HESAPLAMA -->
+    <div class="tab-content" id="recipe-tab">
+      <div class="card">
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <input type="text" id="recipeName" placeholder="Ürün adı" style="flex:1; padding:10px; font-size:14px;">
+          <button id="addMaterial" style="background:var(--accent); color:white; border:none; padding:10px 12px; border-radius:6px; font-size:20px; cursor:pointer;">+</button>
+        </div>
+        
+        <div id="recipeMaterials"><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🍗</div>
+            <div class="material-name">Tavuk But</div>
+            <button class="remove-btn" onclick="removeMaterial(0)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="200" oninput="updateMaterial(0, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(0, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(0, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(0, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🥛</div>
+            <div class="material-name">Yoğurt</div>
+            <button class="remove-btn" onclick="removeMaterial(1)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="50" oninput="updateMaterial(1, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(1, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(1, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(1, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🫒</div>
+            <div class="material-name">Zeytinyağı</div>
+            <button class="remove-btn" onclick="removeMaterial(2)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="20" oninput="updateMaterial(2, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(2, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(2, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(2, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🧂</div>
+            <div class="material-name">Baharatlar</div>
+            <button class="remove-btn" onclick="removeMaterial(3)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="16" oninput="updateMaterial(3, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(3, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(3, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(3, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🍞</div>
+            <div class="material-name">Ekmek</div>
+            <button class="remove-btn" onclick="removeMaterial(4)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="1" oninput="updateMaterial(4, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(4, 'originalUnit', this.value)">
+                <option value="gr">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet" selected="">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(4, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">adet₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(4, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="adet" selected="">adet fiyatı</option><option value="koli">koli fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🥬</div>
+            <div class="material-name">Marul</div>
+            <button class="remove-btn" onclick="removeMaterial(5)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="60" oninput="updateMaterial(5, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(5, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(5, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(5, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🍅</div>
+            <div class="material-name">Domates</div>
+            <button class="remove-btn" onclick="removeMaterial(6)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="70" oninput="updateMaterial(6, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(6, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(6, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(6, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🥒</div>
+            <div class="material-name">Turşu</div>
+            <button class="remove-btn" onclick="removeMaterial(7)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="40" oninput="updateMaterial(7, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(7, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(7, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(7, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🥚</div>
+            <div class="material-name">Mayonez</div>
+            <button class="remove-btn" onclick="removeMaterial(8)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="30" oninput="updateMaterial(8, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(8, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(8, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(8, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🍅</div>
+            <div class="material-name">Ketçap</div>
+            <button class="remove-btn" onclick="removeMaterial(9)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="25" oninput="updateMaterial(9, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(9, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(9, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(9, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div><div class="material-item">
+          <div class="material-header">
+            <div class="material-emoji">🔥</div>
+            <div class="material-name">Barbekü Sos</div>
+            <button class="remove-btn" onclick="removeMaterial(10)">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" class="quantity-input" value="20" oninput="updateMaterial(10, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(10, 'originalUnit', this.value)">
+                <option value="gr" selected="">gr</option>
+                <option value="ml">ml</option>
+                <option value="adet">adet</option>
+                <option value="dilim">dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container empty">
+                <input type="number" class="price-input" step="0.01" value="" oninput="updateMaterial(10, 'price', this.value)" onfocus="this.parentElement.classList.remove('empty')" onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">kg₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">0.00₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(10, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              <option value="kg" selected="">kg fiyatı</option><option value="gr">gr fiyatı</option>
+            </select>
+          </div>
+        </div></div>
+        
+        <div id="recipeResult" class="total-cost">
+          <div style="font-size:12px; margin-bottom:4px;">Toplam Maliyet</div>
+          <div id="recipeCost" style="font-size:20px; font-weight:bold;">0.00 ₺</div>
+          <button id="saveRecipe" class="btn" style="margin-top:12px;">Kaydet</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- KAYDEDİLEN MALİYETLER -->
+    <div class="tab-content" id="saved-tab">
+      <div class="card">
+        <div style="font-size:14px; margin-bottom:12px;">Kayıtlı Maliyetler</div>
+        <div id="savedList"><div style="text-align:center; padding:20px; color:var(--muted); font-size:13px;">Henüz kayıtlı maliyet yok</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MALZEME EKLEME MODALI -->
+  <div id="materialModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin:0 0 16px 0; text-align:center;">Malzeme Ekle</h3>
+      
+      <div id="materialOptions">
+<input class="modal-search" placeholder="Malzeme ara..." oninput="filterMaterials(this.value)">
+        <!-- Malzeme seçenekleri buraya eklenecek -->
+      </div>
+      
+      <div class="form-group">
+        <label>Malzeme Adı</label>
+        <input type="text" id="newMaterialName" placeholder="Örn: Zeytinyağı">
+      </div>
+      
+      <div style="display:flex; gap:8px;">
+        <div class="form-group" style="flex:1;">
+          <label>Miktar</label>
+          <input type="number" id="newMaterialQuantity" value="100" step="0.01">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Birim</label>
+          <select id="newMaterialUnit">
+            <option value="gr">gr</option>
+            <option value="kg">kg</option>
+            <option value="ml">ml</option>
+            <option value="lt">lt</option>
+            <option value="adet">adet</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button id="selectMaterial" class="btn">Seçili Malzemeyi Ekle</button>
+        <button id="createMaterial" class="btn secondary">Yeni Oluştur</button>
+        <button id="closeModal" class="btn secondary">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elementler
+    const RECIPE_MATERIALS = document.getElementById('recipeMaterials');
+    const RECIPE_RESULT = document.getElementById('recipeResult');
+    const RECIPE_COST = document.getElementById('recipeCost');
+    const RECIPE_NAME = document.getElementById('recipeName');
+    const ADD_MATERIAL = document.getElementById('addMaterial');
+    const SAVE_RECIPE = document.getElementById('saveRecipe');
+    const PRODUCT_GRID = document.getElementById('productGrid');
+    const SAVED_LIST = document.getElementById('savedList');
+    const MATERIAL_MODAL = document.getElementById('materialModal');
+    const MATERIAL_OPTIONS = document.getElementById('materialOptions');
+    const SELECT_MATERIAL = document.getElementById('selectMaterial');
+    const CREATE_MATERIAL = document.getElementById('createMaterial');
+    const CLOSE_MODAL = document.getElementById('closeModal');
+    const NEW_MATERIAL_NAME = document.getElementById('newMaterialName');
+    const NEW_MATERIAL_QUANTITY = document.getElementById('newMaterialQuantity');
+    const NEW_MATERIAL_UNIT = document.getElementById('newMaterialUnit');
+
+    let recipeItems = [];
+    let savedCosts = JSON.parse(localStorage.getItem('maliq_saved')) || [];
+    let selectedMaterial = null;
+    let allMaterials = [];
+    let editingSavedIndex = -1;
+
+    // GÜNCELLENMİŞ POPÜLER ÜRÜNLER
+    const popularProducts = [
+      {
+        name: "Lahmacun",
+        emoji: "🥙",
+        materials: [
+          { name: "Un", quantity: 150, unit: "gr", emoji: "🌾" },
+          { name: "Su", quantity: 90, unit: "ml", emoji: "💧" },
+          { name: "Tuz", quantity: 5, unit: "gr", emoji: "🧂" },
+          { name: "Maya", quantity: 5, unit: "gr", emoji: "🧫" },
+          { name: "Kıyma", quantity: 150, unit: "gr", emoji: "🥩" },
+          { name: "Soğan", quantity: 100, unit: "gr", emoji: "🧅" },
+          { name: "Domates", quantity: 100, unit: "gr", emoji: "🍅" },
+          { name: "Biber Salçası", quantity: 30, unit: "gr", emoji: "🌶️" },
+          { name: "Maydanoz", quantity: 20, unit: "gr", emoji: "🌿" },
+          { name: "Sivri Biber", quantity: 50, unit: "gr", emoji: "🌶️" },
+          { name: "Sarımsak", quantity: 15, unit: "gr", emoji: "🧄" },
+          { name: "Zeytinyağı", quantity: 20, unit: "gr", emoji: "🫒" },
+          { name: "Baharatlar", quantity: 15, unit: "gr", emoji: "🧂" }
+        ]
+      },
+      {
+        name: "Adana Kebap Porsiyon",
+        emoji: "🍖",
+        materials: [
+          { name: "Kuzu Kıyması", quantity: 250, unit: "gr", emoji: "🥩" },
+          { name: "Kuyruk Yağı", quantity: 50, unit: "gr", emoji: "🥓" },
+          { name: "Kırmızı Biber", quantity: 15, unit: "gr", emoji: "🌶️" },
+          { name: "Tuz", quantity: 8, unit: "gr", emoji: "🧂" },
+          { name: "Kimyon", quantity: 5, unit: "gr", emoji: "🟤" },
+          { name: "Lavaş", quantity: 1, unit: "adet", emoji: "🫓" },
+          { name: "Pilav", quantity: 200, unit: "gr", emoji: "🍚" },
+          { name: "Sumaklı Soğan", quantity: 100, unit: "gr", emoji: "🧅" },
+          { name: "Izgara Biber", quantity: 80, unit: "gr", emoji: "🌶️" },
+          { name: "Domates", quantity: 80, unit: "gr", emoji: "🍅" },
+          { name: "Tereyağı", quantity: 15, unit: "gr", emoji: "🧈" },
+          { name: "Maydanoz", quantity: 10, unit: "gr", emoji: "🌿" }
+        ]
+      },
+      {
+        name: "Adana Kebap Dürüm",
+        emoji: "🌯",
+        materials: [
+          { name: "Kuzu Kıyması", quantity: 200, unit: "gr", emoji: "🥩" },
+          { name: "Kuyruk Yağı", quantity: 40, unit: "gr", emoji: "🥓" },
+          { name: "Kırmızı Biber", quantity: 12, unit: "gr", emoji: "🌶️" },
+          { name: "Tuz", quantity: 6, unit: "gr", emoji: "🧂" },
+          { name: "Kimyon", quantity: 4, unit: "gr", emoji: "🟤" },
+          { name: "Lavaş", quantity: 1, unit: "adet", emoji: "🫓" },
+          { name: "Sumaklı Soğan", quantity: 80, unit: "gr", emoji: "🧅" },
+          { name: "Marul", quantity: 50, unit: "gr", emoji: "🥬" },
+          { name: "Domates", quantity: 60, unit: "gr", emoji: "🍅" },
+          { name: "Maydanoz", quantity: 15, unit: "gr", emoji: "🌿" },
+          { name: "Acılı Ezme", quantity: 30, unit: "gr", emoji: "🌶️" }
+        ]
+      },
+      {
+        name: "Tavuk Döner Ekmek",
+        emoji: "🍗",
+        materials: [
+          { name: "Tavuk But", quantity: 200, unit: "gr", emoji: "🍗" },
+          { name: "Yoğurt", quantity: 50, unit: "gr", emoji: "🥛" },
+          { name: "Zeytinyağı", quantity: 20, unit: "gr", emoji: "🫒" },
+          { name: "Baharatlar", quantity: 16, unit: "gr", emoji: "🧂" },
+          { name: "Ekmek", quantity: 1, unit: "adet", emoji: "🍞" },
+          { name: "Marul", quantity: 60, unit: "gr", emoji: "🥬" },
+          { name: "Domates", quantity: 70, unit: "gr", emoji: "🍅" },
+          { name: "Turşu", quantity: 40, unit: "gr", emoji: "🥒" },
+          { name: "Mayonez", quantity: 30, unit: "gr", emoji: "🥚" },
+          { name: "Ketçap", quantity: 25, unit: "gr", emoji: "🍅" },
+          { name: "Barbekü Sos", quantity: 20, unit: "gr", emoji: "🔥" }
+        ]
+      },
+      {
+        name: "Dana Döner Ekmek",
+        emoji: "🥩",
+        materials: [
+          { name: "Dana Eti", quantity: 200, unit: "gr", emoji: "🥩" },
+          { name: "Soğan", quantity: 50, unit: "gr", emoji: "🧅" },
+          { name: "Zeytinyağı", quantity: 25, unit: "gr", emoji: "🫒" },
+          { name: "Baharatlar", quantity: 17, unit: "gr", emoji: "🧂" },
+          { name: "Ekmek", quantity: 1, unit: "adet", emoji: "🍞" },
+          { name: "Marul", quantity: 60, unit: "gr", emoji: "🥬" },
+          { name: "Domates", quantity: 70, unit: "gr", emoji: "🍅" },
+          { name: "Turşu", quantity: 40, unit: "gr", emoji: "🥒" },
+          { name: "Mayonez", quantity: 30, unit: "gr", emoji: "🥚" },
+          { name: "Ketçap", quantity: 25, unit: "gr", emoji: "🍅" },
+          { name: "Cacık", quantity: 40, unit: "gr", emoji: "🥒" }
+        ]
+      },
+      {
+        name: "Hatay Usulü Dürüm",
+        emoji: "🌯",
+        materials: [
+          { name: "Tavuk But", quantity: 220, unit: "gr", emoji: "🍗" },
+          { name: "Domates Salçası", quantity: 25, unit: "gr", emoji: "🍅" },
+          { name: "Yoğurt", quantity: 40, unit: "gr", emoji: "🥛" },
+          { name: "Zeytinyağı", quantity: 25, unit: "gr", emoji: "🫒" },
+          { name: "Baharatlar", quantity: 17, unit: "gr", emoji: "🧂" },
+          { name: "Sıvı Yağ", quantity: 15, unit: "gr", emoji: "🛢️" },
+          { name: "Biber Salçası", quantity: 20, unit: "gr", emoji: "🌶️" },
+          { name: "Lavaş", quantity: 1, unit: "adet", emoji: "🫓" },
+          { name: "Humus", quantity: 50, unit: "gr", emoji: "🫘" },
+          { name: "Cevizli Acuka", quantity: 40, unit: "gr", emoji: "🌰" },
+          { name: "Turşu", quantity: 30, unit: "gr", emoji: "🥒" },
+          { name: "Marul", quantity: 50, unit: "gr", emoji: "🥬" },
+          { name: "Nar Ekşisi", quantity: 15, unit: "ml", emoji: "🔴" },
+          { name: "Sumak", quantity: 5, unit: "gr", emoji: "🟣" }
+        ]
+      },
+      {
+        name: "Köfte Ekmek",
+        emoji: "🍔",
+        materials: [
+          { name: "Dana Kıyma", quantity: 180, unit: "gr", emoji: "🥩" },
+          { name: "Soğan", quantity: 70, unit: "gr", emoji: "🧅" },
+          { name: "Ekmek İçi", quantity: 30, unit: "gr", emoji: "🍞" },
+          { name: "Yumurta", quantity: 1, unit: "adet", emoji: "🥚" },
+          { name: "Galeta Unu", quantity: 20, unit: "gr", emoji: "🌾" },
+          { name: "Baharatlar", quantity: 13, unit: "gr", emoji: "🧂" },
+          { name: "Ekmek", quantity: 1, unit: "adet", emoji: "🍞" },
+          { name: "Soğan", quantity: 80, unit: "gr", emoji: "🧅" },
+          { name: "Domates", quantity: 70, unit: "gr", emoji: "🍅" },
+          { name: "Turşu", quantity: 40, unit: "gr", emoji: "🥒" },
+          { name: "Mayonez", quantity: 25, unit: "gr", emoji: "🥚" },
+          { name: "Ketçap", quantity: 20, unit: "gr", emoji: "🍅" },
+          { name: "Barbekü Sos", quantity: 15, unit: "gr", emoji: "🔥" }
+        ]
+      },
+      {
+        name: "Tantuni Dürüm",
+        emoji: "🌯",
+        materials: [
+          { name: "Dana Eti", quantity: 180, unit: "gr", emoji: "🥩" },
+          { name: "Baharatlar", quantity: 21, unit: "gr", emoji: "🧂" },
+          { name: "Lavaş", quantity: 1, unit: "adet", emoji: "🫓" },
+          { name: "Domates", quantity: 70, unit: "gr", emoji: "🍅" },
+          { name: "Maydanoz", quantity: 25, unit: "gr", emoji: "🌿" },
+          { name: "Soğan", quantity: 50, unit: "gr", emoji: "🧅" },
+          { name: "Sumak", quantity: 5, unit: "gr", emoji: "🟣" },
+          { name: "Acılı Ezme", quantity: 35, unit: "gr", emoji: "🌶️" },
+          { name: "Limon", quantity: 0.5, unit: "adet", emoji: "🍋" }
+        ]
+      },
+      {
+        name: "Pizza",
+        emoji: "🍕",
+        materials: [
+          { name: "Un", quantity: 200, unit: "gr", emoji: "🌾" },
+          { name: "Su", quantity: 120, unit: "ml", emoji: "💧" },
+          { name: "Maya", quantity: 7, unit: "gr", emoji: "🧫" },
+          { name: "Zeytinyağı", quantity: 15, unit: "gr", emoji: "🫒" },
+          { name: "Tuz", quantity: 6, unit: "gr", emoji: "🧂" },
+          { name: "Domates Sos", quantity: 100, unit: "gr", emoji: "🍅" },
+          { name: "Mozzarella", quantity: 180, unit: "gr", emoji: "🧀" },
+          { name: "Sucuk", quantity: 90, unit: "gr", emoji: "🥓" },
+          { name: "Sosis", quantity: 80, unit: "gr", emoji: "🌭" },
+          { name: "Zeytin", quantity: 40, unit: "gr", emoji: "🫒" },
+          { name: "Mısır", quantity: 50, unit: "gr", emoji: "🌽" },
+          { name: "Biber", quantity: 40, unit: "gr", emoji: "🌶️" },
+          { name: "Mantar", quantity: 50, unit: "gr", emoji: "🍄" },
+          { name: "Baharatlar", quantity: 5, unit: "gr", emoji: "🧂" }
+        ]
+      },
+      {
+        name: "Hamburger",
+        emoji: "🍔",
+        materials: [
+          { name: "Dana Kıyma", quantity: 180, unit: "gr", emoji: "🥩" },
+          { name: "Baharatlar", quantity: 10, unit: "gr", emoji: "🧂" },
+          { name: "Burger Ekmeği", quantity: 1, unit: "adet", emoji: "🍞" },
+          { name: "Cheddar Peyniri", quantity: 40, unit: "gr", emoji: "🧀" },
+          { name: "Marul", quantity: 40, unit: "gr", emoji: "🥬" },
+          { name: "Domates", quantity: 50, unit: "gr", emoji: "🍅" },
+          { name: "Turşu", quantity: 30, unit: "gr", emoji: "🥒" },
+          { name: "Mayonez", quantity: 25, unit: "gr", emoji: "🥚" },
+          { name: "Ketçap", quantity: 20, unit: "gr", emoji: "🍅" },
+          { name: "Hardal", quantity: 10, unit: "gr", emoji: "🟡" }
+        ]
+      },
+      {
+        name: "Tavuk Burger",
+        emoji: "🍗",
+        materials: [
+          { name: "Tavuk Göğüs", quantity: 200, unit: "gr", emoji: "🍗" },
+          { name: "Un", quantity: 50, unit: "gr", emoji: "🌾" },
+          { name: "Yumurta", quantity: 1, unit: "adet", emoji: "🥚" },
+          { name: "Galeta Unu", quantity: 40, unit: "gr", emoji: "🌾" },
+          { name: "Baharatlar", quantity: 10, unit: "gr", emoji: "🧂" },
+          { name: "Burger Ekmeği", quantity: 1, unit: "adet", emoji: "🍞" },
+          { name: "Marul", quantity: 40, unit: "gr", emoji: "🥬" },
+          { name: "Domates", quantity: 50, unit: "gr", emoji: "🍅" },
+          { name: "Mayonez", quantity: 30, unit: "gr", emoji: "🥚" },
+          { name: "Barbekü Sos", quantity: 20, unit: "gr", emoji: "🔥" },
+          { name: "Turşu", quantity: 30, unit: "gr", emoji: "🥒" }
+        ]
+      },
+      {
+        name: "Balık Ekmek",
+        emoji: "🐟",
+        materials: [
+          { name: "Levrek", quantity: 180, unit: "gr", emoji: "🐟" },
+          { name: "Un", quantity: 60, unit: "gr", emoji: "🌾" },
+          { name: "Mısır Unu", quantity: 30, unit: "gr", emoji: "🌽" },
+          { name: "Baharatlar", quantity: 8, unit: "gr", emoji: "🧂" },
+          { name: "Limon Suyu", quantity: 10, unit: "ml", emoji: "🍋" },
+          { name: "Ekmek", quantity: 1, unit: "adet", emoji: "🍞" },
+          { name: "Marul", quantity: 50, unit: "gr", emoji: "🥬" },
+          { name: "Soğan", quantity: 60, unit: "gr", emoji: "🧅" },
+          { name: "Mayonez", quantity: 30, unit: "gr", emoji: "🥚" },
+          { name: "Limon", quantity: 0.5, unit: "adet", emoji: "🍋" }
+        ]
+      },
+      {
+        name: "Kokoreç",
+        emoji: "🍖",
+        materials: [
+          { name: "Bağırsak", quantity: 220, unit: "gr", emoji: "🍖" },
+          { name: "Baharatlar", quantity: 27, unit: "gr", emoji: "🧂" },
+          { name: "Ekmek", quantity: 0.5, unit: "adet", emoji: "🍞" },
+          { name: "Limon", quantity: 0.25, unit: "adet", emoji: "🍋" }
+        ]
+      },
+      {
+        name: "Kumpir",
+        emoji: "🥔",
+        materials: [
+          { name: "Patates", quantity: 400, unit: "gr", emoji: "🥔" },
+          { name: "Tereyağı", quantity: 30, unit: "gr", emoji: "🧈" },
+          { name: "Kaşar Peyniri", quantity: 100, unit: "gr", emoji: "🧀" },
+          { name: "Mısır", quantity: 80, unit: "gr", emoji: "🌽" },
+          { name: "Sosis", quantity: 90, unit: "gr", emoji: "🌭" },
+          { name: "Zeytin", quantity: 50, unit: "gr", emoji: "🫒" },
+          { name: "Mayonez", quantity: 40, unit: "gr", emoji: "🥚" },
+          { name: "Ketçap", quantity: 30, unit: "gr", emoji: "🍅" },
+          { name: "Turşu", quantity: 50, unit: "gr", emoji: "🥒" },
+          { name: "Bezelye", quantity: 40, unit: "gr", emoji: "🫛" },
+          { name: "Havuç", quantity: 30, unit: "gr", emoji: "🥕" }
+        ]
+      },
+      {
+        name: "Patso",
+        emoji: "🍟",
+        materials: [
+          { name: "Patates", quantity: 250, unit: "gr", emoji: "🍟" },
+          { name: "Ekmek", quantity: 1, unit: "adet", emoji: "🍞" },
+          { name: "Sosis", quantity: 80, unit: "gr", emoji: "🌭" },
+          { name: "Ketçap", quantity: 25, unit: "gr", emoji: "🍅" },
+          { name: "Mayonez", quantity: 25, unit: "gr", emoji: "🥚" },
+          { name: "Barbekü Sos", quantity: 15, unit: "gr", emoji: "🔥" },
+          { name: "Baharatlar", quantity: 10, unit: "gr", emoji: "🧂" }
+        ]
+      },
+      {
+        name: "Çiğ Köfte",
+        emoji: "🌯",
+        materials: [
+          { name: "İnce Bulgur", quantity: 200, unit: "gr", emoji: "🌾" },
+          { name: "Salça", quantity: 50, unit: "gr", emoji: "🌶️" },
+          { name: "Soğan Suyu", quantity: 80, unit: "ml", emoji: "🧅" },
+          { name: "İsot", quantity: 25, unit: "gr", emoji: "🌶️" },
+          { name: "Zeytinyağı", quantity: 30, unit: "gr", emoji: "🫒" },
+          { name: "Baharatlar", quantity: 20, unit: "gr", emoji: "🧂" },
+          { name: "Marul", quantity: 80, unit: "gr", emoji: "🥬" },
+          { name: "Domates", quantity: 90, unit: "gr", emoji: "🍅" },
+          { name: "Nar Ekşisi", quantity: 20, unit: "ml", emoji: "🔴" },
+          { name: "Limon", quantity: 0.5, unit: "adet", emoji: "🍋" },
+          { name: "Maydanoz", quantity: 20, unit: "gr", emoji: "🌿" }
+        ]
+      },
+      {
+        name: "İskender Kebap",
+        emoji: "🍛",
+        materials: [
+          { name: "Dana Döner", quantity: 220, unit: "gr", emoji: "🥩" },
+          { name: "Pide", quantity: 2, unit: "dilim", emoji: "🍞" },
+          { name: "Domates Sos", quantity: 100, unit: "gr", emoji: "🍅" },
+          { name: "Yoğurt", quantity: 120, unit: "gr", emoji: "🥛" },
+          { name: "Tereyağı", quantity: 40, unit: "gr", emoji: "🧈" },
+          { name: "Baharatlar", quantity: 10, unit: "gr", emoji: "🧂" }
+        ]
+      },
+      {
+        name: "Urfa Kebap Dürüm",
+        emoji: "🌯",
+        materials: [
+          { name: "Kuzu Kıyması", quantity: 190, unit: "gr", emoji: "🥩" },
+          { name: "Kuyruk Yağı", quantity: 35, unit: "gr", emoji: "🥓" },
+          { name: "Tuz", quantity: 6, unit: "gr", emoji: "🧂" },
+          { name: "Lavaş", quantity: 1, unit: "adet", emoji: "🫓" },
+          { name: "Sumaklı Soğan", quantity: 70, unit: "gr", emoji: "🧅" },
+          { name: "Domates", quantity: 60, unit: "gr", emoji: "🍅" },
+          { name: "Maydanoz", quantity: 15, unit: "gr", emoji: "🌿" },
+          { name: "Acılı Ezme", quantity: 25, unit: "gr", emoji: "🌶️" }
+        ]
+      },
+      {
+        name: "Tavuk Şiş Dürüm",
+        emoji: "🍗",
+        materials: [
+          { name: "Tavuk Göğüs", quantity: 200, unit: "gr", emoji: "🍗" },
+          { name: "Yoğurt", quantity: 60, unit: "gr", emoji: "🥛" },
+          { name: "Zeytinyağı", quantity: 25, unit: "gr", emoji: "🫒" },
+          { name: "Baharatlar", quantity: 15, unit: "gr", emoji: "🧂" },
+          { name: "Lavaş", quantity: 1, unit: "adet", emoji: "🫓" },
+          { name: "Pilav", quantity: 100, unit: "gr", emoji: "🍚" },
+          { name: "Marul", quantity: 40, unit: "gr", emoji: "🥬" },
+          { name: "Domates", quantity: 50, unit: "gr", emoji: "🍅" },
+          { name: "Sarımsaklı Yoğurt", quantity: 40, unit: "gr", emoji: "🧄" }
+        ]
+      },
+      {
+        name: "Kaşarlı Dürüm",
+        emoji: "🧀",
+        materials: [
+          { name: "Dana Döner", quantity: 170, unit: "gr", emoji: "🥩" },
+          { name: "Kaşar Peyniri", quantity: 60, unit: "gr", emoji: "🧀" },
+          { name: "Lavaş", quantity: 1, unit: "adet", emoji: "🫓" },
+          { name: "Domates", quantity: 50, unit: "gr", emoji: "🍅" },
+          { name: "Turşu", quantity: 35, unit: "gr", emoji: "🥒" },
+          { name: "Mayonez", quantity: 25, unit: "gr", emoji: "🥚" },
+          { name: "Ketçap", quantity: 20, unit: "gr", emoji: "🍅" }
+        ]
+      },
+      {
+        name: "Karışık Dürüm",
+        emoji: "🌯",
+        materials: [
+          { name: "Dana Döner", quantity: 100, unit: "gr", emoji: "🥩" },
+          { name: "Tavuk Döner", quantity: 80, unit: "gr", emoji: "🍗" },
+          { name: "Lavaş", quantity: 1, unit: "adet", emoji: "🫓" },
+          { name: "Pilav", quantity: 80, unit: "gr", emoji: "🍚" },
+          { name: "Marul", quantity: 40, unit: "gr", emoji: "🥬" },
+          { name: "Domates", quantity: 50, unit: "gr", emoji: "🍅" },
+          { name: "Turşu", quantity: 30, unit: "gr", emoji: "🥒" },
+          { name: "Cacık", quantity: 35, unit: "gr", emoji: "🥒" }
+        ]
+      },
+      {
+        name: "Sucuklu Kaşarlı Pide",
+        emoji: "🥙",
+        materials: [
+          { name: "Un", quantity: 180, unit: "gr", emoji: "🌾" },
+          { name: "Su", quantity: 110, unit: "ml", emoji: "💧" },
+          { name: "Maya", quantity: 6, unit: "gr", emoji: "🧫" },
+          { name: "Tuz", quantity: 5, unit: "gr", emoji: "🧂" },
+          { name: "Sucuk", quantity: 100, unit: "gr", emoji: "🥓" },
+          { name: "Kaşar Peyniri", quantity: 120, unit: "gr", emoji: "🧀" },
+          { name: "Yumurta", quantity: 1, unit: "adet", emoji: "🥚" },
+          { name: "Baharatlar", quantity: 8, unit: "gr", emoji: "🧂" }
+        ]
+      },
+      {
+        name: "Kıymalı Pide",
+        emoji: "🥙",
+        materials: [
+          { name: "Un", quantity: 180, unit: "gr", emoji: "🌾" },
+          { name: "Su", quantity: 110, unit: "ml", emoji: "💧" },
+          { name: "Maya", quantity: 6, unit: "gr", emoji: "🧫" },
+          { name: "Tuz", quantity: 5, unit: "gr", emoji: "🧂" },
+          { name: "Kıyma", quantity: 160, unit: "gr", emoji: "🥩" },
+          { name: "Soğan", quantity: 60, unit: "gr", emoji: "🧅" },
+          { name: "Maydanoz", quantity: 15, unit: "gr", emoji: "🌿" },
+          { name: "Yumurta", quantity: 1, unit: "adet", emoji: "🥚" },
+          { name: "Baharatlar", quantity: 10, unit: "gr", emoji: "🧂" }
+        ]
+      }
+    ];
+
+    const commonMaterials = [
+      { name: "Domates", emoji: "🍅", quantity: 100, unit: "gr" },
+      { name: "Soğan", emoji: "🧅", quantity: 50, unit: "gr" },
+      { name: "Biber", emoji: "🫑", quantity: 75, unit: "gr" },
+      { name: "Sarımsak", emoji: "🧄", quantity: 10, unit: "gr" },
+      { name: "Zeytinyağı", emoji: "🫒", quantity: 100, unit: "ml" },
+      { name: "Un", emoji: "🌾", quantity: 100, unit: "gr" },
+      { name: "Tuz", emoji: "🧂", quantity: 5, unit: "gr" },
+      { name: "Kıyma", emoji: "🥩", quantity: 100, unit: "gr" },
+      { name: "Tavuk", emoji: "🍗", quantity: 100, unit: "gr" },
+      { name: "Peynir", emoji: "🧀", quantity: 100, unit: "gr" },
+      { name: "Yoğurt", emoji: "🥛", quantity: 100, unit: "gr" },
+      { name: "Mayonez", emoji: "🥚", quantity: 100, unit: "gr" },
+      { name: "Ketçap", emoji: "🍅", quantity: 100, unit: "gr" }
+    ];
+
+    // Sekme değiştirme
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+        
+        if (tab.dataset.tab === 'saved') {
+          renderSavedList();
+        }
+      });
+    });
+
+    // Ürün listesini render et
+    function renderProductGrid() {
+      PRODUCT_GRID.innerHTML = '';
+      popularProducts.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div class="product-emoji">${product.emoji}</div>
+          <div class="product-name">${product.name}</div>
+        `;
+        card.addEventListener('click', () => {
+          document.querySelector('[data-tab="recipe"]').click();
+          RECIPE_NAME.value = product.name;
+          loadProductMaterials(product);
+        });
+        PRODUCT_GRID.appendChild(card);
+      });
+    }
+
+    function loadProductMaterials(product) {
+      recipeItems = [];
+      product.materials.forEach(material => {
+        const availableUnits = getAvailableUnits(material.unit);
+        recipeItems.push({
+          name: material.name,
+          originalQuantity: material.quantity,
+          originalUnit: material.unit,
+          emoji: material.emoji,
+          selectedUnit: availableUnits[0],
+          price: 0,
+          calculatedCost: 0
+        });
+      });
+      renderRecipeMaterials();
+    }
+
+    function getAvailableUnits(unit) {
+      switch(unit) {
+        case 'gr': return ['kg', 'gr'];
+        case 'ml': return ['lt', 'ml'];
+        case 'adet': return ['adet', 'koli'];
+        case 'dilim': return ['adet', 'dilim'];
+        default: return [unit];
+      }
+    }
+
+    function renderRecipeMaterials() {
+      RECIPE_MATERIALS.innerHTML = '';
+      
+      if (recipeItems.length === 0) {
+        RECIPE_MATERIALS.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted); font-size:13px;">Ürün seçin veya malzeme ekleyin</div>';
+        RECIPE_RESULT.classList.add('hidden');
+        return;
+      }
+      
+      recipeItems.forEach((item, index) => {
+        const materialDiv = document.createElement('div');
+        materialDiv.className = 'material-item';
+        const availableUnits = getAvailableUnits(item.originalUnit);
+        
+        materialDiv.innerHTML = `
+          <div class="material-header">
+            <div class="material-emoji">${item.emoji}</div>
+            <div class="material-name">${item.name}</div>
+            <button class="remove-btn" onclick="removeMaterial(${index})">×</button>
+          </div>
+          
+          <div class="material-controls">
+            <div class="quantity-controls">
+              <input type="number" 
+                     class="quantity-input" 
+                     value="${item.originalQuantity}"
+                     oninput="updateMaterial(${index}, 'quantity', this.value)">
+              <select class="unit-select" onchange="updateMaterial(${index}, 'originalUnit', this.value)">
+                <option value="gr" ${item.originalUnit === 'gr' ? 'selected' : ''}>gr</option>
+                <option value="ml" ${item.originalUnit === 'ml' ? 'selected' : ''}>ml</option>
+                <option value="adet" ${item.originalUnit === 'adet' ? 'selected' : ''}>adet</option>
+                <option value="dilim" ${item.originalUnit === 'dilim' ? 'selected' : ''}>dilim</option>
+              </select>
+            </div>
+            
+            <div class="price-controls">
+              <div class="price-input-container ${!item.price || item.price === 0 ? 'empty' : ''}">
+                <input type="number" 
+                       class="price-input" 
+                       step="0.01"
+                       value="${item.price > 0 ? item.price : ''}"
+                       oninput="updateMaterial(${index}, 'price', this.value)"
+                       onfocus="this.parentElement.classList.remove('empty')"
+                       onblur="if(!this.value) this.parentElement.classList.add('empty')">
+              </div>
+              <div class="price-unit">${item.selectedUnit === 'kg' ? 'kg' : 
+                                       item.selectedUnit === 'lt' ? 'lt' : 
+                                       item.selectedUnit === 'koli' ? 'koli' : 
+                                       item.selectedUnit === 'dilim' ? 'dilim' : 'adet'}₺</div>
+            </div>
+            
+            <div class="material-cost">
+              <div class="cost-amount">${item.calculatedCost.toFixed(2)}₺</div>
+              <div class="cost-label">maliyet</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:8px; display:flex; gap:4px;">
+            <select class="unit-select" onchange="updateMaterial(${index}, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
+              ${availableUnits.map(unit => 
+                `<option value="${unit}" ${unit === item.selectedUnit ? 'selected' : ''}>${unit} fiyatı</option>`
+              ).join('')}
+            </select>
+          </div>
+        `;
+        
+        RECIPE_MATERIALS.appendChild(materialDiv);
+      });
+      
+      RECIPE_RESULT.classList.remove('hidden');
+      calculateTotalCost();
+    }
+
+    function updateMaterial(index, field, value) {
+      const item = recipeItems[index];
+      
+      // Virgülü noktaya dönüştür
+      if (typeof value === 'string') {
+        value = value.replace(',', '.');
+      }
+      
+      if (field === 'quantity') {
+        item.originalQuantity = parseFloat(value) || 0;
+      } else if (field === 'originalUnit') {
+        item.originalUnit = value;
+        const availableUnits = getAvailableUnits(value);
+        item.selectedUnit = availableUnits[0];
+      } else if (field === 'selectedUnit') {
+        item.selectedUnit = value;
+      } else if (field === 'price') {
+        item.price = parseFloat(value) || 0;
+        calculateMaterialCost(item);
+        // Sadece bu malzemenin maliyetini güncelle
+        const materialDiv = RECIPE_MATERIALS.children[index];
+        if (materialDiv) {
+          const costEl = materialDiv.querySelector('.cost-amount');
+          if (costEl) costEl.textContent = item.calculatedCost.toFixed(2) + '₺';
+          
+          const priceInputContainer = materialDiv.querySelector('.price-input-container');
+          if (item.price > 0) {
+            priceInputContainer.classList.remove('empty');
+          } else {
+            priceInputContainer.classList.add('empty');
+          }
+        }
+        // Toplam maliyeti güncelle
+        calculateTotalCost();
+        return;
+      }
+      
+      calculateMaterialCost(item);
+      renderRecipeMaterials();
+    }
+
+    function calculateMaterialCost(item) {
+      let cost = 0;
+      const price = parseFloat(item.price) || 0;
+      const quantity = parseFloat(item.originalQuantity) || 0;
+      
+      if (item.selectedUnit === 'kg' && item.originalUnit === 'gr') {
+        cost = (price / 1000) * quantity;
+      }
+      else if (item.selectedUnit === 'gr' && item.originalUnit === 'gr') {
+        cost = price * quantity;
+      }
+      else if (item.selectedUnit === 'lt' && item.originalUnit === 'ml') {
+        cost = (price / 1000) * quantity;
+      }
+      else if (item.selectedUnit === 'ml' && item.originalUnit === 'ml') {
+        cost = price * quantity;
+      }
+      else if (item.selectedUnit === 'koli' && item.originalUnit === 'adet') {
+        // 1 koli = 12 adet varsayımı
+        cost = (price / 12) * quantity;
+      }
+      else if (item.selectedUnit === 'adet' && item.originalUnit === 'adet') {
+        cost = price * quantity;
+      }
+      else if (item.selectedUnit === 'dilim' && item.originalUnit === 'dilim') {
+        cost = price * quantity;
+      }
+      // Birimler aynıysa doğrudan çarp
+      else if (item.selectedUnit === item.originalUnit) {
+        cost = price * quantity;
+      }
+      
+      item.calculatedCost = Math.round(cost * 100) / 100;
+    }
+
+    function removeMaterial(index) {
+      recipeItems.splice(index, 1);
+      renderRecipeMaterials();
+    }
+
+    function calculateTotalCost() {
+      let total = 0;
+      recipeItems.forEach(item => {
+        total += item.calculatedCost;
+      });
+      
+      RECIPE_COST.textContent = total.toFixed(2) + ' ₺';
+      
+      return total;
+    }
+
+    // Malzeme modalı
+    function showMaterialModal() {
+      allMaterials = [...commonMaterials];
+      popularProducts.forEach(product => {
+        product.materials.forEach(material => {
+          if (!allMaterials.some(m => m.name === material.name)) {
+            allMaterials.push(material);
+          }
+        });
+      });
+      
+      MATERIAL_OPTIONS.innerHTML = '';
+      allMaterials.forEach((material, index) => {
+        const option = document.createElement('div');
+        option.className = 'material-option';
+        option.innerHTML = `
+          <div style="font-size:20px; margin-bottom:4px;">${material.emoji}</div>
+          <div style="font-size:12px;">${material.name}</div>
+          <div style="font-size:10px; color:var(--muted);">${material.quantity} ${material.unit}</div>
+        `;
+        option.addEventListener('click', () => {
+          selectedMaterial = material;
+          document.querySelectorAll('.material-option').forEach(opt => {
+            opt.style.background = 'rgba(255,255,255,0.05)';
+          });
+          option.style.background = 'rgba(6,182,212,0.2)';
+        });
+        MATERIAL_OPTIONS.appendChild(option);
+      });
+      
+      MATERIAL_MODAL.classList.add('active');
+    }
+
+    function addSelectedMaterial() {
+      if (!selectedMaterial) return;
+      
+      const availableUnits = getAvailableUnits(selectedMaterial.unit);
+      recipeItems.push({
+        name: selectedMaterial.name,
+        originalQuantity: selectedMaterial.quantity,
+        originalUnit: selectedMaterial.unit,
+        emoji: selectedMaterial.emoji,
+        selectedUnit: availableUnits[0],
+        price: 0,
+        calculatedCost: 0
+      });
+      
+      MATERIAL_MODAL.classList.remove('active');
+      renderRecipeMaterials();
+    }
+
+    function createNewMaterial() {
+      const name = NEW_MATERIAL_NAME.value.trim();
+      const quantity = parseFloat(NEW_MATERIAL_QUANTITY.value) || 100;
+      const unit = NEW_MATERIAL_UNIT.value;
+      
+      if (!name) {
+        alert('Lütfen malzeme adı girin');
+        return;
+      }
+      
+      const availableUnits = getAvailableUnits(unit);
+      recipeItems.push({
+        name: name,
+        originalQuantity: quantity,
+        originalUnit: unit,
+        emoji: "📦",
+        selectedUnit: availableUnits[0],
+        price: 0,
+        calculatedCost: 0
+      });
+      
+      MATERIAL_MODAL.classList.remove('active');
+      renderRecipeMaterials();
+    }
+
+    // Kayıt işlemleri
+    function saveRecipe() {
+      const productName = RECIPE_NAME.value.trim() || 'İsimsiz Ürün';
+      const totalCost = calculateTotalCost();
+      const date = new Date().toLocaleDateString('tr-TR');
+      
+      if (editingSavedIndex >= 0) {
+        savedCosts[editingSavedIndex] = {
+          name: productName,
+          cost: totalCost,
+          date: date,
+          materials: [...recipeItems]
+        };
+        editingSavedIndex = -1;
+      } else {
+        savedCosts.unshift({
+          name: productName,
+          cost: totalCost,
+          date: date,
+          materials: [...recipeItems]
+        });
+      }
+      
+      localStorage.setItem('maliq_saved', JSON.stringify(savedCosts));
+      alert('Maliyet kaydedildi!');
+      renderSavedList();
+    }
+
+    function renderSavedList() {
+      SAVED_LIST.innerHTML = '';
+      
+      if (savedCosts.length === 0) {
+        SAVED_LIST.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted); font-size:13px;">Henüz kayıtlı maliyet yok</div>';
+        return;
+      }
+      
+      savedCosts.forEach((item, index) => {
+        const savedItem = document.createElement('div');
+        savedItem.className = 'saved-item';
+        savedItem.innerHTML = `
+          <div class="saved-header">
+            <div class="saved-name">${item.name}</div>
+            <div class="saved-cost">${item.cost.toFixed(2)} ₺</div>
+          </div>
+          <div class="saved-date">${item.date}</div>
+          
+          <div class="saved-materials">
+            ${item.materials.map(material => `
+              <div class="saved-material-item">
+                <div class="saved-material-name">${material.emoji} ${material.name}</div>
+                <div class="saved-material-cost">${material.calculatedCost.toFixed(2)} ₺</div>
+              </div>
+            `).join('')}
+            
+            <div class="saved-actions">
+              <button class="btn" onclick="loadSavedForEdit(${index})">Güncelle</button>
+              <button class="btn secondary" onclick="deleteSaved(${index})">Sil</button>
+            </div>
+          </div>
+        `;
+        
+        savedItem.addEventListener('click', (e) => {
+          if (!e.target.closest('.saved-actions')) {
+            const materialsSection = savedItem.querySelector('.saved-materials');
+            const isExpanded = materialsSection.classList.contains('expanded');
+            
+            document.querySelectorAll('.saved-materials.expanded').forEach(section => {
+              section.classList.remove('expanded');
+            });
+            document.querySelectorAll('.saved-item.expanded').forEach(item => {
+              item.classList.remove('expanded');
+            });
+            
+            if (!isExpanded) {
+              materialsSection.classList.add('expanded');
+              savedItem.classList.add('expanded');
+            }
+          }
+        });
+        
+        SAVED_LIST.appendChild(savedItem);
+      });
+    }
+
+    function loadSavedForEdit(index) {
+      const savedItem = savedCosts[index];
+      recipeItems = JSON.parse(JSON.stringify(savedItem.materials));
+      RECIPE_NAME.value = savedItem.name;
+      editingSavedIndex = index;
+      
+      document.querySelector('[data-tab="recipe"]').click();
+      renderRecipeMaterials();
+    }
+
+    function deleteSaved(index) {
+      if (confirm('Bu kaydı silmek istediğinizden emin misiniz?')) {
+        savedCosts.splice(index, 1);
+        localStorage.setItem('maliq_saved', JSON.stringify(savedCosts));
+        renderSavedList();
+      }
+    }
+
+    // Event listener'lar
+    ADD_MATERIAL.addEventListener('click', showMaterialModal);
+    SELECT_MATERIAL.addEventListener('click', addSelectedMaterial);
+    CREATE_MATERIAL.addEventListener('click', createNewMaterial);
+    CLOSE_MODAL.addEventListener('click', () => MATERIAL_MODAL.classList.remove('active'));
+    SAVE_RECIPE.addEventListener('click', saveRecipe);
+
+    MATERIAL_MODAL.addEventListener('click', (e) => {
+      if (e.target === MATERIAL_MODAL) {
+        MATERIAL_MODAL.classList.remove('active');
+      }
+    });
+
+    // Otomatik kaydetme
+    function saveAuto() {
+      try {
+        const payload = { 
+          recipeItems: recipeItems || [], 
+          recipeName: document.getElementById('recipeName').value || '' 
+        };
+        localStorage.setItem('maliq_autosave', JSON.stringify(payload));
+      } catch(e){}
+    }
+    
+    function loadAuto() {
+      try {
+        const raw = localStorage.getItem('maliq_autosave');
+        if (!raw) return;
+        const p = JSON.parse(raw);
+        if (p.recipeItems) recipeItems = p.recipeItems;
+        if (p.recipeName) document.getElementById('recipeName').value = p.recipeName;
+        renderRecipeMaterials();
+      } catch(e){}
+    }
+    
+    // PDF dışa aktarma (yazdırma)
+    function exportPDF() { 
+      window.print(); 
+    }
+    
+    // Malzeme arama
+    function filterMaterials(q) {
+      const query = (q||'').toLowerCase();
+      document.querySelectorAll('.material-option').forEach(opt=>{
+        opt.style.display = opt.textContent.toLowerCase().includes(query) ? '' : 'none';
+      });
+    }
+    
+    // Sayfa yüklendiğinde çalıştır
+    document.addEventListener('DOMContentLoaded', function() {
+      renderProductGrid();
+      renderSavedList();
+      loadAuto();
+      
+      // Otomatik kaydetmeyi başlat
+      setInterval(saveAuto, 3000);
+      
+      // Event listener'ları ekle
+      document.getElementById('exportPDFBtn').addEventListener('click', exportPDF);
+    });
+
+  </script>
+
+  <div class="footer">
+    <div>CAN&D Şirketinin ürünüdür. Tüm hakları saklıdır © CAN&D</div>
+    <div class="branding">Reklam: CAN&D - Maliyet ve Menü Çözümleri</div>
+  </div>
+
+</body></html>
