@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MALIQ - Admin Panel</title>
+    <style>
+        :root {
+            --bg: #0f1724;
+            --card: #0b1220;
+            --accent: #06b6d4;
+            --muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --admin: #ff6b6b;
+            color-scheme: dark;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: var(--bg);
+            color: white;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 24px;
+        }
+        
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .admin-section {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+        
+        .material-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            padding: 10px;
+        }
+        
+        .material-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .users-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .quick-recipe-input {
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            font-family: 'Courier New', monospace !important;
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+        }
+        
+        .preview-area {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 100px;
+        }
+        
+        .preview-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .preview-material {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .preview-material:last-child {
+            border-bottom: none;
+        }
+        
+        .help-text {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--muted);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .last-update {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .admin-section {
+                padding: 15px;
+            }
+            
+            .tab-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 MALIQ Admin Panel</h1>
+            <button class="logout-btn" onclick="logout()">🚪 Çıkış Yap</button>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Toplam Kullanıcı</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeUsers">0</div>
+                <div class="stat-label">Aktif Kullanıcı (30 gün)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalProducts">0</div>
+                <div class="stat-label">Toplam Ürün</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalMaterials">0</div>
+                <div class="stat-label">Toplam Malzeme</div>
+            </div>
+        </div>
+
+        <div class="last-update" id="lastUpdate">
+            Son güncelleme: Yükleniyor...
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('quick')">🚀 Kolay Tarif Ekleme</button>
+            <button class="tab-btn" onclick="showTab('manual')">📝 Manuel Ürün Ekleme</button>
+            <button class="tab-btn" onclick="showTab('materials')">📦 Malzeme Yönetimi</button>
+            <button class="tab-btn" onclick="showTab('users')">👥 Kullanıcı Yönetimi</button>
+        </div>
+
+        <!-- KOLAY TARİF EKLEME -->
+        <div class="tab-content active" id="quick-tab">
+            <div class="admin-section">
+                <h2 class="section-title">🚀 Kolay Tarif Ekleme</h2>
+                
+                <div class="form-group">
+                    <label>Tarif Formatında Yazın:</label>
+                    <textarea 
+                        id="quickRecipeInput" 
+                        class="quick-recipe-input"
+                        placeholder="Örnek format:
+
+Special Burger🍔
+- Dana Kıyma: 200g 🥩
+- Pastırma: 40g 🥓
+- Cheddar: 50g 🧀
+- Burger Ekmeği: 1 adet 🍞
+- Marul: 45g 🥬
+- Domates: 55g 🍅
+- Barbekü Sos: 25g 🔥
+- Baharatlar: 15g 🧂
+
+💡 İPUCU:
+- İlk satır: Ürün adı + emoji
+- Sonraki satırlar: - Malzeme: miktar birim emoji
+- Birimler: g, gr, kg, ml, lt, adet, dilim
+- Boş satırları atlayabilirsiniz"
+                    ></textarea>
+                    <div class="help-text">
+                        Yukarıdaki formatta tarifinizi yazın, otomatik olarak parse edilecektir.
+                    </div>
+                </div>
+                
+                <div class="preview-area" id="previewArea">
+                    <div class="preview-title">Önizleme:</div>
+                    <div id="previewContent">Tarif yazmaya başladığınızda önizleme burada görünecek...</div>
+                </div>
+                
+                <button class="btn btn-success" onclick="parseAndAddRecipe()" style="margin-top: 15px;">
+                    ✅ Tarifi Ekle
+                </button>
+            </div>
+        </div>
+
+        <!-- MANUEL ÜRÜN EKLEME -->
+        <div class="tab-content" id="manual-tab">
+            <div class="admin-section">
+                <h2 class="section-title">📝 Manuel Ürün Ekleme</h2>
+                <div class="form-grid">
+                    <div>
+                        <div class="form-group">
+                            <label>Ürün Adı</label>
+                            <input type="text" id="productName" placeholder="Yeni ürün adı">
+                        </div>
+                        <div class="form-group">
+                            <label>Emoji</label>
+                            <input type="text" id="productEmoji" placeholder="🥙">
+                        </div>
+                        <button class="btn" onclick="addProduct()">➕ Ürün Ekle</button>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>Mevcut Ürünler</label>
+                            <div class="material-list" id="productList">
+                                <!-- Ürünler burada listelenecek -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MALZEME YÖNETİMİ -->
+        <div class="tab-content" id="materials-tab">
+            <div class="admin-section">
+                <h2 class="section-title">📦 Malzeme Yönetimi</h2>
+                <div class="form-grid">
+                    <div>
+                        <div class="form-group">
+                            <label>Malzeme Adı</label>
+                            <input type="text" id="materialName" placeholder="Yeni malzeme adı">
+                        </div>
+                        <div class="form-group">
+                            <label>Emoji</label>
+                            <input type="text" id="materialEmoji" placeholder="🍅">
+                        </div>
+                        <div class="form-group">
+                            <label>Varsayılan Miktar</label>
+                            <input type="number" id="materialQuantity" placeholder="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Birim</label>
+                            <select id="materialUnit">
+                                <option value="gr">gr</option>
+                                <option value="ml">ml</option>
+                                <option value="adet">adet</option>
+                                <option value="dilim">dilim</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="addMaterial()">➕ Malzeme Ekle</button>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>Mevcut Malzemeler</label>
+                            <div class="material-list" id="materialList">
+                                <!-- Malzemeler burada listelenecek -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KULLANICI YÖNETİMİ -->
+        <div class="tab-content" id="users-tab">
+            <div class="admin-section">
+                <h2 class="section-title">👥 Kullanıcı Yönetimi</h2>
+                <div class="users-list" id="usersList">
+                    <!-- Kullanıcılar burada listelenecek -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'quick';
+        let autoRefreshInterval;
+        
+        // Admin kontrolü
+        window.addEventListener('load', function() {
+            console.log('Admin panel yükleniyor...');
+            const isAdmin = localStorage.getItem('maliq_admin');
+            const userStr = localStorage.getItem('maliq_user');
+            
+            if (!isAdmin || !userStr) {
+                console.log('Admin değil, yönlendiriliyor...');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(userStr);
+                if (!user.isAdmin) {
+                    console.log('Admin yetkisi yok, yönlendiriliyor...');
+                    window.location.href = 'index.html';
+                    return;
+                }
+            } catch (e) {
+                console.log('JSON parse hatası:', e);
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Admin paneline giriş yapıldı
+            console.log('Admin girişi başarılı!');
+            initializeAdminPanel();
+        });
+        
+        function initializeAdminPanel() {
+            // İlk yükleme
+            loadAllData();
+            
+            // Kolay tarif inputunu dinle
+            document.getElementById('quickRecipeInput').addEventListener('input', function() {
+                updatePreview();
+            });
+            
+            // Otomatik yenileme (5 saniyede bir)
+            autoRefreshInterval = setInterval(loadAllData, 5000);
+            
+            console.log('Admin panel başlatıldı!');
+        }
+        
+        function loadAllData() {
+            loadStats();
+            loadProducts();
+            loadMaterials();
+            loadUsers();
+            updateLastUpdateTime();
+        }
+        
+        function updateLastUpdateTime() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = 
+                'Son güncelleme: ' + now.toLocaleTimeString('tr-TR');
+        }
+        
+        function showTab(tabName) {
+            currentTab = tabName;
+            
+            // Tab butonlarını güncelle
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            
+            // Tab içeriklerini güncelle
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+        
+        function logout() {
+            if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
+                clearInterval(autoRefreshInterval);
+                localStorage.removeItem('maliq_admin');
+                localStorage.removeItem('maliq_user');
+                window.location.href = 'index.html';
+            }
+        }
+        
+        function loadStats() {
+            try {
+                const users = JSON.parse(localStorage.getItem('maliq_users') || '[]');
+                const products = JSON.parse(localStorage.getItem('maliq_products') || '[]');
+                const materials = JSON.parse(localStorage.getItem('maliq_materials') || '[]');
+                
+                // Admin olmayan kullanıcıları say
+                const normalUsers = users.filter(u => !u.isAdmin);
+                
+                // Aktif kullanıcıları say (son 30 gün içinde giriş yapanlar)
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                
+                const activeUsers = normalUsers.filter(u => {
+                    if (!u.lastLogin) return false;
+                    try {
+                        const lastLogin = new Date(u.lastLogin);
+                        return lastLogin > thirtyDaysAgo;
+                    } catch (e) {
+                        return false;
+                    }
+                }).length;
+                
+                document.getElementById('totalUsers').textContent = normalUsers.length;
+                document.getElementById('activeUsers').textContent = activeUsers;
+                document.getElementById('totalProducts').textContent = products.length;
+                document.getElementById('totalMaterials').textContent = materials.length;
+                
+            } catch (error) {
+                console.error('İstatistikler yüklenirken hata:', error);
+            }
+        }
+        
+        function updatePreview() {
+            const input = document.getElementById('quickRecipeInput').value;
+            const previewContent = document.getElementById('previewContent');
+            
+            if (!input.trim()) {
+                previewContent.innerHTML = 'Tarif yazmaya başladığınızda önizleme burada görünecek...';
+                return;
+            }
+            
+            try {
+                const parsedRecipe = parseRecipe(input);
+                let previewHTML = '';
+                
+                if (parsedRecipe.name) {
+                    previewHTML += `<div style="margin-bottom: 15px;"><strong>${parsedRecipe.emoji} ${parsedRecipe.name}</strong></div>`;
+                }
+                
+                if (parsedRecipe.materials && parsedRecipe.materials.length > 0) {
+                    parsedRecipe.materials.forEach(material => {
+                        previewHTML += `
+                            <div class="preview-material">
+                                <span>${material.emoji} ${material.name}</span>
+                                <span>${material.quantity} ${material.unit}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    previewHTML += '<div style="color: var(--muted);">Malzeme bulunamadı. Formatı kontrol edin.</div>';
+                }
+                
+                previewContent.innerHTML = previewHTML;
+            } catch (error) {
+                previewContent.innerHTML = `<div style="color: var(--danger);">Hata: ${error.message}</div>`;
+            }
+        }
+        
+        function parseRecipe(input) {
+            const lines = input.split('\n').filter(line => line.trim() !== '');
+            
+            if (lines.length === 0) {
+                throw new Error('Boş tarif!');
+            }
+            
+            // İlk satır: ürün adı ve emoji
+            const firstLine = lines[0].trim();
+            let productName = firstLine;
+            let productEmoji = "📦";
+            
+            // Emoji kontrolü
+            const emojiRegex = /[\u{1F300}-\u{1F9FF}]/u;
+            const emojiMatch = firstLine.match(emojiRegex);
+            
+            if (emojiMatch) {
+                const emojiIndex = firstLine.indexOf(emojiMatch[0]);
+                productName = firstLine.substring(0, emojiIndex).trim();
+                productEmoji = emojiMatch[0];
+            }
+            
+            // Malzemeleri parse et
+            const materials = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Madde işaretini kontrol et (- veya •)
+                if (line.startsWith('-') || line.startsWith('•')) {
+                    const content = line.substring(1).trim();
+                    
+                    // Gelişmiş parse patternleri
+                    const patterns = [
+                        /^([^:]+):\s*([\d.]+)\s*([a-zA-Z]+)\s*([🎀-🏿])?$/,
+                        /^([^:]+)\s+([\d.]+)\s*([a-zA-Z]+)\s*([🎀-🏿])?$/
+                    ];
+                    
+                    let match = null;
+                    for (const pattern of patterns) {
+                        match = content.match(pattern);
+                        if (match) break;
+                    }
+                    
+                    if (match) {
+                        const name = match[1].trim();
+                        const quantity = parseFloat(match[2]);
+                        let unit = match[3].toLowerCase();
+                        let emoji = match[4] || "📦";
+                        
+                        // Emoji kontrolü
+                        const materialEmojiMatch = content.match(emojiRegex);
+                        if (materialEmojiMatch && !match[4]) {
+                            emoji = materialEmojiMatch[0];
+                        }
+                        
+                        // Birim standardizasyonu
+                        if (unit === 'g' || unit === 'gram') unit = 'gr';
+                        if (unit === 'kg' || unit === 'kilo') unit = 'kg';
+                        if (unit === 'ml') unit = 'ml';
+                        if (unit === 'lt' || unit === 'l' || unit === 'litre') unit = 'lt';
+                        if (unit === 'adet' || unit === 'piece') unit = 'adet';
+                        if (unit === 'dilim' || unit === 'slice') unit = 'dilim';
+                        
+                        materials.push({
+                            name,
+                            quantity,
+                            unit,
+                            emoji
+                        });
+                    }
+                }
+            }
+            
+            return {
+                name: productName,
+                emoji: productEmoji,
+                materials: materials
+            };
+        }
+        
+        function parseAndAddRecipe() {
+            const input = document.getElementById('quickRecipeInput').value;
+            
+            if (!input.trim()) {
+                alert('Lütfen tarif yazın!');
+                return;
+            }
+            
+            try {
+                const parsedRecipe = parseRecipe(input);
+                
+                if (!parsedRecipe.name) {
+                    alert('Ürün adı bulunamadı!');
+                    return;
+                }
+                
+                if (parsedRecipe.materials.length === 0) {
+                    alert('Hiç malzeme bulunamadı! Formatı kontrol edin.');
+                    return;
+                }
+                
+                // Ürünü kaydet
+                const products = JSON.parse(localStorage.getItem('maliq_products') || '[]');
+                
+                // Aynı isimde ürün var mı kontrol et
+                const existingProductIndex = products.findIndex(p => p.name.toLowerCase() === parsedRecipe.name.toLowerCase());
+                if (existingProductIndex !== -1) {
+                    if (!confirm(`"${parsedRecipe.name}" isimli ürün zaten mevcut! Üzerine yazılsın mı?`)) {
+                        return;
+                    }
+                    // Mevcut ürünü kaldır
+                    products.splice(existingProductIndex, 1);
+                }
+                
+                // Yeni ürünü ekle
+                products.push({
+                    name: parsedRecipe.name,
+                    emoji: parsedRecipe.emoji,
+                    materials: parsedRecipe.materials,
+                    createdAt: new Date().toISOString(),
+                    createdBy: 'admin-quick'
+                });
+                
+                localStorage.setItem('maliq_products', JSON.stringify(products));
+                
+                // Malzemeleri de kaydet (yoksa)
+                const materials = JSON.parse(localStorage.getItem('maliq_materials') || '[]');
+                parsedRecipe.materials.forEach(material => {
+                    const existingMaterial = materials.find(m => m.name.toLowerCase() === material.name.toLowerCase());
+                    if (!existingMaterial) {
+                        materials.push({
+                            name: material.name,
+                            emoji: material.emoji,
+                            quantity: material.quantity,
+                            unit: material.unit,
+                            createdAt: new Date().toISOString(),
+                            createdBy: 'admin-quick'
+                        });
+                    }
+                });
+                localStorage.setItem('maliq_materials', JSON.stringify(materials));
+                
+                // Formu temizle
+                document.getElementById('quickRecipeInput').value = '';
+                document.getElementById('previewContent').innerHTML = 'Tarif başarıyla eklendi! 🎉';
+                
+                loadAllData();
+                
+                alert(`"${parsedRecipe.name}" tarifi başarıyla eklendi! ${parsedRecipe.materials.length} malzeme kaydedildi.`);
+                
+            } catch (error) {
+                alert('Tarif eklenirken hata oluştu: ' + error.message);
+                console.error('Parse hatası:', error);
+            }
+        }
+        
+        function loadProducts() {
+            try {
+                const products = JSON.parse(localStorage.getItem('maliq_products') || '[]');
+                const productList = document.getElementById('productList');
+                
+                productList.innerHTML = '';
+                
+                if (products.length === 0) {
+                    productList.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 20px;">Henüz ürün eklenmemiş</div>';
+                    return;
+                }
+                
+                // Tarihe göre sırala (yeniden eskiye)
+                const sortedProducts = products.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                sortedProducts.forEach((product, index) => {
+                    const originalIndex = products.findIndex(p => p.name === product.name);
+                    const item = document.createElement('div');
+                    item.className = 'material-item';
+                    item.innerHTML = `
+                        <div style="flex: 1;">
+                            <span>${product.emoji} ${product.name}</span>
+                            <div style="font-size: 11px; color: var(--muted);">
+                                ${product.materials.length} malzeme • 
+                                ${new Date(product.createdAt).toLocaleDateString('tr-TR')}
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteProduct(${originalIndex})">Sil</button>
+                    `;
+                    productList.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Ürünler yüklenirken hata:', error);
+            }
+        }
+        
+        function loadMaterials() {
+            try {
+                const materials = JSON.parse(localStorage.getItem('maliq_materials') || '[]');
+                const materialList = document.getElementById('materialList');
+                
+                materialList.innerHTML = '';
+                
+                if (materials.length === 0) {
+                    materialList.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 20px;">Henüz malzeme eklenmemiş</div>';
+                    return;
+                }
+                
+                // İsme göre sırala
+                const sortedMaterials = materials.sort((a, b) => a.name.localeCompare(b.name));
+                
+                sortedMaterials.forEach((material, index) => {
+                    const originalIndex = materials.findIndex(m => m.name === material.name);
+                    const item = document.createElement('div');
+                    item.className = 'material-item';
+                    item.innerHTML = `
+                        <div style="flex: 1;">
+                            <span>${material.emoji} ${material.name}</span>
+                            <div style="font-size: 11px; color: var(--muted);">
+                                ${material.quantity} ${material.unit} • 
+                                ${new Date(material.createdAt).toLocaleDateString('tr-TR')}
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteMaterial(${originalIndex})">Sil</button>
+                    `;
+                    materialList.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Malzemeler yüklenirken hata:', error);
+            }
+        }
+        
+        function loadUsers() {
+            try {
+                const users = JSON.parse(localStorage.getItem('maliq_users') || '[]');
+                const usersList = document.getElementById('usersList');
+                
+                usersList.innerHTML = '';
+                
+                // Admin kullanıcılarını filtrele (sadece normal kullanıcıları göster)
+                const normalUsers = users.filter(u => !u.isAdmin);
+                
+                if (normalUsers.length === 0) {
+                    usersList.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 20px;">Henüz kullanıcı kaydı yok</div>';
+                    return;
+                }
+                
+                // Tarihe göre sırala (yeniden eskiye)
+                const sortedUsers = normalUsers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                sortedUsers.forEach((user, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'user-item';
+                    
+                    const lastLogin = user.lastLogin ? 
+                        new Date(user.lastLogin).toLocaleDateString('tr-TR') + ' ' + 
+                        new Date(user.lastLogin).toLocaleTimeString('tr-TR') : 
+                        'Hiç giriş yapmamış';
+                    
+                    const provider = user.provider ? ` (${user.provider})` : '';
+                    const socialBadge = user.isSocial ? ' 🌐' : '';
+                    const status = user.isActive ? '🟢 Aktif' : '🔴 Pasif';
+                    
+                    item.innerHTML = `
+                        <div style="flex: 1;">
+                            <strong>${user.name || 'İsimsiz Kullanıcı'}${socialBadge}</strong>
+                            <div style="font-size: 12px; color: var(--muted);">
+                                ${user.email}${provider}
+                            </div>
+                            <div style="font-size: 11px; color: var(--muted);">
+                                📅 Kayıt: ${new Date(user.createdAt).toLocaleDateString('tr-TR')} • ${status}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px;">${status}</div>
+                            <div style="font-size: 11px; color: var(--muted);">
+                                Son giriş:<br>${lastLogin}
+                            </div>
+                        </div>
+                    `;
+                    usersList.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Kullanıcılar yüklenirken hata:', error);
+            }
+        }
+        
+        function addProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const emoji = document.getElementById('productEmoji').value.trim();
+            
+            if (!name) {
+                alert('Lütfen ürün adı girin.');
+                return;
+            }
+            
+            if (!emoji) {
+                alert('Lütfen emoji girin.');
+                return;
+            }
+            
+            try {
+                const products = JSON.parse(localStorage.getItem('maliq_products') || '[]');
+                
+                // Aynı isimde ürün var mı kontrol et
+                const existingProduct = products.find(p => p.name.toLowerCase() === name.toLowerCase());
+                if (existingProduct) {
+                    alert('Bu isimde bir ürün zaten mevcut!');
+                    return;
+                }
+                
+                products.push({ 
+                    name, 
+                    emoji, 
+                    materials: [],
+                    createdAt: new Date().toISOString(),
+                    createdBy: 'admin-manual'
+                });
+                
+                localStorage.setItem('maliq_products', JSON.stringify(products));
+                
+                // Formu temizle
+                document.getElementById('productName').value = '';
+                document.getElementById('productEmoji').value = '';
+                
+                loadAllData();
+                
+                alert('Ürün başarıyla eklendi!');
+            } catch (error) {
+                alert('Ürün eklenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        function addMaterial() {
+            const name = document.getElementById('materialName').value.trim();
+            const emoji = document.getElementById('materialEmoji').value.trim();
+            const quantity = document.getElementById('materialQuantity').value;
+            const unit = document.getElementById('materialUnit').value;
+            
+            if (!name) {
+                alert('Lütfen malzeme adı girin.');
+                return;
+            }
+            
+            if (!emoji) {
+                alert('Lütfen emoji girin.');
+                return;
+            }
+            
+            if (!quantity || quantity <= 0) {
+                alert('Lütfen geçerli bir miktar girin.');
+                return;
+            }
+            
+            try {
+                const materials = JSON.parse(localStorage.getItem('maliq_materials') || '[]');
+                
+                // Aynı isimde malzeme var mı kontrol et
+                const existingMaterial = materials.find(m => m.name.toLowerCase() === name.toLowerCase());
+                if (existingMaterial) {
+                    alert('Bu isimde bir malzeme zaten mevcut!');
+                    return;
+                }
+                
+                materials.push({ 
+                    name, 
+                    emoji, 
+                    quantity: parseFloat(quantity), 
+                    unit,
+                    createdAt: new Date().toISOString(),
+                    createdBy: 'admin-manual'
+                });
+                
+                localStorage.setItem('maliq_materials', JSON.stringify(materials));
+                
+                // Formu temizle
+                document.getElementById('materialName').value = '';
+                document.getElementById('materialEmoji').value = '';
+                document.getElementById('materialQuantity').value = '';
+                
+                loadAllData();
+                
+                alert('Malzeme başarıyla eklendi!');
+            } catch (error) {
+                alert('Malzeme eklenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        function deleteProduct(index) {
+            if (!confirm('Bu ürünü silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) {
+                return;
+            }
+            
+            try {
+                const products = JSON.parse(localStorage.getItem('maliq_products') || '[]');
+                
+                if (index < 0 || index >= products.length) {
+                    alert('Geçersiz ürün indexi!');
+                    return;
+                }
+                
+                const productName = products[index].name;
+                products.splice(index, 1);
+                localStorage.setItem('maliq_products', JSON.stringify(products));
+                
+                loadAllData();
+                
+                alert(`"${productName}" ürünü başarıyla silindi!`);
+            } catch (error) {
+                alert('Ürün silinirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        function deleteMaterial(index) {
+            if (!confirm('Bu malzemeyi silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) {
+                return;
+            }
+            
+            try {
+                const materials = JSON.parse(localStorage.getItem('maliq_materials') || '[]');
+                
+                if (index < 0 || index >= materials.length) {
+                    alert('Geçersiz malzeme indexi!');
+                    return;
+                }
+                
+                const materialName = materials[index].name;
+                materials.splice(index, 1);
+                localStorage.setItem('maliq_materials', JSON.stringify(materials));
+                
+                loadAllData();
+                
+                alert(`"${materialName}" malzemesi başarıyla silindi!`);
+            } catch (error) {
+                alert('Malzeme silinirken hata oluştu: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
