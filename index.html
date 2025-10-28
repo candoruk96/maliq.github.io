@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MALIQ - Giriş</title>
+    <title>MALIQ - Akıllı Maliyet Hesaplayıcı</title>
     <style>
         :root {
             --bg: #0f1724;
@@ -32,9 +32,45 @@
             padding: 20px;
         }
         
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(6,182,212,0.3);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
         .container {
             width: 100%;
             max-width: 400px;
+            display: none;
         }
         
         .welcome-card {
@@ -44,6 +80,12 @@
             border: 1px solid rgba(255,255,255,0.1);
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .user-panel {
@@ -53,6 +95,12 @@
             border-radius: 10px;
             margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.1);
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .user-info {
@@ -93,6 +141,11 @@
         
         .admin-btn {
             background: var(--admin);
+            color: white;
+        }
+        
+        .app-btn {
+            background: var(--accent);
             color: white;
         }
         
@@ -209,6 +262,12 @@
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
+            transition: all 0.2s;
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         
         .switch-mode {
@@ -219,19 +278,6 @@
         
         .switch-mode a {
             color: var(--accent);
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        .admin-link {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .admin-link a {
-            color: var(--muted);
-            font-size: 12px;
             text-decoration: none;
             cursor: pointer;
         }
@@ -262,7 +308,14 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Yükleme Ekranı -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <div class="loading-text">MALİQ yükleniyor...</div>
+    </div>
+
+    <!-- Ana İçerik -->
+    <div class="container" id="mainContainer">
         <div class="welcome-card">
             <!-- Kullanıcı Paneli -->
             <div class="user-panel" id="userPanel">
@@ -272,7 +325,8 @@
                         <div class="user-email" id="userEmail"></div>
                     </div>
                     <div class="user-actions">
-                        <button class="btn admin-btn" id="adminBtn" onclick="goToAdmin()">YÖNETİCİ</button>
+                        <button class="btn admin-btn" id="adminBtn" onclick="goToAdmin()">YÖNETİCİ PANELİ</button>
+                        <button class="btn app-btn" onclick="goToApp()">UYGULAMA</button>
                         <button class="btn logout-btn" onclick="logout()">ÇIKIŞ</button>
                     </div>
                 </div>
@@ -317,15 +371,12 @@
                 
                 <button type="submit" class="submit-btn" id="submitBtn">
                     <span id="btnText">Hesap Oluştur</span>
+                    <span id="btnLoader" class="hidden">⏳</span>
                 </button>
             </form>
             
             <div class="switch-mode">
                 Zaten hesabınız var mı? <a onclick="switchMode()">Giriş Yap</a>
-            </div>
-            
-            <div class="admin-link">
-                <a onclick="showAdminLogin()">Yönetici Girişi</a>
             </div>
         </div>
     </div>
@@ -335,8 +386,29 @@
         
         // Sayfa yüklendiğinde
         window.addEventListener('load', function() {
-            checkUserStatus();
+            // Yükleme ekranını göster
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                checkUserStatus();
+            }, 2000);
         });
+
+        function setLoading(loading) {
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+            
+            if (loading) {
+                btn.disabled = true;
+                btnText.classList.add('hidden');
+                btnLoader.classList.remove('hidden');
+            } else {
+                btn.disabled = false;
+                btnText.classList.remove('hidden');
+                btnLoader.classList.add('hidden');
+            }
+        }
 
         function checkUserStatus() {
             const user = localStorage.getItem('maliq_user');
@@ -360,7 +432,6 @@
             document.getElementById('authForm').style.display = 'none';
             document.querySelector('.divider').style.display = 'none';
             document.querySelector('.switch-mode').style.display = 'none';
-            document.querySelector('.admin-link').style.display = 'none';
             
             document.getElementById('userName').textContent = userData.name || userData.email;
             document.getElementById('userEmail').textContent = userData.email;
@@ -421,6 +492,8 @@
         }
 
         function socialLogin(provider) {
+            setLoading(true);
+            
             const providerNames = {
                 'apple': 'Apple',
                 'google': 'Google', 
@@ -455,146 +528,142 @@
                 localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
                 localStorage.setItem('maliq_user', JSON.stringify(demoUser));
                 
-                window.location.href = 'app.html';
-            }, 1500);
-        }
-
-        function showAdminLogin() {
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.8);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-            `;
-            
-            modal.innerHTML = `
-                <div style="background: var(--card); padding: 30px; border-radius: 12px; width: 90%; max-width: 400px;">
-                    <h3 style="margin-bottom: 20px; text-align: center;">Yönetici Girişi</h3>
-                    <div class="form-group">
-                        <label>E-posta</label>
-                        <input type="email" id="adminEmail" placeholder="admin@maliq.com" style="width: 100%; padding: 12px; margin-bottom: 15px;">
-                    </div>
-                    <div class="form-group">
-                        <label>Şifre</label>
-                        <input type="password" id="adminPassword" placeholder="admin123" style="width: 100%; padding: 12px; margin-bottom: 20px;">
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="handleAdminLogin()" class="submit-btn" style="flex: 1;">Giriş Yap</button>
-                        <button onclick="this.closest('div').parentElement.remove()" class="submit-btn" style="flex: 1; background: var(--muted);">İptal</button>
-                    </div>
-                    <div style="margin-top: 15px; text-align: center; font-size: 12px; color: var(--muted);">
-                        Varsayılan: admin@maliq.com / admin123
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-        }
-
-        function handleAdminLogin() {
-            const email = document.getElementById('adminEmail').value;
-            const password = document.getElementById('adminPassword').value;
-            
-            if (email === 'admin@maliq.com' && password === 'admin123') {
-                // Admin kullanıcısını oluştur
-                const adminUser = {
-                    name: 'Sistem Yöneticisi',
-                    email: email,
-                    isAdmin: true,
-                    lastLogin: new Date().toISOString()
-                };
-                
-                localStorage.setItem('maliq_admin', 'true');
-                localStorage.setItem('maliq_user', JSON.stringify(adminUser));
-                
-                // Mevcut kullanıcılar listesine admin ekle
-                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
-                const adminExists = existingUsers.find(u => u.email === 'admin@maliq.com');
-                
-                if (!adminExists) {
-                    const adminUserData = {
-                        id: 'admin',
-                        name: 'Sistem Yöneticisi',
-                        email: 'admin@maliq.com',
-                        isAdmin: true,
-                        createdAt: new Date().toISOString(),
-                        lastLogin: new Date().toISOString(),
-                        isActive: true
-                    };
-                    existingUsers.push(adminUserData);
-                    localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
+                // Admin kontrolü
+                if (demoUser.email === 'admincan@maliq.com') {
+                    localStorage.setItem('maliq_admin', 'true');
                 }
                 
-                // Index sayfasında kal (admin paneline yönlendirme yapma)
-                location.reload();
-                
-            } else {
-                alert('Yönetici giriş bilgileri hatalı!\n\nVarsayılan: admin@maliq.com / admin123');
-            }
+                setLoading(false);
+                window.location.href = 'app.html';
+            }, 2000);
         }
 
         function goToAdmin() {
-            window.location.href = 'admin.html';
+            showLoading();
+            setTimeout(() => {
+                window.location.href = 'admin.html';
+            }, 1000);
+        }
+
+        function goToApp() {
+            showLoading();
+            setTimeout(() => {
+                window.location.href = 'app.html';
+            }, 1000);
+        }
+
+        function showLoading() {
+            document.getElementById('loadingScreen').style.display = 'flex';
+            document.getElementById('mainContainer').style.display = 'none';
         }
 
         function logout() {
             if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
-                localStorage.removeItem('maliq_user');
-                localStorage.removeItem('maliq_admin');
-                location.reload();
+                showLoading();
+                setTimeout(() => {
+                    localStorage.removeItem('maliq_user');
+                    localStorage.removeItem('maliq_admin');
+                    location.reload();
+                }, 1000);
             }
         }
 
         // Form gönderimi
         document.getElementById('authForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            setLoading(true);
             
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             
+            // Admin girişi kontrolü
+            if (email === 'admincan' && password === 'candoruk1234') {
+                handleAdminLogin();
+                return;
+            }
+            
             if (!isLoginMode) {
                 if (!name) {
                     showError('Lütfen adınızı giriniz.');
+                    setLoading(false);
                     return;
                 }
                 
                 if (name.length < 2) {
                     showError('Lütfen geçerli bir ad giriniz.');
+                    setLoading(false);
                     return;
                 }
             }
             
             if (!email) {
                 showError('Lütfen e-posta adresinizi giriniz.');
+                setLoading(false);
                 return;
             }
             
-            if (!isValidEmail(email)) {
+            if (!isValidEmail(email) && email !== 'admincan') {
                 showError('Lütfen geçerli bir e-posta adresi giriniz.');
+                setLoading(false);
                 return;
             }
             
             if (!password) {
                 showError('Lütfen şifrenizi giriniz.');
+                setLoading(false);
                 return;
             }
             
             if (password.length < 6) {
                 showError('Şifre en az 6 karakter olmalıdır.');
+                setLoading(false);
                 return;
             }
             
             // Kullanıcı işlemleri
-            handleUserAuth({ name, email, password, isLogin: isLoginMode });
+            setTimeout(() => {
+                handleUserAuth({ name, email, password, isLogin: isLoginMode });
+            }, 1500);
         });
+
+        function handleAdminLogin() {
+            // Admin kullanıcısını oluştur
+            const adminUser = {
+                name: 'Sistem Yöneticisi',
+                email: 'admincan@maliq.com',
+                isAdmin: true,
+                lastLogin: new Date().toISOString()
+            };
+            
+            localStorage.setItem('maliq_admin', 'true');
+            localStorage.setItem('maliq_user', JSON.stringify(adminUser));
+            
+            // Mevcut kullanıcılar listesine admin ekle
+            const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
+            const adminExists = existingUsers.find(u => u.email === 'admincan@maliq.com');
+            
+            if (!adminExists) {
+                const adminUserData = {
+                    id: 'admin',
+                    name: 'Sistem Yöneticisi',
+                    email: 'admincan@maliq.com',
+                    isAdmin: true,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    isActive: true
+                };
+                existingUsers.push(adminUserData);
+                localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
+            }
+            
+            showError('Yönetici girişi başarılı! Yönlendiriliyorsunuz...', 'success');
+            
+            setTimeout(() => {
+                setLoading(false);
+                location.reload();
+            }, 2000);
+        }
 
         function handleUserAuth(userData) {
             const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
@@ -604,6 +673,7 @@
                 const user = existingUsers.find(u => u.email === userData.email && u.password === userData.password);
                 if (!user) {
                     showError('E-posta veya şifre hatalı!');
+                    setLoading(false);
                     return;
                 }
                 
@@ -614,14 +684,16 @@
                 
                 showError('Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
                 setTimeout(() => {
+                    setLoading(false);
                     window.location.href = 'app.html';
-                }, 1000);
+                }, 1500);
                 
             } else {
                 // Kayıt işlemi
                 const existingUser = existingUsers.find(u => u.email === userData.email);
                 if (existingUser) {
                     showError('Bu e-posta adresi zaten kayıtlı!');
+                    setLoading(false);
                     return;
                 }
                 
@@ -642,8 +714,9 @@
                 
                 showError('Hesabınız başarıyla oluşturuldu! Yönlendiriliyorsunuz...', 'success');
                 setTimeout(() => {
+                    setLoading(false);
                     window.location.href = 'app.html';
-                }, 1000);
+                }, 1500);
             }
         }
     </script>
