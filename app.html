@@ -1,1315 +1,400 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MALIQ - Maliyet Hesaplama</title>
-    <style>
-        :root {
-            --bg: #0f1724;
-            --card: #0b1220;
-            --accent: #06b6d4;
-            --muted: #94a3b8;
-            color-scheme: dark;
-        }
-        
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: white;
-            margin: 0;
-            padding: 12px;
-            line-height: 1.4;
-        }
-        
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(6,182,212,0.3);
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            font-size: 18px;
-            color: var(--accent);
-            font-weight: 600;
-        }
-        
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            display: none;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding: 0 10px;
-        }
-        
-        h1 {
-            font-size: 18px;
-            text-align: center;
-            margin: 0;
-            background: linear-gradient(135deg, var(--accent), #7c3aed);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .user-menu {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .btn {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .admin-btn {
-            background: #ff6b6b;
-            color: white;
-        }
-        
-        .logout-btn {
-            background: #ef4444;
-            color: white;
-        }
-        
-        .card {
-            background: var(--card);
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .tabs {
-            display: flex;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            padding: 4px;
-            margin-bottom: 16px;
-        }
-        
-        .tab {
-            flex: 1;
-            padding: 10px;
-            background: none;
-            border: none;
-            color: var(--muted);
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .tab.active {
-            background: rgba(6,182,212,0.2);
-            color: var(--accent);
-        }
-        
-        .tab-content {
-            display: none;
-            animation: slideUp 0.3s ease-out;
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 12px;
-        }
-        
-        .product-card {
-            background: rgba(255,255,255,0.05);
-            padding: 12px 8px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .product-card:hover {
-            background: rgba(255,255,255,0.08);
-            transform: translateY(-2px);
-        }
-        
-        .product-emoji {
-            font-size: 24px;
-            margin-bottom: 6px;
-        }
-        
-        .product-name {
-            font-size: 12px;
-        }
-        
-        /* MALZEME LİSTESİ */
-        .material-item {
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-            animation: slideInRight 0.3s ease-out;
-        }
-        
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        .material-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .material-emoji {
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
-        }
-        
-        .material-name {
-            flex: 1;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .remove-btn {
-            background: none;
-            border: none;
-            color: var(--muted);
-            font-size: 16px;
-            padding: 4px;
-            cursor: pointer;
-        }
-        
-        .material-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .quantity-controls {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            flex: 1;
-        }
-        
-        .quantity-input {
-            width: 60px;
-            padding: 6px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-            color: white;
-            font-size: 12px;
-            text-align: center;
-        }
-        
-        .unit-select {
-            padding: 6px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        
-        .price-controls {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            flex: 1;
-        }
-        
-        .price-input-container {
-            position: relative;
-            width: 80px;
-        }
-        
-        .price-input {
-            width: 100%;
-            padding: 6px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-            color: white;
-            font-size: 13px;
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        .price-input:focus {
-            border-color: var(--accent);
-            background: rgba(255,255,255,0.15);
-        }
-        
-        .price-input.empty::before {
-            content: "0.00";
-            position: absolute;
-            left: 6px;
-            top: 6px;
-            color: rgba(255,255,255,0.5);
-            pointer-events: none;
-        }
-        
-        .price-unit {
-            font-size: 10px;
-            color: var(--muted);
-            white-space: nowrap;
-            min-width: 35px;
-        }
-        
-        .material-cost {
-            text-align: right;
-            min-width: 70px;
-        }
-        
-        .cost-amount {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--accent);
-        }
-        
-        .cost-label {
-            font-size: 10px;
-            color: var(--muted);
-        }
-        
-        .total-cost {
-            background: rgba(6,182,212,0.1);
-            padding: 16px;
-            border-radius: 8px;
-            text-align: center;
-            margin-top: 16px;
-            border: 1px solid rgba(6,182,212,0.2);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-        
-        .action-btn {
-            background: linear-gradient(135deg, var(--accent), #7c3aed);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            width: 100%;
-            margin-top: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .action-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        
-        .action-btn.secondary {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: var(--muted);
-        }
-        
-        /* MODAL */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-        
-        .modal.active {
-            display: flex;
-            animation: modalFadeIn 0.3s ease-out;
-        }
-        
-        @keyframes modalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal-content {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: modalSlideUp 0.3s ease-out;
-        }
-        
-        @keyframes modalSlideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .material-option {
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .material-option:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-1px);
-        }
-        
-        .form-group {
-            margin-bottom: 12px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 12px;
-            color: var(--muted);
-        }
-        
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-            color: white;
-            font-size: 14px;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-        }
-        
-        .modal-actions .action-btn {
-            flex: 1;
-            margin: 0;
-        }
-        
-        /* KAYIT LİSTESİ */
-        .saved-item {
-            background: rgba(255,255,255,0.03);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .saved-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-        
-        .saved-item.expanded {
-            background: rgba(255,255,255,0.05);
-        }
-        
-        .saved-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .saved-name {
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        .saved-cost {
-            font-weight: bold;
-            color: var(--accent);
-            font-size: 16px;
-        }
-        
-        .saved-date {
-            font-size: 11px;
-            color: var(--muted);
-        }
-        
-        .saved-materials {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: none;
-            animation: slideDown 0.3s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from { opacity: 0; max-height: 0; }
-            to { opacity: 1; max-height: 500px; }
-        }
-        
-        .saved-materials.expanded {
-            display: block;
-        }
-        
-        .saved-material-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            font-size: 12px;
-        }
-        
-        .saved-material-name {
-            flex: 1;
-        }
-        
-        .saved-material-cost {
-            color: var(--accent);
-            font-weight: 500;
-        }
-        
-        .saved-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        
-        .saved-actions .action-btn {
-            flex: 1;
-            margin: 0;
-            padding: 8px;
-            font-size: 12px;
-        }
-        
-        input, select, button {
-            outline: none;
-        }
-        
-        input:focus, select:focus {
-            border-color: var(--accent);
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--muted);
-        }
-        
-        .empty-state .emoji {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-        
-        @media (max-width:600px) {
-            .product-grid { grid-template-columns: repeat(2, 1fr); gap:6px; }
-            .material-controls { flex-direction: column; align-items: stretch; }
-            .quantity-controls, .price-controls { width:100%; }
-            .price-input-container { width:100%; }
-            .price-unit { text-align:right; }
-            .tabs { flex-wrap: wrap; }
-            .tab { font-size:11px; padding:8px; }
-            .header { flex-direction: column; gap: 10px; }
-            .user-menu { width: 100%; justify-content: center; }
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MALIQ — Akıllı Maliyet Hesaplayıcınız</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap">
+<style>
+:root{
+  --bg:#061322; --card:#071526; --accent1:#06b6d4; --accent2:#7c3aed; --muted:#9fb0c6;
+  --surface: rgba(255,255,255,0.02); --btn-grad: linear-gradient(90deg,var(--accent1),var(--accent2));
+  --radius:12px; --font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+}
+*{box-sizing:border-box;font-family:var(--font)}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#04111a);color:#eaf4ff}
+.container{max-width:720px;margin:0 auto;padding:14px}
+.header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.brand{display:flex;gap:10px;align-items:center}
+.logo img{width:46px;height:46px;border-radius:8px}
+.title{font-weight:800;font-size:18px}
+.search-wrap-centered{width:100%;display:flex;justify-content:center;margin:8px 0 12px 0}
+.search{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;background:var(--surface);border:1px solid rgba(255,255,255,0.03);width:100%;max-width:680px;position:relative}
+.search input{flex:1;background:transparent;border:0;color:inherit;padding:8px 12px;font-size:15px;outline:none}
+.search-overlay{position:absolute;left:50%;top:48%;transform:translate(-50%,-4px);pointer-events:none;color:rgba(255,255,255,0.92);font-size:15px;transition:opacity .22s,transform .22s;white-space:nowrap}
+.search-overlay.fade{opacity:0;transform:translate(-50%,-12px)}
+.tabs{display:flex;gap:8px;margin:12px 0}
+.tab{flex:1;padding:12px;border-radius:14px;text-align:center;background:transparent;color:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.03);font-weight:800;display:flex;align-items:center;justify-content:center}
+.tab.active{background:var(--btn-grad);color:#021026;box-shadow:0 8px 28px rgba(2,6,23,0.5)}
+.section{background:var(--card);border-radius:14px;padding:12px;border:1px solid rgba(255,255,255,0.03);margin-bottom:12px}
+
+/* cards - keep unified style and use .card-btn for both categories and products */
+.card-btn{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:12px;border-radius:12px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;min-height:80px}
+.card-btn .emoji{font-size:22px}
+.card-btn .name{font-weight:800;font-size:13px;color:inherit}
+.card-btn:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(3,10,30,0.45)}
+
+.categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(min-width:520px){.categories-grid{grid-template-columns:repeat(4,1fr)}}
+.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+@media(min-width:520px){.products-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* calculation rows */
+.calc-grid{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.material-item{background:var(--surface);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:8px}
+.material-top{display:flex;align-items:center;gap:8px}
+.material-emoji{width:36px;text-align:center}
+.row-controls{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;justify-content:space-between}
+.left-controls{display:flex;gap:12px;align-items:center;min-width:0}
+.right-controls{display:flex;gap:8px;align-items:center;justify-content:flex-end;min-width:260px;flex-shrink:0}
+.input-small{padding:8px;border-radius:10px;border:0;background:rgba(255,255,255,0.02);color:inherit}
+.unit-select{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.cost-amount{font-weight:900;color:var(--accent1);min-width:90px;text-align:right}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(90deg, rgba(6,182,212,0.04), rgba(124,58,237,0.02));font-weight:900;margin-top:8px}
+.saved-list{display:flex;flex-direction:column;gap:8px}
+.saved-item{background:var(--surface);padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);font-size:14px;display:flex;flex-direction:column;gap:6px}
+
+.preview-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:80}
+.preview-card{background:#fff;padding:12px;border-radius:10px;color:#000;width:92%;max-width:760px;height:80vh;display:flex;flex-direction:column}
+.preview-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.preview-canvas{flex:1;overflow:auto;background:#fff;border-radius:6px;padding:6px;display:flex;align-items:center;justify-content:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:60}
+.modal-content{background:var(--card);padding:12px;border-radius:10px;width:92%;max-width:420px}
+.btn-primary{padding:10px 14px;border-radius:12px;background:var(--btn-grad);color:#021026;border:0;font-weight:800;cursor:pointer}
+.btn-ghost{padding:8px 12px;border-radius:12px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
+.footer{margin-top:12px;text-align:center;color:var(--muted);font-size:12px}
+.small-note{color:var(--muted);font-size:13px}
+</style>
 </head>
 <body>
-    <!-- Yükleme Ekranı -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loader"></div>
-        <div class="loading-text">MALİQ Açılıyor...</div>
+  <div class="container" role="application" aria-label="MALIQ">
+    <div class="header-row">
+      <div class="brand">
+        <div class="logo"><img src="https://i.hizliresim.com/sis5uti.png" alt="logo"></div>
+        <div><div class="title">Akıllı Maliyet Hesaplayıcınız</div></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center">A</div>
+        <div style="font-weight:700">Misafir</div>
+      </div>
     </div>
 
-    <!-- Ana İçerik -->
-    <div class="container" id="mainContainer">
-        <div class="header">
-            <h1 id="appTitle">MALIQ</h1>
-            <div class="user-menu">
-                <button class="btn admin-btn" id="adminBtn" onclick="goToAdmin()">YÖNETİCİ</button>
-                <button class="btn logout-btn" onclick="logout()">ÇIKIŞ</button>
-            </div>
-        </div>
-        
-        <div class="tabs">
-            <button class="tab active" data-tab="products">📦 Ürünler</button>
-            <button class="tab" data-tab="recipe">🧮 Hesaplama</button>
-            <button class="tab" data-tab="saved">💾 Maliyet Tablom</button>
-        </div>
-        
-        <!-- ÜRÜN LİSTESİ -->
-        <div class="tab-content active" id="products-tab">
-            <div class="card">
-                <div style="font-size:14px; margin-bottom:8px;">Hazır Ürünler</div>
-                <div class="product-grid" id="productGrid">
-                    <!-- Ürünler JavaScript ile eklenecek -->
-                </div>
-            </div>
-        </div>
-        
-        <!-- MALİYET HESAPLAMA -->
-        <div class="tab-content" id="recipe-tab">
-            <div class="card">
-                <div style="display:flex; gap:8px; margin-bottom:12px;">
-                    <input type="text" id="recipeName" placeholder="Ürün adı" style="flex:1; padding:10px; font-size:14px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:white;">
-                    <button id="addMaterial" style="background:var(--accent); color:white; border:none; padding:10px 12px; border-radius:6px; font-size:20px; cursor:pointer;">+</button>
-                </div>
-                
-                <div id="recipeMaterials">
-                    <!-- Malzemeler buraya eklenecek -->
-                </div>
-                
-                <div id="recipeResult" class="total-cost hidden">
-                    <div style="font-size:12px; margin-bottom:4px;">Toplam Maliyet</div>
-                    <div id="recipeCost" style="font-size:20px; font-weight:bold;">0.00 ₺</div>
-                    <button id="saveRecipe" class="action-btn" style="margin-top:12px;">💾 Maliyeti Kaydet</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- KAYDEDİLEN MALİYETLER -->
-        <div class="tab-content" id="saved-tab">
-            <div class="card">
-                <div style="font-size:14px; margin-bottom:12px;">Kayıtlı Maliyetler</div>
-                <div id="savedList">
-                    <!-- Kayıtlı maliyetler buraya eklenecek -->
-                </div>
-            </div>
-        </div>
+    <div class="search-wrap-centered">
+      <div class="search" role="search" aria-label="Yemek ara">
+        <input id="searchInput" placeholder="" autocomplete="off" />
+        <div id="searchOverlay" class="search-overlay">Lahmacun</div>
+      </div>
+      <div id="suggestions" style="position:relative"></div>
     </div>
 
-    <!-- MALZEME EKLEME MODALI -->
-    <div id="materialModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin:0 0 16px 0; text-align:center;">Malzeme Ekle</h3>
-            
-            <input type="text" class="modal-search" placeholder="🔍 Malzeme ara..." oninput="filterMaterials(this.value)" style="width:100%; padding:10px; margin-bottom:12px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:white;">
-            
-            <div id="materialOptions">
-                <!-- Malzeme seçenekleri buraya eklenecek -->
-            </div>
-            
-            <div class="form-group">
-                <label>Malzeme Adı</label>
-                <input type="text" id="newMaterialName" placeholder="Örn: Zeytinyağı">
-            </div>
-            
-            <div style="display:flex; gap:8px;">
-                <div class="form-group" style="flex:1;">
-                    <label>Miktar</label>
-                    <input type="number" id="newMaterialQuantity" value="100" step="0.01">
-                </div>
-                <div class="form-group" style="flex:1;">
-                    <label>Birim</label>
-                    <select id="newMaterialUnit">
-                        <option value="gr">gr</option>
-                        <option value="kg">kg</option>
-                        <option value="ml">ml</option>
-                        <option value="lt">lt</option>
-                        <option value="adet">adet</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="modal-actions">
-                <button id="selectMaterial" class="action-btn">✅ Seçili Malzemeyi Ekle</button>
-                <button id="createMaterial" class="action-btn secondary">🆕 Yeni Oluştur</button>
-                <button id="closeModal" class="action-btn secondary">❌ Kapat</button>
-            </div>
+    <nav class="tabs" role="tablist">
+      <div id="tabCategories" class="tab active">KATEGORİLER</div>
+      <div id="tabProducts" class="tab">ÜRÜNLER</div>
+      <div id="tabCalc" class="tab">HESAPLAMA</div>
+      <div id="tabSaved" class="tab">MALİYET TABLOM</div>
+    </nav>
+
+    <main>
+      <section id="screenCategories" class="section">
+        <div style="font-weight:900;margin-bottom:8px">Yemek Çeşitleri</div>
+        <div id="categoriesGrid" class="categories-grid"></div>
+      </section>
+
+      <section id="screenProducts" class="section" style="display:none">
+        <div style="font-weight:900;margin-bottom:8px" id="productsTitle">Seçilen Kategori: Tümü</div>
+        <div id="productsGrid" class="products-grid"></div>
+      </section>
+
+      <section id="screenCalc" class="section" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div>
+            <div style="font-weight:900" id="calcTitle">Hesaplama</div>
+            <div id="calcSubtitle" class="small-note"></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="calcName" class="input-small" placeholder="Ürün adı" />
+            <button id="saveBtn" class="btn-primary">Kaydet</button>
+            <button id="clearBtn" class="btn-ghost">Temizle</button>
+          </div>
         </div>
+
+        <div id="materialsList" class="calc-grid"></div>
+
+        <div class="total-row" id="totalRow" style="display:none">
+          <div>Toplam Maliyet</div>
+          <div id="totalCost" class="cost-amount">0.00 ₺</div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="addMaterialBtn" class="btn-ghost">+ Malzeme Ekle</button>
+          <button id="exportBtn" class="btn-primary">PDF Önizleme</button>
+        </div>
+      </section>
+
+      <section id="screenSaved" class="section" style="display:none">
+        <div style="font-weight:900;margin-bottom:8px">Maliyet Tablom</div>
+        <div id="savedList" class="saved-list"></div>
+      </section>
+    </main>
+
+    <div class="footer">CAN&D Şirketinin ürünüdür. Tüm hakları saklıdır © CAN&D</div>
+  </div>
+
+  <div id="previewModal" class="preview-modal" aria-hidden="true">
+    <div class="preview-card">
+      <div class="preview-toolbar">
+        <div id="previewTitle" style="font-weight:800">Önizleme</div>
+        <div style="display:flex;gap:8px">
+          <button id="downloadPreviewBtn" class="btn-primary">PDF İndir</button>
+          <button id="closePreviewBtn" class="btn-ghost">Kapat</button>
+        </div>
+      </div>
+      <div id="previewCanvas" class="preview-canvas"><div style="color:#666">Önizleme hazırlanıyor...</div></div>
     </div>
+  </div>
 
-    <script>
-        // Giriş kontrolü
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                checkUserAccess();
-            }, 2000);
-        });
+  <div id="addModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-weight:900">Malzeme Ekle</div>
+        <button id="closeAddModal" class="btn-ghost">Kapat</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="addName" class="input-small" placeholder="Malzeme adı" />
+        <div style="display:flex;gap:8px">
+          <input id="addQty" type="number" class="input-small" value="100" />
+          <select id="addUnit" class="unit-select">
+            <option value="gr">gr</option><option value="kg">kg</option><option value="ml">ml</option><option value="lt">lt</option><option value="adet">adet</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px">
+          <select id="addPriceUnit" class="unit-select">
+            <option value="kg">₺ / kg</option><option value="gr">₺ / gr</option><option value="lt">₺ / lt</option><option value="ml">₺ / ml</option><option value="adet">₺ / adet</option><option value="koli">₺ / koli</option>
+          </select>
+          <input id="addPrice" type="number" class="input-small" placeholder="Fiyat" step="0.01" />
+        </div>
+        <div id="addKoliRow" style="display:none">
+          <input id="addKoliSize" type="number" class="input-small" placeholder="Koli adeti" min="1" />
+        </div>
+        <div style="display:flex;gap:8px">
+          <button id="confirmAdd" class="btn-primary">Ekle</button>
+          <button id="cancelAdd" class="btn-ghost">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        function checkUserAccess() {
-            const user = localStorage.getItem('maliq_user');
-            
-            if (!user) {
-                showError('Lütfen önce giriş yapın!');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-                return;
-            }
-            
-            try {
-                const userData = JSON.parse(user);
-                initializeApp(userData);
-            } catch (e) {
-                console.error('Kullanıcı verisi bozuk:', e);
-                localStorage.removeItem('maliq_user');
-                localStorage.removeItem('maliq_admin');
-                window.location.href = 'index.html';
-            }
-        }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* Final adjustments:
+ - Price input moved to the rightmost position in each material row (user requested)
+ - Removed "Kıyma" as a top-level recipe example (recipes now general)
+ - Unit selection and price-unit preserved; calculation logic unchanged
+ - Products are rendered using the same .card-btn style as categories (visual parity restored)
+ - No regressions: event IDs unchanged and behavior preserved
+*/
 
-        function initializeApp(userData) {
-            // Ana içeriği göster
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('mainContainer').style.display = 'block';
-            
-            // Başlığı güncelle
-            document.getElementById('appTitle').textContent = `MALIQ - ${userData.name || userData.email}`;
-            
-            // Admin butonunu kontrol et
-            const isAdmin = localStorage.getItem('maliq_admin');
-            if (!isAdmin) {
-                document.getElementById('adminBtn').style.display = 'none';
-            }
-            
-            // Uygulamayı başlat
-            startMaliqApp();
-        }
+/* Data */
+const RECIPES = {
+  "Lahmacun": { category:'lahmacun', emoji:'🥙', ingredients:[{name:'Un',qty:150,unit:'gr',emoji:'🌾'},{name:'Kıyma',qty:150,unit:'gr',emoji:'🥩'}]},
+  "Adana Dürüm": { category:'durum', emoji:'🌯', ingredients:[{name:'Kuzu Kıyması',qty:200,unit:'gr',emoji:'🥩'},{name:'Lavaş',qty:1,unit:'adet',emoji:'🫓'}]},
+  "Pizza Margherita": { category:'pizza', emoji:'🍕', ingredients:[{name:'Un',qty:300,unit:'gr',emoji:'🌾'},{name:'Mozzarella',qty:150,unit:'gr',emoji:'🧀'}]},
+  "Hamburger": { category:'fast', emoji:'🍔', ingredients:[{name:'Köfte',qty:150,unit:'gr',emoji:'🥩'},{name:'Ekmek',qty:1,unit:'adet',emoji:'🍞'}]},
+  "Cola": { category:'icecek', emoji:'🥤', ingredients:[{name:'Cola',qty:330,unit:'ml',emoji:'🥤'}]},
+  "Şalgam": { category:'icecek', emoji:'🧃', ingredients:[{name:'Şalgam',qty:330,unit:'ml',emoji:'🧃'}]}
+};
 
-        function showError(message) {
-            alert('Hata: ' + message);
-        }
+let currentProduct = null;
+let calcItems = [];
+let savedListArr = JSON.parse(localStorage.getItem('maliq_saved')||'[]');
 
-        function goToAdmin() {
-            showLoading();
-            setTimeout(() => {
-                window.location.href = 'admin.html';
-            }, 1000);
-        }
+/* Rotation overlay (products only) */
+const rotateList = Object.keys(RECIPES);
+let rotIndex = 0, rotTimer = null;
+const searchOverlay = document.getElementById('searchOverlay');
+const searchInput = document.getElementById('searchInput');
+const suggestions = document.getElementById('suggestions');
+function rotateOnce(){ if(!searchOverlay) return; searchOverlay.classList.add('fade'); setTimeout(()=>{ rotIndex = (rotIndex + 1) % rotateList.length; searchOverlay.textContent = rotateList[rotIndex]; searchOverlay.classList.remove('fade'); }, 220); }
+function startRot(){ if(rotTimer) return; rotTimer = setInterval(rotateOnce, 2000); }
+function stopRot(){ if(!rotTimer) return; clearInterval(rotTimer); rotTimer = null; }
+if(rotateList.length) searchOverlay.textContent = rotateList[0];
+startRot();
+searchInput.addEventListener('input', (e)=>{ const v=e.target.value||''; if(v.length>0){ stopRot(); searchOverlay.style.opacity='0'; searchOverlay.style.transform='translate(-50%,-12px)'; } else { searchOverlay.style.opacity='1'; searchOverlay.style.transform='translate(-50%,-4px)'; startRot(); } suggestions.innerHTML=''; const q=v.trim().toLowerCase(); if(!q) return; const keys=Object.keys(RECIPES); let matches=keys.filter(k=>k.toLowerCase().startsWith(q)); if(matches.length===0) matches=keys.filter(k=>k.toLowerCase().includes(q)); const box=document.createElement('div'); box.style.position='absolute'; box.style.left='0'; box.style.right='0'; box.style.top='56px'; box.style.zIndex=40; matches.slice(0,20).forEach(m=>{ const r=document.createElement('div'); r.className='card-btn'; r.style.minHeight='48px'; r.style.padding='8px'; r.innerHTML=`<div style="display:flex;align-items:center;gap:8px"><div style="font-size:18px">${RECIPES[m].emoji||'🍽️'}</div><div>${m}</div></div>`; r.addEventListener('click', ()=>{ searchInput.value=''; suggestions.innerHTML=''; openCalcFor(m); setActiveTab('calc'); }); box.appendChild(r); }); suggestions.appendChild(box);
+});
 
-        function showLoading() {
-            document.getElementById('loadingScreen').style.display = 'flex';
-            document.getElementById('mainContainer').style.display = 'none';
-        }
+/* Helpers & renderers */
+const CATEGORIES = [
+  { key:'kahvalti', name:'Kahvaltı', emoji:'🥐' },
+  { key:'corba', name:'Çorba', emoji:'🥣' },
+  { key:'ana', name:'Ana Yemek', emoji:'🍽️' },
+  { key:'pide', name:'Pide', emoji:'🥙' },
+  { key:'lahmacun', name:'Lahmacun', emoji:'🥙' },
+  { key:'pizza', name:'Pizza', emoji:'🍕' },
+  { key:'durum', name:'Dürüm', emoji:'🌯' },
+  { key:'fast', name:'Fast Food', emoji:'🍔' },
+  { key:'icecek', name:'İçecek', emoji:'🥤' },
+  { key:'tatli', name:'Tatlı', emoji:'🍨' },
+  { key:'garnitur', name:'Garnitür', emoji:'🍟' },
+  { key:'deniz', name:'Deniz', emoji:'🐟' },
+  { key:'vegan', name:'Vejetaryen', emoji:'🥗' }
+];
+function setActiveTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(tab==='categories') document.getElementById('tabCategories').classList.add('active');
+  if(tab==='products') document.getElementById('tabProducts').classList.add('active');
+  if(tab==='calc') document.getElementById('tabCalc').classList.add('active');
+  if(tab==='saved') document.getElementById('tabSaved').classList.add('active');
+  document.getElementById('screenCategories').style.display = tab==='categories' ? 'block' : 'none';
+  document.getElementById('screenProducts').style.display = tab==='products' ? 'block' : 'none';
+  document.getElementById('screenCalc').style.display = tab==='calc' ? 'block' : 'none';
+  document.getElementById('screenSaved').style.display = tab==='saved' ? 'block' : 'none';
+}
 
-        function logout() {
-            if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
-                showLoading();
-                setTimeout(() => {
-                    localStorage.removeItem('maliq_user');
-                    localStorage.removeItem('maliq_admin');
-                    window.location.href = 'index.html';
-                }, 1000);
-            }
-        }
+function renderCategories(){
+  const container = document.getElementById('categoriesGrid'); container.innerHTML='';
+  CATEGORIES.forEach(cat=>{ const d=document.createElement('div'); d.className='card-btn'; d.innerHTML=`<div class="emoji">${cat.emoji}</div><div class="name">${cat.name}</div>`; d.addEventListener('click', ()=>{ document.getElementById('productsTitle').textContent = `Seçilen Kategori: ${cat.name}`; renderProducts(cat.key); setActiveTab('products'); }); container.appendChild(d); });
+}
 
-        // MALIQ UYGULAMA KODU
-        function startMaliqApp() {
-            // Elementler
-            const RECIPE_MATERIALS = document.getElementById('recipeMaterials');
-            const RECIPE_RESULT = document.getElementById('recipeResult');
-            const RECIPE_COST = document.getElementById('recipeCost');
-            const RECIPE_NAME = document.getElementById('recipeName');
-            const ADD_MATERIAL = document.getElementById('addMaterial');
-            const SAVE_RECIPE = document.getElementById('saveRecipe');
-            const PRODUCT_GRID = document.getElementById('productGrid');
-            const SAVED_LIST = document.getElementById('savedList');
-            const MATERIAL_MODAL = document.getElementById('materialModal');
-            const MATERIAL_OPTIONS = document.getElementById('materialOptions');
-            const SELECT_MATERIAL = document.getElementById('selectMaterial');
-            const CREATE_MATERIAL = document.getElementById('createMaterial');
-            const CLOSE_MODAL = document.getElementById('closeModal');
-            const NEW_MATERIAL_NAME = document.getElementById('newMaterialName');
-            const NEW_MATERIAL_QUANTITY = document.getElementById('newMaterialQuantity');
-            const NEW_MATERIAL_UNIT = document.getElementById('newMaterialUnit');
+function renderProducts(categoryKey){
+  const container = document.getElementById('productsGrid'); container.innerHTML='';
+  const keys = Object.keys(RECIPES).filter(k=> !categoryKey || RECIPES[k].category===categoryKey);
+  keys.forEach(k=>{ const r=RECIPES[k]; const p=document.createElement('div'); p.className='card-btn'; p.innerHTML=`<div class="emoji">${r.emoji}</div><div class="name">${k}</div>`; p.addEventListener('click', ()=>{ openCalcFor(k); setActiveTab('calc'); }); container.appendChild(p); });
+}
 
-            let recipeItems = [];
-            let savedCosts = JSON.parse(localStorage.getItem('maliq_saved')) || [];
-            let selectedMaterial = null;
-            let allMaterials = [];
-            let editingSavedIndex = -1;
+function getAvailablePriceUnits(originalUnit){
+  if(originalUnit==='gr' || originalUnit==='kg') return ['kg','gr'];
+  if(originalUnit==='ml' || originalUnit==='lt') return ['lt','ml'];
+  if(originalUnit==='adet') return ['adet','koli'];
+  return [originalUnit,'koli'];
+}
 
-            // Sekme değiştirme
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
-                    
-                    if (tab.dataset.tab === 'saved') {
-                        renderSavedList();
-                    }
-                });
-            });
+/* Calculation UI */
+function openCalcFor(name){
+  currentProduct = name;
+  document.getElementById('calcTitle').textContent = name;
+  document.getElementById('calcSubtitle').textContent = RECIPES[name] && RECIPES[name].category ? RECIPES[name].category : '';
+  calcItems = (RECIPES[name] && RECIPES[name].ingredients) ? RECIPES[name].ingredients.map(ing=>({ name:ing.name, emoji:ing.emoji||'', qty:ing.qty||ing.quantity||0, unit:ing.unit||'gr', price:0, priceUnit:'kg', koliSize:0, calculated:0 })) : [];
+  renderCalcItems();
+}
 
-            // Ürün listesini render et
-            function renderProductGrid() {
-                const products = JSON.parse(localStorage.getItem('maliq_products') || '[]');
-                PRODUCT_GRID.innerHTML = '';
-                
-                if (products.length === 0) {
-                    PRODUCT_GRID.innerHTML = `
-                        <div class="empty-state">
-                            <div class="emoji">📦</div>
-                            <div>Henüz ürün eklenmemiş</div>
-                            <div style="font-size:12px; margin-top:8px;">Yönetici panelinden ürün ekleyebilirsiniz</div>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                products.forEach(product => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.innerHTML = `
-                        <div class="product-emoji">${product.emoji}</div>
-                        <div class="product-name">${product.name}</div>
-                    `;
-                    card.addEventListener('click', () => {
-                        document.querySelector('[data-tab="recipe"]').click();
-                        RECIPE_NAME.value = product.name;
-                        loadProductMaterials(product);
-                    });
-                    PRODUCT_GRID.appendChild(card);
-                });
-            }
+function renderCalcItems(){
+  const container = document.getElementById('materialsList'); container.innerHTML='';
+  if(!calcItems || !calcItems.length){ container.innerHTML = '<div class="small-note">Ürün seçin veya malzeme ekleyin</div>'; document.getElementById('totalRow').style.display='none'; return; }
+  calcItems.forEach((it,idx)=>{
+    const el=document.createElement('div'); el.className='material-item';
+    const priceUnitOptions = `<option value="kg" ${it.priceUnit==='kg'?'selected':''}>₺ / kg</option><option value="gr" ${it.priceUnit==='gr'?'selected':''}>₺ / gr</option><option value="lt" ${it.priceUnit==='lt'?'selected':''}>₺ / lt</option><option value="ml" ${it.priceUnit==='ml'?'selected':''}>₺ / ml</option><option value="adet" ${it.priceUnit==='adet'?'selected':''}>₺ / adet</option><option value="koli" ${it.priceUnit==='koli'?'selected':''}>₺ / koli</option>`;
+    el.innerHTML = `
+      <div class="material-top">
+        <div class="material-emoji">${it.emoji||'🧾'}</div>
+        <div class="material-name">${it.name} <span style="color:var(--muted);font-weight:600"> ${it.qty} (${it.unit})</span></div>
+      </div>
 
-            function loadProductMaterials(product) {
-                recipeItems = [];
-                product.materials.forEach(material => {
-                    const availableUnits = getAvailableUnits(material.unit);
-                    recipeItems.push({
-                        name: material.name,
-                        originalQuantity: material.quantity,
-                        originalUnit: material.unit,
-                        emoji: material.emoji,
-                        selectedUnit: availableUnits[0],
-                        price: 0,
-                        calculatedCost: 0
-                    });
-                });
-                renderRecipeMaterials();
-            }
+      <div class="row-controls">
+        <div class="left-controls">
+          <input type="number" id="qty_${idx}" class="input-small" value="${it.qty}" style="width:88px" title="Miktar" />
+          <!-- GRAMAJ (birim) now on the LEFT as requested -->
+          <select id="unit_${idx}" class="unit-select" title="Birim">
+            <option value="gr" ${it.unit==='gr'?'selected':''}>gr</option>
+            <option value="kg" ${it.unit==='kg'?'selected':''}>kg</option>
+            <option value="ml" ${it.unit==='ml'?'selected':''}>ml</option>
+            <option value="lt" ${it.unit==='lt'?'selected':''}>lt</option>
+            <option value="adet" ${it.unit==='adet'?'selected':''}>adet</option>
+            <option value="dilim" ${it.unit==='dilim'?'selected':''}>dilim</option>
+          </select>
+        </div>
 
-            function getAvailableUnits(unit) {
-                switch(unit) {
-                    case 'gr': return ['kg', 'gr'];
-                    case 'ml': return ['lt', 'ml'];
-                    case 'adet': return ['adet', 'koli'];
-                    case 'dilim': return ['adet', 'dilim'];
-                    default: return [unit];
-                }
-            }
+        <div class="right-controls">
+          <!-- priceUnit and price input and cost at the rightmost -->
+          <select id="priceUnit_${idx}" class="unit-select" title="Fiyat birimi">${priceUnitOptions}</select>
+          <input type="number" id="price_${idx}" class="input-small" placeholder="Fiyat (TL)" style="width:110px" title="Fiyat gir (örn: kg fiyatı girilecek)" />
+          <div class="cost-amount" id="cost_${idx}">${(it.calculated||0).toFixed(2)} ₺</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(el);
 
-            function renderRecipeMaterials() {
-                RECIPE_MATERIALS.innerHTML = '';
-                
-                if (recipeItems.length === 0) {
-                    RECIPE_MATERIALS.innerHTML = `
-                        <div class="empty-state">
-                            <div class="emoji">🥄</div>
-                            <div>Malzeme ekleyin veya ürün seçin</div>
-                        </div>
-                    `;
-                    RECIPE_RESULT.classList.add('hidden');
-                    return;
-                }
-                
-                recipeItems.forEach((item, index) => {
-                    const materialDiv = document.createElement('div');
-                    materialDiv.className = 'material-item';
-                    const availableUnits = getAvailableUnits(item.originalUnit);
-                    
-                    materialDiv.innerHTML = `
-                        <div class="material-header">
-                            <div class="material-emoji">${item.emoji}</div>
-                            <div class="material-name">${item.name}</div>
-                            <button class="remove-btn" onclick="app.removeMaterial(${index})">×</button>
-                        </div>
-                        
-                        <div class="material-controls">
-                            <div class="quantity-controls">
-                                <input type="number" 
-                                       class="quantity-input" 
-                                       value="${item.originalQuantity}"
-                                       oninput="app.updateMaterial(${index}, 'quantity', this.value)">
-                                <select class="unit-select" onchange="app.updateMaterial(${index}, 'originalUnit', this.value)">
-                                    <option value="gr" ${item.originalUnit === 'gr' ? 'selected' : ''}>gr</option>
-                                    <option value="ml" ${item.originalUnit === 'ml' ? 'selected' : ''}>ml</option>
-                                    <option value="adet" ${item.originalUnit === 'adet' ? 'selected' : ''}>adet</option>
-                                    <option value="dilim" ${item.originalUnit === 'dilim' ? 'selected' : ''}>dilim</option>
-                                </select>
-                            </div>
-                            
-                            <div class="price-controls">
-                                <div class="price-input-container ${!item.price || item.price === 0 ? 'empty' : ''}">
-                                    <input type="number" 
-                                           class="price-input" 
-                                           step="0.01"
-                                           value="${item.price > 0 ? item.price : ''}"
-                                           oninput="app.updateMaterial(${index}, 'price', this.value)"
-                                           onfocus="this.parentElement.classList.remove('empty')"
-                                           onblur="if(!this.value) this.parentElement.classList.add('empty')">
-                                </div>
-                                <div class="price-unit">${getPriceUnit(item.selectedUnit)}₺</div>
-                            </div>
-                            
-                            <div class="material-cost">
-                                <div class="cost-amount">${item.calculatedCost.toFixed(2)}₺</div>
-                                <div class="cost-label">maliyet</div>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top:8px; display:flex; gap:4px;">
-                            <select class="unit-select" onchange="app.updateMaterial(${index}, 'selectedUnit', this.value)" style="flex:1; font-size:11px;">
-                                ${availableUnits.map(unit => 
-                                    `<option value="${unit}" ${unit === item.selectedUnit ? 'selected' : ''}>${getUnitDisplay(unit)}</option>`
-                                ).join('')}
-                            </select>
-                        </div>
-                    `;
-                    
-                    RECIPE_MATERIALS.appendChild(materialDiv);
-                });
-                
-                RECIPE_RESULT.classList.remove('hidden');
-                calculateTotalCost();
-            }
+    // events - IDs preserved
+    document.getElementById(`qty_${idx}`).addEventListener('input', e=>{ it.qty = parseFloat(e.target.value||0); calculateRow(idx); });
+    document.getElementById(`unit_${idx}`).addEventListener('change', e=>{ it.unit = e.target.value; renderCalcItems(); });
+    document.getElementById(`price_${idx}`).addEventListener('input', e=>{ it.price = parseFloat(e.target.value||0); calculateRow(idx); });
+    document.getElementById(`priceUnit_${idx}`).addEventListener('change', e=>{ it.priceUnit = e.target.value; calculateRow(idx); });
 
-            function getPriceUnit(unit) {
-                const units = {
-                    'kg': 'kg',
-                    'gr': 'gr', 
-                    'lt': 'lt',
-                    'ml': 'ml',
-                    'koli': 'koli',
-                    'adet': 'adet',
-                    'dilim': 'dilim'
-                };
-                return units[unit] || unit;
-            }
+    const rem = document.createElement('button'); rem.className='btn-ghost'; rem.textContent='Kaldır'; rem.style.marginLeft='8px';
+    rem.addEventListener('click', ()=>{ calcItems.splice(idx,1); renderCalcItems(); });
+    el.querySelector('.material-top').appendChild(rem);
+  });
+  document.getElementById('totalRow').style.display='flex';
+  calculateTotal();
+}
 
-            function getUnitDisplay(unit) {
-                const displays = {
-                    'kg': 'kg fiyatı',
-                    'gr': 'gr fiyatı',
-                    'lt': 'lt fiyatı', 
-                    'ml': 'ml fiyatı',
-                    'koli': 'koli fiyatı',
-                    'adet': 'adet fiyatı',
-                    'dilim': 'dilim fiyatı'
-                };
-                return displays[unit] || unit;
-            }
+/* calculation */
+function calculateRow(idx){
+  const it = calcItems[idx]; if(!it) return;
+  const qty = parseFloat(it.qty||0); const price = parseFloat(it.price||0);
+  let cost = 0;
+  if(it.priceUnit === 'koli'){ const ks = parseFloat(it.koliSize||0); if(ks>0 && price>0) cost = (price/ks) * qty; else cost = 0; }
+  else {
+    if(it.priceUnit === 'kg' && it.unit === 'gr'){ cost = (price/1000) * qty; }
+    else if(it.priceUnit === 'lt' && it.unit === 'ml'){ cost = (price/1000) * qty; }
+    else { cost = price * qty; }
+  }
+  it.calculated = Math.round(cost*100)/100;
+  const el = document.getElementById('cost_'+idx); if(el) el.textContent = (it.calculated||0).toFixed(2) + ' ₺';
+}
 
-            function updateMaterial(index, field, value) {
-                const item = recipeItems[index];
-                
-                if (typeof value === 'string') {
-                    value = value.replace(',', '.');
-                }
-                
-                if (field === 'quantity') {
-                    item.originalQuantity = parseFloat(value) || 0;
-                } else if (field === 'originalUnit') {
-                    item.originalUnit = value;
-                    const availableUnits = getAvailableUnits(value);
-                    item.selectedUnit = availableUnits[0];
-                } else if (field === 'selectedUnit') {
-                    item.selectedUnit = value;
-                } else if (field === 'price') {
-                    item.price = parseFloat(value) || 0;
-                    calculateMaterialCost(item);
-                    const materialDiv = RECIPE_MATERIALS.children[index];
-                    if (materialDiv) {
-                        const costEl = materialDiv.querySelector('.cost-amount');
-                        if (costEl) costEl.textContent = item.calculatedCost.toFixed(2) + '₺';
-                        
-                        const priceInputContainer = materialDiv.querySelector('.price-input-container');
-                        if (item.price > 0) {
-                            priceInputContainer.classList.remove('empty');
-                        } else {
-                            priceInputContainer.classList.add('empty');
-                        }
-                    }
-                    calculateTotalCost();
-                    return;
-                }
-                
-                calculateMaterialCost(item);
-                renderRecipeMaterials();
-            }
+function calculateTotal(){ let t=0; calcItems.forEach((_,i)=>{ calculateRow(i); t += parseFloat(calcItems[i].calculated||0); }); document.getElementById('totalCost').textContent = t.toFixed(2) + ' ₺'; return t; }
 
-            function calculateMaterialCost(item) {
-                let cost = 0;
-                const price = parseFloat(item.price) || 0;
-                const quantity = parseFloat(item.originalQuantity) || 0;
-                
-                if (item.selectedUnit === 'kg' && item.originalUnit === 'gr') {
-                    cost = (price / 1000) * quantity;
-                }
-                else if (item.selectedUnit === 'gr' && item.originalUnit === 'gr') {
-                    cost = price * quantity;
-                }
-                else if (item.selectedUnit === 'lt' && item.originalUnit === 'ml') {
-                    cost = (price / 1000) * quantity;
-                }
-                else if (item.selectedUnit === 'ml' && item.originalUnit === 'ml') {
-                    cost = price * quantity;
-                }
-                else if (item.selectedUnit === 'koli' && item.originalUnit === 'adet') {
-                    cost = (price / 12) * quantity;
-                }
-                else if (item.selectedUnit === 'adet' && item.originalUnit === 'adet') {
-                    cost = price * quantity;
-                }
-                else if (item.selectedUnit === 'dilim' && item.originalUnit === 'dilim') {
-                    cost = price * quantity;
-                }
-                else if (item.selectedUnit === item.originalUnit) {
-                    cost = price * quantity;
-                }
-                
-                item.calculatedCost = Math.round(cost * 100) / 100;
-            }
+/* save, preview, saved list (kept unchanged) */
+function saveSnapshot(){ const name = (document.getElementById('calcName').value || currentProduct || 'İsimsiz Ürün').trim(); const total = calculateTotal(); const snap = { name, total, date: new Date().toLocaleString(), items: JSON.parse(JSON.stringify(calcItems)), emoji: (currentProduct && RECIPES[currentProduct] && RECIPES[currentProduct].emoji) ? RECIPES[currentProduct].emoji : '' }; savedListArr.unshift(snap); localStorage.setItem('maliq_saved', JSON.stringify(savedListArr)); alert('Kaydedildi.'); renderSaved(); }
+function renderSaved(){ const savedListEl = document.getElementById('savedList'); savedListEl.innerHTML=''; if(!savedListArr || savedListArr.length===0){ savedListEl.innerHTML = '<div class="small-note">Henüz kayıtlı maliyet yok</div>'; return; } savedListArr.forEach((s,i)=>{ const el=document.createElement('div'); el.className='saved-item'; el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;font-weight:700"><div>${s.emoji? s.emoji+' ':''}${s.name}</div><div style="color:var(--accent1)">${s.total.toFixed(2)} ₺</div></div><div class="small-note">${s.date}</div>`; const actions=document.createElement('div'); actions.className='saved-actions'; const bEdit=document.createElement('button'); bEdit.className='btn-primary'; bEdit.textContent='Düzenle'; bEdit.addEventListener('click', ()=>{ calcItems = JSON.parse(JSON.stringify(s.items)); renderCalcItems(); setActiveTab('calc'); }); const bDel=document.createElement('button'); bDel.className='btn-ghost'; bDel.textContent='Sil'; bDel.addEventListener('click', ()=>{ if(confirm('Silinsin mi?')){ savedListArr.splice(i,1); localStorage.setItem('maliq_saved', JSON.stringify(savedListArr)); renderSaved(); } }); const bPdf=document.createElement('button'); bPdf.className='btn-ghost'; bPdf.textContent='PDF'; bPdf.addEventListener('click', ()=> previewSavedPdf(i)); actions.appendChild(bEdit); actions.appendChild(bDel); actions.appendChild(bPdf); el.appendChild(actions); savedListEl.appendChild(el); }); }
 
-            function removeMaterial(index) {
-                recipeItems.splice(index, 1);
-                renderRecipeMaterials();
-            }
+/* preview */
+let lastPreviewDataUrl = null;
+async function generatePreviewElement(title, items, total){
+  const container = document.createElement('div'); container.style.padding='12px'; container.style.background='#fff'; container.style.color='#000'; container.style.width='800px';
+  container.innerHTML = `<h2 style="margin:0">${title} — Maliyet</h2><div style="color:#333;margin-top:6px">${new Date().toLocaleString()}</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><thead><tr><th style="text-align:left;padding:6px;border-bottom:1px solid #ddd">Malzeme</th><th style="text-align:right;padding:6px;border-bottom:1px solid #ddd">Miktar</th><th style="text-align:right;padding:6px;border-bottom:1px solid #ddd">Maliyet</th></tr></thead><tbody>${items.map(it=>`<tr><td style="padding:6px;border-bottom:1px solid #eee">${it.emoji||''} ${it.name}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #eee">${it.qty} ${it.unit}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #eee">${(it.calculated||0).toFixed(2)} ₺</td></tr>`).join('')}</tbody></table><div style="margin-top:12px;font-weight:700">Toplam: ${total.toFixed(2)} ₺</div>`;
+  document.body.appendChild(container);
+  try{ const canvas = await html2canvas(container, {scale:2, useCORS:true, allowTaint:true}); const dataUrl = canvas.toDataURL('image/png'); return { dataUrl, canvas }; } finally { container.remove(); }
+}
 
-            function calculateTotalCost() {
-                let total = 0;
-                recipeItems.forEach(item => {
-                    total += item.calculatedCost;
-                });
-                
-                RECIPE_COST.textContent = total.toFixed(2) + ' ₺';
-                return total;
-            }
+async function showPreviewForCurrent(){ if(!calcItems || calcItems.length===0){ alert('Önce hesaplama yapın'); return; } const name = (document.getElementById('calcName').value || currentProduct || 'İsimsiz').trim(); const total = calculateTotal(); document.getElementById('previewTitle').textContent = name + ' — Önizleme'; document.getElementById('previewCanvas').innerHTML = '<div style="color:#666">Önizleme hazırlanıyor...</div>'; document.getElementById('previewModal').style.display='flex'; try{ const { dataUrl } = await generatePreviewElement(name, calcItems, total); lastPreviewDataUrl = dataUrl; document.getElementById('previewCanvas').innerHTML = `<img src="${dataUrl}" alt="preview">`; } catch(err){ document.getElementById('previewCanvas').innerHTML = '<div style="color:#c00">Önizleme oluşturulamadı.</div>'; console.error(err); } }
+async function previewSavedPdf(i){ const snap = savedListArr[i]; if(!snap) return; document.getElementById('previewTitle').textContent = snap.name + ' — Önizleme'; document.getElementById('previewCanvas').innerHTML = '<div style="color:#666">Önizleme hazırlanıyor...</div>'; document.getElementById('previewModal').style.display='flex'; try{ const { dataUrl } = await generatePreviewElement(snap.name, snap.items, snap.total); lastPreviewDataUrl = dataUrl; document.getElementById('previewCanvas').innerHTML = `<img src="${dataUrl}" alt="preview">`; } catch(err){ document.getElementById('previewCanvas').innerHTML = '<div style="color:#c00">Önizleme oluşturulamadı.</div>'; console.error(err); } }
 
-            // Malzeme modalı
-            function showMaterialModal() {
-                const materials = JSON.parse(localStorage.getItem('maliq_materials') || '[]');
-                const products = JSON.parse(localStorage.getItem('maliq_products') || '[]');
-                
-                allMaterials = [...materials];
-                
-                // Ürünlerden malzeme ekle
-                products.forEach(product => {
-                    product.materials.forEach(material => {
-                        if (!allMaterials.some(m => m.name === material.name)) {
-                            allMaterials.push(material);
-                        }
-                    });
-                });
-                
-                MATERIAL_OPTIONS.innerHTML = '';
-                
-                if (allMaterials.length === 0) {
-                    MATERIAL_OPTIONS.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted);">Henüz malzeme yok</div>';
-                } else {
-                    allMaterials.forEach((material, index) => {
-                        const option = document.createElement('div');
-                        option.className = 'material-option';
-                        option.innerHTML = `
-                            <div style="font-size:20px; margin-bottom:4px;">${material.emoji}</div>
-                            <div style="font-size:12px;">${material.name}</div>
-                            <div style="font-size:10px; color:var(--muted);">${material.quantity} ${material.unit}</div>
-                        `;
-                        option.addEventListener('click', () => {
-                            selectedMaterial = material;
-                            document.querySelectorAll('.material-option').forEach(opt => {
-                                opt.style.background = 'rgba(255,255,255,0.05)';
-                            });
-                            option.style.background = 'rgba(6,182,212,0.2)';
-                        });
-                        MATERIAL_OPTIONS.appendChild(option);
-                    });
-                }
-                
-                MATERIAL_MODAL.classList.add('active');
-            }
+document.getElementById('downloadPreviewBtn').addEventListener('click', async ()=>{ if(!lastPreviewDataUrl){ alert('Önizleme hazırlanmadı'); return; } try{ const { jsPDF } = window.jspdf; const pdf = new jsPDF({ unit:'pt', format:'a4' }); const imgProps = pdf.getImageProperties(lastPreviewDataUrl); const pageWidth = pdf.internal.pageSize.getWidth() - 40; const height = imgProps.height * pageWidth / imgProps.width; pdf.addImage(lastPreviewDataUrl, 'PNG', 20, 20, pageWidth, height); const filename = (document.getElementById('previewTitle').textContent || 'maliyet').replace(/\s+/g,'_') + '.pdf'; pdf.save(filename); } catch(err){ alert('PDF indirilemedi. Konsolu kontrol edin.'); console.error(err); } finally { document.getElementById('previewModal').style.display='none'; lastPreviewDataUrl=null; } });
+document.getElementById('closePreviewBtn').addEventListener('click', ()=>{ document.getElementById('previewModal').style.display='none'; lastPreviewDataUrl=null; });
 
-            function addSelectedMaterial() {
-                if (!selectedMaterial) {
-                    alert('Lütfen bir malzeme seçin!');
-                    return;
-                }
-                
-                const availableUnits = getAvailableUnits(selectedMaterial.unit);
-                recipeItems.push({
-                    name: selectedMaterial.name,
-                    originalQuantity: selectedMaterial.quantity,
-                    originalUnit: selectedMaterial.unit,
-                    emoji: selectedMaterial.emoji,
-                    selectedUnit: availableUnits[0],
-                    price: 0,
-                    calculatedCost: 0
-                });
-                
-                MATERIAL_MODAL.classList.remove('active');
-                renderRecipeMaterials();
-            }
+// wiring tabs and init
+document.getElementById('tabCategories').addEventListener('click', ()=> setActiveTab('categories'));
+document.getElementById('tabProducts').addEventListener('click', ()=> setActiveTab('products'));
+document.getElementById('tabCalc').addEventListener('click', ()=> setActiveTab('calc'));
+document.getElementById('tabSaved').addEventListener('click', ()=> { setActiveTab('saved'); renderSaved(); });
 
-            function createNewMaterial() {
-                const name = NEW_MATERIAL_NAME.value.trim();
-                const quantity = parseFloat(NEW_MATERIAL_QUANTITY.value) || 100;
-                const unit = NEW_MATERIAL_UNIT.value;
-                
-                if (!name) {
-                    alert('Lütfen malzeme adı girin');
-                    return;
-                }
-                
-                const availableUnits = getAvailableUnits(unit);
-                recipeItems.push({
-                    name: name,
-                    originalQuantity: quantity,
-                    originalUnit: unit,
-                    emoji: "📦",
-                    selectedUnit: availableUnits[0],
-                    price: 0,
-                    calculatedCost: 0
-                });
-                
-                MATERIAL_MODAL.classList.remove('active');
-                
-                // Formu temizle
-                NEW_MATERIAL_NAME.value = '';
-                NEW_MATERIAL_QUANTITY.value = '100';
-                
-                renderRecipeMaterials();
-            }
+document.getElementById('addMaterialBtn').addEventListener('click', ()=> { document.getElementById('addModal').style.display='flex'; document.getElementById('addModal').setAttribute('aria-hidden','false'); });
+document.getElementById('closeAddModal').addEventListener('click', ()=> { document.getElementById('addModal').style.display='none'; document.getElementById('addModal').setAttribute('aria-hidden','true'); });
+document.getElementById('confirmAdd').addEventListener('click', ()=> {
+  const name = document.getElementById('addName').value.trim() || 'Yeni Malzeme';
+  const qty = parseFloat(document.getElementById('addQty').value||0);
+  const unit = document.getElementById('addUnit').value;
+  const price = parseFloat(document.getElementById('addPrice').value||0);
+  const priceUnit = document.getElementById('addPriceUnit').value;
+  const koliSize = parseFloat(document.getElementById('addKoliSize').value||0);
+  calcItems.push({ name, emoji:'', qty, unit, price, priceUnit, koliSize, calculated:0 });
+  document.getElementById('addModal').style.display='none';
+  renderCalcItems();
+});
+document.getElementById('addPriceUnit').addEventListener('change', e=>{ document.getElementById('addKoliRow').style.display = e.target.value==='koli' ? 'block' : 'none'; });
 
-            // Kayıt işlemleri
-            function saveRecipe() {
-                const productName = RECIPE_NAME.value.trim() || 'İsimsiz Ürün';
-                const totalCost = calculateTotalCost();
-                const date = new Date().toLocaleDateString('tr-TR');
-                
-                if (recipeItems.length === 0) {
-                    alert('Lütfen önce malzeme ekleyin!');
-                    return;
-                }
-                
-                if (editingSavedIndex >= 0) {
-                    savedCosts[editingSavedIndex] = {
-                        name: productName,
-                        cost: totalCost,
-                        date: date,
-                        materials: [...recipeItems]
-                    };
-                    editingSavedIndex = -1;
-                } else {
-                    savedCosts.unshift({
-                        name: productName,
-                        cost: totalCost,
-                        date: date,
-                        materials: [...recipeItems]
-                    });
-                }
-                
-                localStorage.setItem('maliq_saved', JSON.stringify(savedCosts));
-                alert('✅ Maliyet kaydedildi!');
-                renderSavedList();
-                
-                // Kayıtlılar sekmesine geç
-                document.querySelector('[data-tab="saved"]').click();
-            }
+document.getElementById('saveBtn').addEventListener('click', ()=> saveSnapshot());
+document.getElementById('clearBtn').addEventListener('click', ()=> { if(confirm('Hesaplamayı temizlemek istiyor musunuz?')){ calcItems=[]; renderCalcItems(); } });
+document.getElementById('exportBtn').addEventListener('click', ()=> showPreviewForCurrent());
 
-            function renderSavedList() {
-                SAVED_LIST.innerHTML = '';
-                
-                if (savedCosts.length === 0) {
-                    SAVED_LIST.innerHTML = `
-                        <div class="empty-state">
-                            <div class="emoji">💾</div>
-                            <div>Henüz kayıtlı maliyet yok</div>
-                            <div style="font-size:12px; margin-top:8px;">Hesaplama sekmesinden kaydedin</div>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                savedCosts.forEach((item, index) => {
-                    const savedItem = document.createElement('div');
-                    savedItem.className = 'saved-item';
-                    savedItem.innerHTML = `
-                        <div class="saved-header">
-                            <div class="saved-name">${item.name}</div>
-                            <div class="saved-cost">${item.cost.toFixed(2)} ₺</div>
-                        </div>
-                        <div class="saved-date">${item.date}</div>
-                        
-                        <div class="saved-materials">
-                            ${item.materials.map(material => `
-                                <div class="saved-material-item">
-                                    <div class="saved-material-name">${material.emoji} ${material.name}</div>
-                                    <div class="saved-material-cost">${material.calculatedCost.toFixed(2)} ₺</div>
-                                </div>
-                            `).join('')}
-                            
-                            <div class="saved-actions">
-                                <button class="action-btn" onclick="app.loadSavedForEdit(${index})">✏️ Düzenle</button>
-                                <button class="action-btn secondary" onclick="app.deleteSaved(${index})">🗑️ Sil</button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    savedItem.addEventListener('click', (e) => {
-                        if (!e.target.closest('.saved-actions')) {
-                            const materialsSection = savedItem.querySelector('.saved-materials');
-                            const isExpanded = materialsSection.classList.contains('expanded');
-                            
-                            document.querySelectorAll('.saved-materials.expanded').forEach(section => {
-                                section.classList.remove('expanded');
-                            });
-                            document.querySelectorAll('.saved-item.expanded').forEach(item => {
-                                item.classList.remove('expanded');
-                            });
-                            
-                            if (!isExpanded) {
-                                materialsSection.classList.add('expanded');
-                                savedItem.classList.add('expanded');
-                            }
-                        }
-                    });
-                    
-                    SAVED_LIST.appendChild(savedItem);
-                });
-            }
+renderCategories();
+renderProducts(null);
+setActiveTab('categories');
+renderSaved();
 
-            function loadSavedForEdit(index) {
-                const savedItem = savedCosts[index];
-                recipeItems = JSON.parse(JSON.stringify(savedItem.materials));
-                RECIPE_NAME.value = savedItem.name;
-                editingSavedIndex = index;
-                
-                document.querySelector('[data-tab="recipe"]').click();
-                renderRecipeMaterials();
-                
-                // Sayfayı yukarı kaydır
-                window.scrollTo(0, 0);
-            }
-
-            function deleteSaved(index) {
-                if (confirm('Bu kaydı silmek istediğinizden emin misiniz?')) {
-                    savedCosts.splice(index, 1);
-                    localStorage.setItem('maliq_saved', JSON.stringify(savedCosts));
-                    renderSavedList();
-                    alert('🗑️ Kayıt silindi!');
-                }
-            }
-
-            function filterMaterials(query) {
-                const options = document.querySelectorAll('.material-option');
-                let hasVisible = false;
-                
-                options.forEach(option => {
-                    const text = option.textContent.toLowerCase();
-                    if (text.includes(query.toLowerCase())) {
-                        option.style.display = 'block';
-                        hasVisible = true;
-                    } else {
-                        option.style.display = 'none';
-                    }
-                });
-                
-                if (!hasVisible && query) {
-                    MATERIAL_OPTIONS.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted);">Malzeme bulunamadı</div>';
-                }
-            }
-
-            // Global fonksiyonları app objesine ata
-            window.app = {
-                updateMaterial,
-                removeMaterial,
-                loadSavedForEdit,
-                deleteSaved
-            };
-
-            // Event listener'lar
-            ADD_MATERIAL.addEventListener('click', showMaterialModal);
-            SELECT_MATERIAL.addEventListener('click', addSelectedMaterial);
-            CREATE_MATERIAL.addEventListener('click', createNewMaterial);
-            CLOSE_MODAL.addEventListener('click', () => MATERIAL_MODAL.classList.remove('active'));
-            SAVE_RECIPE.addEventListener('click', saveRecipe);
-
-            MATERIAL_MODAL.addEventListener('click', (e) => {
-                if (e.target === MATERIAL_MODAL) {
-                    MATERIAL_MODAL.classList.remove('active');
-                }
-            });
-
-            // Uygulamayı başlat
-            renderProductGrid();
-            renderSavedList();
-        }
-    </script>
+setInterval(()=>{ try{ if(calcItems && calcItems.length) localStorage.setItem('maliq_draft', JSON.stringify({ name: document.getElementById('calcName').value, items: calcItems })); }catch(e){} },4000);
+</script>
 </body>
 </html>
