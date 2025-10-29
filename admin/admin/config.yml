@@ -2,6 +2,14 @@ backend:
   name: github
   repo: candoruk96/candoruk96.github.io
   branch: main
+  auth:
+    client_id: "Ov23liC9jwIFXPXz3jcH"
+  auth_endpoint: "https://maliq-oauth.vercel.app/auth"
+
+backend:
+  name: github
+  repo: candoruk96/candoruk96.github.io
+  branch: main
 
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
