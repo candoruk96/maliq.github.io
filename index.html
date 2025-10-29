@@ -5,309 +5,614 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MALIQ - Akıllı Maliyet Hesaplayıcı</title>
     <style>
-        :root {
-            --bg: #0f1724;
-            --card: #0b1220;
-            --accent: #06b6d4;
-            --muted: #94a3b8;
-            --success: #10b981;
-            --danger: #ef4444;
-            --admin: #ff6b6b;
-            --facebook: #1877F2;
-            --google: #4285F4;
-        }
-        
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            box-sizing: border-box;
         }
-        
+
         body {
-            background: var(--bg);
-            color: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
-        
-        .loading-screen {
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-card {
+            background: #151520;
+            border: 1px solid #2a2a35;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            opacity: 0;
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .login-card:hover::before {
+            opacity: 1;
+        }
+
+        .login-card:hover {
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(0, 255, 136, 0.1),
+                0 0 40px rgba(0, 255, 136, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ff88, #0099ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0a0a0f;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        .login-header h2 {
+            color: #ffffff;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #00ff88, #0099ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header p {
+            color: #a0a0b0;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        /* Form Group & Input Styles */
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            background: #1a1a25;
+            border: 1px solid #2a2a35;
+            border-radius: 6px;
+            padding: 24px 16px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 400;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #00ff88;
+            background: rgba(26, 26, 37, 0.8);
+            box-shadow: 
+                0 0 0 3px rgba(0, 255, 136, 0.1),
+                0 4px 20px rgba(0, 255, 136, 0.1);
+        }
+
+        .input-wrapper input:focus + label,
+        .input-wrapper input:valid + label {
+            transform: translateY(-32px) translateX(4px) scale(0.85);
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        .input-wrapper label {
+            position: absolute;
+            left: 16px;
+            top: 24px;
+            color: #a0a0b0;
+            font-size: 16px;
+            font-weight: 400;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            transform-origin: left top;
+        }
+
+        .input-line {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00ff88, #0099ff);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .input-wrapper input:focus ~ .input-line {
+            width: 100%;
+        }
+
+        /* Password Toggle */
+        .password-wrapper input {
+            padding-right: 50px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: #a0a0b0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 6px;
+        }
+
+        .password-toggle:hover {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .toggle-icon {
+            display: block;
+            width: 20px;
+            height: 20px;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a0a0b0' stroke-width='2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'/%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'/%3e%3c/svg%3e");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .password-toggle:hover .toggle-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2300ff88' stroke-width='2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'/%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'/%3e%3c/svg%3e");
+        }
+
+        .toggle-icon.show-password {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a0a0b0' stroke-width='2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 11-4.243-4.243m4.242 4.242L9.88 9.88'/%3e%3c/svg%3e");
+        }
+
+        /* Neon Button */
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00ff88, #0099ff);
+            border: none;
+            border-radius: 6px;
+            padding: 24px 32px;
+            color: #0a0a0f;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-glow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 10px 30px rgba(0, 255, 136, 0.3),
+                0 0 40px rgba(0, 255, 136, 0.2);
+        }
+
+        .login-btn:hover .btn-glow {
+            left: 100%;
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Loading State */
+        .login-btn.loading {
+            pointer-events: none;
+        }
+
+        .btn-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid #0a0a0f;
+            border-radius: 50%;
+            opacity: 0;
+            animation: spin 1s linear infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        .login-btn.loading .btn-text {
+            opacity: 0;
+        }
+
+        .login-btn.loading .btn-loader {
+            opacity: 1;
+        }
+
+        /* Divider */
+        .divider {
+            text-align: center;
+            margin: 32px 0 24px;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #2a2a35, transparent);
+            transform: translateY(-50%);
+        }
+
+        .divider span {
+            background: #151520;
+            color: #a0a0b0;
+            padding: 0 24px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Social Login */
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .social-btn {
+            background: #1a1a25;
+            border: 1px solid #2a2a35;
+            border-radius: 6px;
+            padding: 16px 24px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .social-btn:hover {
+            background: rgba(26, 26, 37, 0.8);
+            border-color: #00ff88;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+        }
+
+        .social-icon {
+            width: 20px;
+            height: 20px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .google-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='%23ea4335' d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'/%3e%3cpath fill='%2334a853' d='M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z'/%3e%3cpath fill='%23fbbc05' d='M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z'/%3e%3cpath fill='%23ea4335' d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z'/%3e%3c/svg%3e");
+        }
+
+        .facebook-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231877F2'%3e%3cpath d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z'/%3e%3c/svg%3e");
+        }
+
+        /* Error States */
+        .error-message {
+            color: #ff0080;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+            margin-left: 4px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 0, 128, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 0, 128, 0.2);
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-group.error .input-wrapper input {
+            border-color: #ff0080;
+            background: rgba(255, 0, 128, 0.05);
+            box-shadow: 0 0 0 3px rgba(255, 0, 128, 0.1);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px 24px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .success-message.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00ff88, #0099ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #0a0a0f;
+            margin: 0 auto 24px;
+            animation: successPulse 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+        }
+
+        .success-message h3 {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .success-message p {
+            color: #a0a0b0;
+            font-size: 16px;
+        }
+
+        /* Background Effects */
+        .background-effects {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
+            pointer-events: none;
+            z-index: 1;
         }
-        
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(6,182,212,0.3);
-            border-top: 3px solid var(--accent);
+
+        .glow-orb {
+            position: absolute;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1), transparent 70%);
+            animation: float 6s ease-in-out infinite;
         }
-        
+
+        .glow-orb-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: -10%;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.08), transparent 70%);
+            animation-delay: 0s;
+        }
+
+        .glow-orb-2 {
+            width: 200px;
+            height: 200px;
+            top: 60%;
+            right: -5%;
+            background: radial-gradient(circle, rgba(0, 153, 255, 0.06), transparent 70%);
+            animation-delay: -2s;
+        }
+
+        .glow-orb-3 {
+            width: 150px;
+            height: 150px;
+            bottom: 20%;
+            left: 10%;
+            background: radial-gradient(circle, rgba(255, 0, 128, 0.04), transparent 70%);
+            animation-delay: -4s;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            from { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+            to { box-shadow: 0 0 30px rgba(0, 255, 136, 0.8); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            33% { transform: translateY(-20px) translateX(10px); }
+            66% { transform: translateY(10px) translateX(-10px); }
+        }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
-        
-        .loading-text {
-            font-size: 18px;
-            color: var(--accent);
-            font-weight: 600;
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
-        
-        .container {
-            width: 100%;
-            max-width: 400px;
-            display: none;
+
+        @keyframes successPulse {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
-        
-        .welcome-card {
-            background: var(--card);
-            padding: 40px 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .user-panel {
-            display: none;
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-            animation: slideDown 0.3s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .user-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .user-details {
-            text-align: left;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
-        .user-email {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-        
-        .user-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .admin-btn {
-            background: var(--admin);
-            color: white;
-        }
-        
-        .app-btn {
-            background: var(--accent);
-            color: white;
-        }
-        
-        .logout-btn {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .logo {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        
-        h1 {
-            font-size: 28px;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--accent), #7c3aed);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-        
-        .subtitle {
-            color: var(--muted);
-            margin-bottom: 35px;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-        
-        .auth-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-        
-        .auth-btn {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
-            padding: 16px 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: white;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-        }
-        
-        .auth-btn:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.3);
-            transform: translateY(-1px);
-        }
-        
-        .auth-btn.google { 
-            background: var(--google); 
-            color: white; 
-            border-color: var(--google);
-        }
-        
-        .auth-btn.google:hover { 
-            background: #3367D6; 
-            border-color: #3367D6;
-        }
-        
-        .auth-btn.facebook { 
-            background: var(--facebook); 
-            color: white; 
-            border-color: var(--facebook);
-        }
-        
-        .auth-btn.facebook:hover { 
-            background: #1664D9; 
-            border-color: #1664D9;
-        }
-        
-        .auth-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-        
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            display: none;
-        }
-        
-        .error-message {
-            background: rgba(239,68,68,0.1);
-            border: 1px solid rgba(239,68,68,0.3);
-            color: #ef4444;
-        }
-        
-        .success-message {
-            background: rgba(16,185,129,0.1);
-            border: 1px solid rgba(16,185,129,0.3);
-            color: #10b981;
-        }
-        
-        .hidden {
-            display: none !important;
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .login-card {
+                padding: 24px;
+                margin: 10px;
+            }
+            
+            .login-header h2 {
+                font-size: 1.75rem;
+            }
+            
+            .input-wrapper input {
+                padding: 16px;
+            }
+            
+            .password-wrapper input {
+                padding-right: 45px;
+            }
+            
+            .glow-orb {
+                opacity: 0.5;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Yükleme Ekranı -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loader"></div>
-        <div class="loading-text">MALİQ yükleniyor...</div>
-    </div>
-
-    <!-- Ana İçerik -->
-    <div class="container" id="mainContainer">
-        <div class="welcome-card">
-            <!-- Kullanıcı Paneli -->
-            <div class="user-panel" id="userPanel">
-                <div class="user-info">
-                    <div class="user-details">
-                        <div class="user-name" id="userName"></div>
-                        <div class="user-email" id="userEmail"></div>
-                    </div>
-                    <div class="user-actions">
-                        <button class="btn admin-btn" id="adminBtn" onclick="goToAdmin()">YÖNETİCİ</button>
-                        <button class="btn app-btn" onclick="goToApp()">UYGULAMA</button>
-                        <button class="btn logout-btn" onclick="logout()">ÇIKIŞ</button>
-                    </div>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-container">
+                    <div class="logo">MQ</div>
                 </div>
+                <h2>HOŞGELDİNİZ</h2>
+                <p>Ben MALIQ - Akıllı Maliyet Hesaplayıcınızım</p>
+            </div>
+            
+            <form class="login-form" id="loginForm" novalidate>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" required autocomplete="email">
+                        <label for="email">E-posta</label>
+                        <span class="input-line"></span>
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper password-wrapper">
+                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                        <label for="password">Şifre</label>
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+                            <span class="toggle-icon"></span>
+                        </button>
+                        <span class="input-line"></span>
+                    </div>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <button type="submit" class="login-btn btn">
+                    <span class="btn-text">Giriş Yap</span>
+                    <span class="btn-loader"></span>
+                    <span class="btn-glow"></span>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>veya</span>
             </div>
 
-            <div class="logo">🧮</div>
-            <h1>MALIQ'A HOŞGELDİNİZ</h1>
-            <div class="subtitle">Akıllı Maliyet Hesaplayıcınız</div>
-            
-            <div class="auth-options" id="authOptions">
-                <button class="auth-btn google" onclick="googleLogin()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 9.81836V14.4656H18.4582C18.1746 15.9602 17.3236 17.2257 16.0472 18.0766L19.9417 21.0984C22.2108 19.0039 23.5199 15.9276 23.5199 12.273C23.5199 11.4221 23.4436 10.6039 23.3017 9.81849L12 9.81836Z" fill="white"></path>
-                        <path d="M5.27461 14.2842L4.39625 14.9566L1.28711 17.3783C3.26165 21.2947 7.30862 24.0002 11.9995 24.0002C15.2394 24.0002 17.9557 22.9311 19.9412 21.0984L16.0467 18.0765C14.9776 18.7965 13.614 19.2329 11.9995 19.2329C8.87951 19.2329 6.22868 17.1275 5.27952 14.2911L5.27461 14.2842Z" fill="white"></path>
-                        <path d="M1.28718 6.62158C0.469042 8.23606 0 10.0579 0 11.9997C0 13.9415 0.469042 15.7633 1.28718 17.3778C1.28718 17.3886 5.27997 14.2796 5.27997 14.2796C5.03998 13.5596 4.89812 12.796 4.89812 11.9996C4.89812 11.2031 5.03998 10.4395 5.27997 9.71951L1.28718 6.62158Z" fill="white"></path>
-                        <path d="M11.9997 4.77818C13.767 4.77818 15.3379 5.38907 16.5925 6.56727L20.0288 3.13095C17.9452 1.18917 15.2398 0 11.9997 0C7.30887 0 3.26165 2.69454 1.28711 6.62183L5.27978 9.72001C6.22882 6.88362 8.87976 4.77818 11.9997 4.77818Z" fill="white"></path>
-                    </svg>
-                    <span>Google ile Giriş Yap</span>
+            <div class="social-login">
+                <button type="button" class="social-btn google-btn" onclick="googleLogin()">
+                    <span class="social-icon google-icon"></span>
+                    <span>Google ile Giriş</span>
                 </button>
-                <button class="auth-btn facebook" onclick="facebookLogin()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="white"/>
-                    </svg>
-                    <span>Facebook ile Giriş Yap</span>
+                <button type="button" class="social-btn facebook-btn" onclick="facebookLogin()">
+                    <span class="social-icon facebook-icon"></span>
+                    <span>Facebook ile Giriş</span>
                 </button>
             </div>
-            
-            <div class="message error-message" id="errorMessage"></div>
-            <div class="message success-message" id="successMessage"></div>
+
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✓</div>
+                <h3>Giriş Başarılı!</h3>
+                <p>MALIQ'a yönlendiriliyorsunuz...</p>
+            </div>
+        </div>
+        
+        <div class="background-effects">
+            <div class="glow-orb glow-orb-1"></div>
+            <div class="glow-orb glow-orb-2"></div>
+            <div class="glow-orb glow-orb-3"></div>
         </div>
     </div>
 
@@ -335,47 +640,313 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
-        let isLoginMode = false;
-        
-        // Sayfa yüklendiğinde
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                document.getElementById('loadingScreen').style.display = 'none';
-                document.getElementById('mainContainer').style.display = 'block';
-                checkUserStatus();
-            }, 2000);
-        });
-
-        // Facebook Giriş Fonksiyonu
-        function facebookLogin() {
-            setLoading(true);
+        class MALIQLogin {
+            constructor() {
+                this.form = document.getElementById('loginForm');
+                this.submitBtn = this.form.querySelector('.login-btn');
+                this.passwordToggle = document.getElementById('passwordToggle');
+                this.passwordInput = document.getElementById('password');
+                this.successMessage = document.getElementById('successMessage');
+                this.isSubmitting = false;
+                
+                this.adminCredentials = {
+                    email: 'can@maliq.com',
+                    password: 'admin1234'
+                };
+                
+                this.init();
+            }
             
-            FB.login(function(response) {
-                if (response.status === 'connected') {
-                    const accessToken = response.authResponse.accessToken;
-                    const userID = response.authResponse.userID;
+            init() {
+                this.addEventListeners();
+                this.setupFloatingLabels();
+                this.setupPasswordToggle();
+                this.addBackgroundEffects();
+            }
+            
+            addEventListeners() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                
+                const inputs = this.form.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('focus', (e) => this.handleFocus(e));
+                    input.addEventListener('blur', (e) => this.handleBlur(e));
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && e.target.closest('#loginForm')) {
+                        e.preventDefault();
+                        this.handleSubmit(e);
+                    }
+                });
+            }
+            
+            setupFloatingLabels() {
+                const inputs = this.form.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (input.value.trim() !== '') {
+                        input.classList.add('has-value');
+                    }
                     
-                    // Kullanıcı bilgilerini al
-                    FB.api('/me', { fields: 'name,email' }, function(userInfo) {
-                        handleSocialLogin({
-                            id: userID,
-                            name: userInfo.name,
-                            email: userInfo.email || `${userID}@facebook.com`,
-                            provider: 'facebook',
-                            accessToken: accessToken
-                        });
+                    input.addEventListener('input', () => {
+                        if (input.value.trim() !== '') {
+                            input.classList.add('has-value');
+                        } else {
+                            input.classList.remove('has-value');
+                        }
                     });
-                } else {
-                    showError('Facebook girişi iptal edildi.');
-                    setLoading(false);
+                });
+            }
+            
+            setupPasswordToggle() {
+                if (this.passwordToggle && this.passwordInput) {
+                    this.passwordToggle.addEventListener('click', () => {
+                        const isPassword = this.passwordInput.type === 'password';
+                        const toggleIcon = this.passwordToggle.querySelector('.toggle-icon');
+                        
+                        this.passwordInput.type = isPassword ? 'text' : 'password';
+                        toggleIcon.classList.toggle('show-password', isPassword);
+                        
+                        this.passwordToggle.style.boxShadow = '0 0 15px rgba(0, 255, 136, 0.5)';
+                        setTimeout(() => {
+                            this.passwordToggle.style.boxShadow = '';
+                        }, 300);
+                        
+                        this.passwordInput.focus();
+                    });
                 }
-            }, { scope: 'public_profile,email' });
+            }
+            
+            addBackgroundEffects() {
+                document.addEventListener('mousemove', (e) => {
+                    const orbs = document.querySelectorAll('.glow-orb');
+                    const x = e.clientX / window.innerWidth;
+                    const y = e.clientY / window.innerHeight;
+                    
+                    orbs.forEach((orb, index) => {
+                        const speed = (index + 1) * 0.5;
+                        const moveX = (x - 0.5) * speed * 20;
+                        const moveY = (y - 0.5) * speed * 20;
+                        orb.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                    });
+                });
+            }
+            
+            handleFocus(e) {
+                const wrapper = e.target.closest('.input-wrapper');
+                if (wrapper) {
+                    wrapper.classList.add('focused');
+                    const input = wrapper.querySelector('input');
+                    input.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.1)';
+                }
+            }
+            
+            handleBlur(e) {
+                const wrapper = e.target.closest('.input-wrapper');
+                if (wrapper) {
+                    wrapper.classList.remove('focused');
+                    const input = wrapper.querySelector('input');
+                    input.style.boxShadow = '';
+                }
+            }
+            
+            validateForm() {
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                let isValid = true;
+                
+                this.clearErrors();
+                
+                if (!email) {
+                    this.showError('email', 'E-posta adresi gereklidir');
+                    isValid = false;
+                } else if (!this.isValidEmail(email)) {
+                    this.showError('email', 'Geçerli bir e-posta adresi girin');
+                    isValid = false;
+                }
+                
+                if (!password) {
+                    this.showError('password', 'Şifre gereklidir');
+                    isValid = false;
+                } else if (password.length < 6) {
+                    this.showError('password', 'Şifre en az 6 karakter olmalıdır');
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+            
+            showError(fieldName, message) {
+                const formGroup = document.getElementById(fieldName).closest('.form-group');
+                const errorElement = document.getElementById(fieldName + 'Error');
+                
+                formGroup.classList.add('error');
+                errorElement.textContent = message;
+                errorElement.classList.add('show');
+                
+                const field = document.getElementById(fieldName);
+                field.style.animation = 'shake 0.5s ease-in-out';
+                field.style.boxShadow = '0 0 15px rgba(255, 0, 128, 0.5)';
+                setTimeout(() => {
+                    field.style.animation = '';
+                    field.style.boxShadow = '';
+                }, 500);
+            }
+            
+            clearErrors() {
+                const errorElements = document.querySelectorAll('.error-message');
+                errorElements.forEach(element => {
+                    element.classList.remove('show');
+                    element.textContent = '';
+                });
+                
+                const formGroups = document.querySelectorAll('.form-group');
+                formGroups.forEach(group => {
+                    group.classList.remove('error');
+                });
+            }
+            
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                if (this.isSubmitting) return;
+                
+                const isValid = this.validateForm();
+                
+                if (isValid) {
+                    await this.submitForm();
+                } else {
+                    this.shakeForm();
+                }
+            }
+            
+            async submitForm() {
+                this.isSubmitting = true;
+                this.submitBtn.classList.add('loading');
+                this.submitBtn.style.boxShadow = '0 0 30px rgba(0, 255, 136, 0.6)';
+                
+                try {
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value;
+                    
+                    // Admin kontrolü
+                    if (email === this.adminCredentials.email && password === this.adminCredentials.password) {
+                        await this.handleAdminLogin();
+                    } else {
+                        await this.handleUserLogin(email, password);
+                    }
+                    
+                } catch (error) {
+                    this.showLoginError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+                } finally {
+                    this.isSubmitting = false;
+                    this.submitBtn.classList.remove('loading');
+                    this.submitBtn.style.boxShadow = '';
+                }
+            }
+            
+            async handleAdminLogin() {
+                const adminUser = {
+                    name: 'Sistem Yöneticisi',
+                    email: 'can@maliq.com',
+                    isAdmin: true,
+                    lastLogin: new Date().toISOString()
+                };
+                
+                localStorage.setItem('maliq_admin', 'true');
+                localStorage.setItem('maliq_user', JSON.stringify(adminUser));
+                
+                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
+                const adminExists = existingUsers.find(u => u.email === 'can@maliq.com');
+                
+                if (!adminExists) {
+                    const adminUserData = {
+                        id: 'admin',
+                        name: 'Sistem Yöneticisi',
+                        email: 'can@maliq.com',
+                        isAdmin: true,
+                        createdAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        isActive: true
+                    };
+                    existingUsers.push(adminUserData);
+                    localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
+                }
+                
+                this.showSuccessMessage();
+            }
+            
+            async handleUserLogin(email, password) {
+                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
+                const user = existingUsers.find(u => u.email === email && u.password === password);
+                
+                if (!user) {
+                    throw new Error('Kullanıcı bulunamadı');
+                }
+                
+                user.lastLogin = new Date().toISOString();
+                localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
+                localStorage.setItem('maliq_user', JSON.stringify(user));
+                
+                this.showSuccessMessage();
+            }
+            
+            showSuccessMessage() {
+                this.form.style.opacity = '0';
+                this.form.style.transform = 'translateY(-20px) scale(0.95)';
+                
+                const elementsToHide = ['.divider', '.social-login'];
+                elementsToHide.forEach(selector => {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        element.style.opacity = '0';
+                        element.style.transform = 'translateY(-20px) scale(0.95)';
+                    }
+                });
+                
+                const card = document.querySelector('.login-card');
+                card.style.boxShadow = '0 0 50px rgba(0, 255, 136, 0.4)';
+                
+                setTimeout(() => {
+                    this.form.style.display = 'none';
+                    elementsToHide.forEach(selector => {
+                        const element = document.querySelector(selector);
+                        if (element) element.style.display = 'none';
+                    });
+                    
+                    this.successMessage.classList.add('show');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'app.html';
+                    }, 2000);
+                }, 300);
+            }
+            
+            showLoginError(message) {
+                this.shakeForm();
+                setTimeout(() => {
+                    alert(message);
+                }, 500);
+            }
+            
+            shakeForm() {
+                const card = document.querySelector('.login-card');
+                card.style.animation = 'shake 0.5s ease-in-out';
+                card.style.boxShadow = '0 0 40px rgba(255, 0, 128, 0.5)';
+                setTimeout(() => {
+                    card.style.animation = '';
+                    card.style.boxShadow = '';
+                }, 500);
+            }
         }
 
-        // Google Giriş Fonksiyonu
+        // Social Login Functions
         function googleLogin() {
-            setLoading(true);
-            
             google.accounts.id.initialize({
                 client_id: '1008649054947-7gpj5ah0j04703605cdmbsrqp2qmhock.apps.googleusercontent.com',
                 callback: handleGoogleResponse
@@ -387,13 +958,68 @@
         function handleGoogleResponse(response) {
             const userData = parseJwt(response.credential);
             
-            handleSocialLogin({
+            const socialUser = {
                 id: userData.sub,
                 name: userData.name,
                 email: userData.email,
                 picture: userData.picture,
-                provider: 'google'
-            });
+                provider: 'google',
+                createdAt: new Date().toISOString(),
+                lastLogin: new Date().toISOString(),
+                isActive: true,
+                isSocial: true
+            };
+            
+            localStorage.setItem('maliq_user', JSON.stringify(socialUser));
+            
+            const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
+            const existingUserIndex = existingUsers.findIndex(u => u.email === socialUser.email);
+            
+            if (existingUserIndex !== -1) {
+                existingUsers[existingUserIndex].lastLogin = new Date().toISOString();
+            } else {
+                existingUsers.push(socialUser);
+            }
+            
+            localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
+            window.location.href = 'app.html';
+        }
+
+        function facebookLogin() {
+            FB.login(function(response) {
+                if (response.status === 'connected') {
+                    const accessToken = response.authResponse.accessToken;
+                    const userID = response.authResponse.userID;
+                    
+                    FB.api('/me', { fields: 'name,email' }, function(userInfo) {
+                        const socialUser = {
+                            id: userID,
+                            name: userInfo.name,
+                            email: userInfo.email || `${userID}@facebook.com`,
+                            provider: 'facebook',
+                            accessToken: accessToken,
+                            createdAt: new Date().toISOString(),
+                            lastLogin: new Date().toISOString(),
+                            isActive: true,
+                            isSocial: true
+                        };
+                        
+                        localStorage.setItem('maliq_user', JSON.stringify(socialUser));
+                        
+                        const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
+                        const existingUserIndex = existingUsers.findIndex(u => u.email === socialUser.email);
+                        
+                        if (existingUserIndex !== -1) {
+                            existingUsers[existingUserIndex].lastLogin = new Date().toISOString();
+                        } else {
+                            existingUsers.push(socialUser);
+                        }
+                        
+                        localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
+                        window.location.href = 'app.html';
+                    });
+                }
+            }, { scope: 'public_profile,email' });
         }
 
         function parseJwt(token) {
@@ -404,135 +1030,22 @@
             }
         }
 
-        function handleSocialLogin(userData) {
-            showError(`${userData.provider === 'google' ? 'Google' : 'Facebook'} girişi başarılı!`, 'success');
-            
-            const socialUser = {
-                id: userData.id,
-                name: userData.name,
-                email: userData.email,
-                provider: userData.provider,
-                picture: userData.picture,
-                createdAt: new Date().toISOString(),
-                lastLogin: new Date().toISOString(),
-                isActive: true,
-                isSocial: true
-            };
-            
-            setTimeout(() => {
-                // Mevcut kullanıcıları güncelle
-                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
-                const existingUserIndex = existingUsers.findIndex(u => u.email === socialUser.email);
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginCard = document.querySelector('.login-card');
+            if (loginCard) {
+                loginCard.style.opacity = '0';
+                loginCard.style.transform = 'translateY(30px) scale(0.9)';
                 
-                if (existingUserIndex !== -1) {
-                    existingUsers[existingUserIndex].lastLogin = new Date().toISOString();
-                } else {
-                    existingUsers.push(socialUser);
-                }
-                
-                localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
-                localStorage.setItem('maliq_user', JSON.stringify(socialUser));
-                
-                // Admin kontrolü
-                if (socialUser.email === 'admincan@maliq.com') {
-                    localStorage.setItem('maliq_admin', 'true');
-                }
-                
-                setLoading(false);
-                window.location.href = 'app.html';
-            }, 1500);
-        }
-
-        function setLoading(loading) {
-            const buttons = document.querySelectorAll('.auth-btn');
-            buttons.forEach(btn => {
-                if (loading) {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.7';
-                } else {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            });
-        }
-
-        function checkUserStatus() {
-            const user = localStorage.getItem('maliq_user');
-            const isAdmin = localStorage.getItem('maliq_admin');
-            
-            if (user) {
-                try {
-                    const userData = JSON.parse(user);
-                    showUserPanel(userData, isAdmin);
-                } catch (e) {
-                    console.error('Kullanıcı verisi bozuk:', e);
-                    localStorage.removeItem('maliq_user');
-                    localStorage.removeItem('maliq_admin');
-                }
-            }
-        }
-
-        function showUserPanel(userData, isAdmin) {
-            document.getElementById('userPanel').style.display = 'block';
-            document.getElementById('authOptions').style.display = 'none';
-            
-            document.getElementById('userName').textContent = userData.name || userData.email;
-            document.getElementById('userEmail').textContent = userData.email;
-            
-            if (isAdmin) {
-                document.getElementById('adminBtn').style.display = 'block';
-            } else {
-                document.getElementById('adminBtn').style.display = 'none';
-            }
-            
-            document.querySelector('h1').textContent = 'TEKRAR HOŞGELDİNİZ!';
-            document.querySelector('.subtitle').textContent = 'MALIQ sizi bekliyor';
-        }
-
-        function showError(message, type = 'error') {
-            const errorEl = document.getElementById('errorMessage');
-            const successEl = document.getElementById('successMessage');
-            
-            if (type === 'error') {
-                errorEl.textContent = message;
-                errorEl.style.display = 'block';
-                successEl.style.display = 'none';
-            } else {
-                successEl.textContent = message;
-                successEl.style.display = 'block';
-                errorEl.style.display = 'none';
-            }
-        }
-
-        function goToAdmin() {
-            showLoading();
-            setTimeout(() => {
-                window.location.href = 'admin.html';
-            }, 1000);
-        }
-
-        function goToApp() {
-            showLoading();
-            setTimeout(() => {
-                window.location.href = 'app.html';
-            }, 1000);
-        }
-
-        function showLoading() {
-            document.getElementById('loadingScreen').style.display = 'flex';
-            document.getElementById('mainContainer').style.display = 'none';
-        }
-
-        function logout() {
-            if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
-                showLoading();
                 setTimeout(() => {
-                    localStorage.removeItem('maliq_user');
-                    localStorage.removeItem('maliq_admin');
-                    location.reload();
-                }, 1000);
+                    loginCard.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                    loginCard.style.opacity = '1';
+                    loginCard.style.transform = 'translateY(0) scale(1)';
+                }, 200);
             }
-        }
+            
+            new MALIQLogin();
+        });
     </script>
 </body>
 </html>
