@@ -1,0 +1,13 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "MALİQ",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "MALİQ",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "maliq",
+  "description": "maliq"
+}
