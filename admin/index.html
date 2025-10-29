@@ -1,18 +1,29 @@
 <!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>Admin — MALIQ</title>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin — MALIQ</title>
 
-  <!-- Decap CMS bağlantısı -->
-  <script src="https://unpkg.com/decap-cms@2.15.0/dist/decap-cms.js"></script>
+    <!-- En stabil Decap CMS sürümü (cdn.jsdelivr.net kullanıyoruz) -->
+    <script src="https://cdn.jsdelivr.net/npm/decap-cms@2.15.0/dist/decap-cms.js"></script>
 
-  <!-- DİKKAT: config.yml yolu burada değişti -->
-  <link href="/maliq.github.io/admin/config.yml" type="text/yaml" rel="cms-config-url" />
-</head>
-<body>
-  <script>
-    // CMS otomatik yüklenecek
-  </script>
-</body>
+    <!-- Config dosyasının TAM URL’si -->
+    <link
+      href="https://candoruk96.github.io/maliq.github.io/admin/config.yml"
+      type="text/yaml"
+      rel="cms-config-url"
+    />
+  </head>
+  <body>
+    <h2 style="font-family: sans-serif; color: #777; text-align: center; margin-top: 40px;">
+      Panel yükleniyor, lütfen bekleyin...
+    </h2>
+
+    <script>
+      // Paneli yükleyemezse konsolda hata göstermek için:
+      window.addEventListener("error", function (e) {
+        console.log("Hata:", e.message);
+      });
+    </script>
+  </body>
 </html>
