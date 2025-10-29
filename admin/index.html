@@ -1,29 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="tr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Admin — MALIQ</title>
-
-    <!-- En stabil Decap CMS sürümü (cdn.jsdelivr.net kullanıyoruz) -->
-    <script src="https://cdn.jsdelivr.net/npm/decap-cms@2.15.0/dist/decap-cms.js"></script>
-
-    <!-- Config dosyasının TAM URL’si -->
-    <link
-      href="https://candoruk96.github.io/maliq.github.io/admin/config.yml"
-      type="text/yaml"
-      rel="cms-config-url"
-    />
-  </head>
-  <body>
-    <h2 style="font-family: sans-serif; color: #777; text-align: center; margin-top: 40px;">
-      Panel yükleniyor, lütfen bekleyin...
-    </h2>
-
-    <script>
-      // Paneli yükleyemezse konsolda hata göstermek için:
-      window.addEventListener("error", function (e) {
-        console.log("Hata:", e.message);
-      });
-    </script>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MALIQ - Admin Panel</title>
+  <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+</head>
+<body>
+  <script>
+    // Decap CMS'i başlat
+    CMS.init();
+    
+    // Hata yakalama
+    window.addEventListener('error', function(e) {
+      console.error('Admin panel hatası:', e.error);
+    });
+  </script>
+</body>
 </html>
