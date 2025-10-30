@@ -5,40 +5,35 @@
     <title>MALIQ Admin</title>
     
     <!-- FARKLI CDN DENEYELİM -->
-    <script src="https://cdn.jsdelivr.net/npm/decap-cms@2.15.0/dist/decap-cms.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/netlify-cms/2.10.192/netlify-cms.js"></script>
     
-    <!-- CONFIG YOLUNU TAM BELİRT -->
-    <link 
-        href="https://candoruk96.github.io/maliq.github.io/config.yml" 
-        type="text/yaml" 
-        rel="cms-config-url"
-    >
 </head>
 <body>
-    <div id="cms-loading" style="text-align: center; padding: 50px;">
+    <div id="loading" style="text-align: center; padding: 50px;">
         <h2>Admin Panel Yükleniyor...</h2>
-        <p>Eğer bu mesaj gitmezse, sayfayı yenileyin.</p>
     </div>
 
     <script>
-        console.log('CMS kontrol ediliyor...');
+        console.log('CMS kontrol:', typeof NetlifyCms);
         
-        // 3 saniye bekle ve kontrol et
         setTimeout(function() {
-            if (typeof CMS !== 'undefined') {
-                console.log('CMS başarıyla yüklendi!');
-                document.getElementById('cms-loading').style.display = 'none';
-                CMS.init();
+            if (typeof NetlifyCms !== 'undefined') {
+                console.log('Netlify CMS başarılı!');
+                document.getElementById('loading').style.display = 'none';
+                NetlifyCms.init();
             } else {
-                console.error('CMS YÜKLENEMEDİ!');
-                document.getElementById('cms-loading').innerHTML = 
-                    '<h2 style="color: red;">HATA: CMS yüklenemedi</h2>' +
-                    '<p>Lütfen:</p>' +
-                    '<ul>' +
-                    '<li>Sayfayı yenileyin</li>' +
-                    '<li>Farklı tarayıcı deneyin (Chrome önerilir)</li>' +
-                    '<li>VPN kapatın</li>' +
-                    '</ul>';
+                console.error('TÜM CDN\'ler engellendi!');
+                document.getElementById('loading').innerHTML = 
+                    '<h2 style="color: red;">CDN ENGELİ TESPİT EDİLDİ</h2>' +
+                    '<p><strong>Sebep:</strong> İnternet sağlayıcınız veya güvenlik duvarı CMS scriptlerini engelliyor.</p>' +
+                    '<h3>ÇÖZÜMLER:</h3>' +
+                    '<ol>' +
+                    '<li><strong>Farklı internet deneyin</strong> (telefon hotspot, cafe wifi)</li>' +
+                    '<li><strong>VPN kullanın</strong></li>' +
+                    '<li><strong>Farklı tarayıcı deneyin</strong> (Chrome, Firefox)</li>' +
+                    '<li><strong>Netlify Desktop uygulamasını indirin</strong></li>' +
+                    '</ol>' +
+                    '<p><a href="https://app.netlify.com/drop" style="color: blue;">👉 VEYA DOSYALARI SÜRÜKLE-BIRAK İLE YÜKLE</a></p>';
             }
         }, 3000);
     </script>
