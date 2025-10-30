@@ -3,11 +3,44 @@
 <head>
     <meta charset="utf-8">
     <title>MALIQ Admin</title>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    
+    <!-- FARKLI CDN DENEYELİM -->
+    <script src="https://cdn.jsdelivr.net/npm/decap-cms@2.15.0/dist/decap-cms.js"></script>
+    
+    <!-- CONFIG YOLUNU TAM BELİRT -->
+    <link 
+        href="https://candoruk96.github.io/maliq.github.io/config.yml" 
+        type="text/yaml" 
+        rel="cms-config-url"
+    >
 </head>
 <body>
+    <div id="cms-loading" style="text-align: center; padding: 50px;">
+        <h2>Admin Panel Yükleniyor...</h2>
+        <p>Eğer bu mesaj gitmezse, sayfayı yenileyin.</p>
+    </div>
+
     <script>
-        CMS.init();
+        console.log('CMS kontrol ediliyor...');
+        
+        // 3 saniye bekle ve kontrol et
+        setTimeout(function() {
+            if (typeof CMS !== 'undefined') {
+                console.log('CMS başarıyla yüklendi!');
+                document.getElementById('cms-loading').style.display = 'none';
+                CMS.init();
+            } else {
+                console.error('CMS YÜKLENEMEDİ!');
+                document.getElementById('cms-loading').innerHTML = 
+                    '<h2 style="color: red;">HATA: CMS yüklenemedi</h2>' +
+                    '<p>Lütfen:</p>' +
+                    '<ul>' +
+                    '<li>Sayfayı yenileyin</li>' +
+                    '<li>Farklı tarayıcı deneyin (Chrome önerilir)</li>' +
+                    '<li>VPN kapatın</li>' +
+                    '</ul>';
+            }
+        }, 3000);
     </script>
 </body>
 </html>
