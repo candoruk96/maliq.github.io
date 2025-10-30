@@ -4,17 +4,52 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MALIQ Admin</title>
+    
+    <!-- Config yolunu MANUEL belirt -->
+    <script>
+        window.CMS_MANUAL_INIT = true;
+        CMS_CONFIG_URL = "https://candoruk96.github.io/maliq.github.io/config.yml";
+    </script>
+    
+    <!-- Decap CMS -->
     <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-    <!-- CONFIG YOLUNU BURADA BELİRT -->
-    <link 
-        href="https://candoruk96.github.io/maliq.github.io/config.yml" 
-        type="text/yaml" 
-        rel="cms-config-url"
-    >
 </head>
 <body>
+    <div id="cms-root"></div>
+
     <script>
-        CMS.init();
+        console.log('CMS yükleniyor...');
+        
+        // CMS yüklendikten sonra
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof CMS !== 'undefined') {
+                console.log('CMS başlatılıyor...');
+                
+                // Manuel config yükleme
+                CMS.registerBackend('git-gateway', window.CMS.getBackend('git-gateway'));
+                
+                // Config'i manuel yükle
+                fetch(CMS_CONFIG_URL)
+                    .then(response => response.text())
+                    .then(configYaml => {
+                        const config = CMS.parseYAML(configYaml);
+                        CMS.init({ config });
+                        console.log('CMS başarıyla başlatıldı!');
+                    })
+                    .catch(error => {
+                        console.error('Config yükleme hatası:', error);
+                    });
+            } else {
+                console.error('CMS tanımlı değil!');
+                // Alternatif CDN deneyelim
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js';
+                script.onload = function() {
+                    location.reload();
+                };
+                document.head.appendChild(script);
+            }
+        });
     </script>
 </body>
 </html>
