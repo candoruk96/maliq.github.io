@@ -1,4 +1,2 @@
 /*
-  Content-Security-Policy: default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: ALLOWALL
+  Content-Security-Policy: default-src 'self' 'unsafe-eval' 'unsafe-inline' https:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:
