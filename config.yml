@@ -1,15 +1,19 @@
 backend:
-  name: git-gateway
+  name: github
   repo: candoruk96/candoruk96.github.io
   branch: main
+  auth:
+    client_id: "Ov23liC9jwIFXPXz3jcH"
+    client_secret: "beddfbcd4bdbc29cc0807a5ae6079b5de72ab57d"
+  auth_endpoint: "https://oauth-server-teal.vercel.app/auth"
 
-media_folder: "assets/images"
-public_folder: "/assets/images"
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
 
 collections:
   - name: "recipes"
     label: "Tarifler"
-    folder: "_recipes"
+    folder: "_data/recipes"
     create: true
     slug: "{{slug}}"
     fields:
