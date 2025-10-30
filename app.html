@@ -18,6 +18,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .brand{display:flex;gap:8px;align-items:center}
 .logo img{width:40px;height:40px;border-radius:8px}
 .title{font-weight:800;font-size:16px}
+.subtitle{font-size:11px;color:var(--muted);margin-top:-2px}
 .search-wrap-centered{width:100%;display:flex;justify-content:center;margin:6px 0 10px 0;position:relative}
 .search{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:var(--surface);border:1px solid rgba(255,255,255,0.03);width:100%;max-width:680px;position:relative}
 .search input{flex:1;background:transparent;border:0;color:inherit;padding:6px 10px;font-size:14px;outline:none}
@@ -51,6 +52,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .unit-select{padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:13px}
 .cost-amount{font-weight:900;color:var(--accent1);min-width:70px;text-align:right;font-size:13px}
 .total-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(6,182,212,0.04), rgba(124,58,237,0.02));font-weight:900;margin-top:6px;font-size:14px}
+.total-row .cost-amount{font-size:18px}
 .saved-list{display:flex;flex-direction:column;gap:6px}
 .saved-item{background:var(--surface);padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:13px;display:flex;flex-direction:column;gap:4px}
 
@@ -97,14 +99,14 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .breadcrumb-separator{color:var(--muted)}
 
 /* Site İstatistikleri */
-.site-stats{display:flex;justify-content:space-around;margin:12px 0;padding:8px;background:var(--surface);border-radius:10px}
+.site-stats{display:flex;justify-content:space-around;margin:12px 0;padding:6px;background:var(--surface);border-radius:8px}
 .stat-item{text-align:center}
-.stat-value{font-weight:800;font-size:16px;color:var(--accent1)}
-.stat-label{font-size:10px;color:var(--muted)}
+.stat-value{font-weight:800;font-size:14px;color:var(--accent1)}
+.stat-label{font-size:9px;color:var(--muted)}
 
 /* Kategori Animasyonu */
 .category-stats{display:flex;justify-content:center;margin:8px 0;padding:6px;background:var(--surface);border-radius:8px}
-.category-stat{text-align:center;font-size:12px;color:var(--muted);transition:opacity 0.5s ease}
+.category-stat{text-align:center;font-size:11px;color:var(--muted);transition:opacity 0.5s ease}
 .category-stat.fade{opacity:0}
 
 /* Mobile optimizations */
@@ -123,6 +125,8 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
   .calc-header-controls{flex-direction:column;gap:8px;align-items:stretch}
   .calc-header-controls input{width:100%}
   .calc-header-controls .btn-primary{width:100%}
+  .save-controls{flex-direction:column}
+  .save-controls .btn-primary{width:100%}
 }
 
 /* PDF mobil uyumluluk */
@@ -134,6 +138,16 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 /* Resim uyarıları */
 .image-warning{color:#ff6b6b;font-size:11px;margin-top:2px}
 .input-warning{border:1px solid #ff6b6b !important}
+
+/* Yönetim paneli */
+.management-panel{max-height:300px;overflow-y:auto;border:1px solid rgba(255,255,255,0.03);border-radius:8px;padding:6px}
+.management-item{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.management-item:last-child{border-bottom:none}
+.management-item-image{width:32px;height:32px;object-fit:cover;border-radius:4px}
+.management-item-name{flex:1;font-size:13px}
+.management-item-url{flex:2;padding:4px;border-radius:4px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit;font-size:12px}
+.management-item-url.input-warning{border-color:#ff6b6b}
+.management-item-actions{display:flex;gap:4px}
 </style>
 </head>
 <body>
@@ -141,7 +155,10 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
     <div class="header-row">
       <div class="brand">
         <div class="logo"><img src="https://i.hizliresim.com/sis5uti.png" alt="logo"></div>
-        <div><div class="title">Akıllı Maliyet Hesaplayıcınız</div></div>
+        <div>
+          <div class="title">Akıllı Maliyet Hesaplayıcınız</div>
+          <div class="subtitle">Maliq sizin 1 porsiyonunuzun maliyetini hesaplar.</div>
+        </div>
       </div>
       <div style="display:flex;gap:6px;align-items:center">
         <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center" id="userAvatar">M</div>
@@ -155,11 +172,6 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
         <div id="searchOverlay" class="search-overlay">Lahmacun</div>
       </div>
       <div id="searchSuggestions" class="search-suggestions"></div>
-    </div>
-
-    <!-- Kategori İstatistik Animasyonu -->
-    <div id="categoryStats" class="category-stats">
-      <div class="category-stat">Yükleniyor...</div>
     </div>
 
     <!-- Site İstatistikleri -->
@@ -206,7 +218,6 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           </div>
           <div style="display:flex;gap:6px;align-items:center">
             <input id="calcName" class="input-small" placeholder="Ürün adı" style="width:100px" />
-            <button id="saveBtn" class="btn-primary">Kaydet</button>
             <button id="clearBtn" class="btn-ghost">Temizle</button>
           </div>
         </div>
@@ -218,8 +229,9 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           <div id="totalCost" class="cost-amount">0.00 ₺</div>
         </div>
 
-        <div style="margin-top:8px;display:flex;gap:6px">
+        <div style="margin-top:8px;display:flex;gap:6px" class="save-controls">
           <button id="addMaterialBtn" class="btn-ghost">+ Malzeme Ekle</button>
+          <button id="saveBtn" class="btn-primary">Kaydet</button>
           <button id="exportBtn" class="btn-primary">PDF Önizleme</button>
         </div>
       </section>
@@ -267,11 +279,6 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
             </select>
             <button id="addCategoryBtn" class="dev-btn">Kategori Ekle</button>
           </div>
-          <div class="dev-controls">
-            <button id="quickAddProductsBtn" class="dev-btn-secondary">Hızlı Ürün Ekle</button>
-            <button id="exportCategoriesBtn" class="dev-btn-secondary">Kategorileri Dışa Aktar</button>
-            <button id="importCategoriesBtn" class="dev-btn-secondary">Kategorileri İçe Aktar</button>
-          </div>
           <div id="categoryImageWarning" class="image-warning" style="display:none">Kategori için resim URL'si gerekli!</div>
         </div>
         
@@ -289,18 +296,18 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           <div id="productImageWarning" class="image-warning" style="display:none">Ürün için resim URL'si gerekli!</div>
         </div>
 
-        <!-- Products List -->
+        <!-- Products Management Panel -->
         <div class="dev-section">
-          <div class="dev-section-title">Tüm Ürünler (<span id="productsCount">0</span>)</div>
-          <div id="productsList" class="dev-controls" style="flex-direction:column;max-height:200px;overflow-y:auto">
+          <div class="dev-section-title">Ürün Yönetim Paneli (<span id="productsCount">0</span>)</div>
+          <div id="productsManagementPanel" class="management-panel">
             <!-- Ürünler buraya dinamik olarak eklenecek -->
           </div>
         </div>
 
-        <!-- Categories List -->
+        <!-- Categories Management Panel -->
         <div class="dev-section">
-          <div class="dev-section-title">Tüm Kategoriler (<span id="categoriesCount">0</span>)</div>
-          <div id="categoriesList" class="dev-controls" style="flex-direction:column;max-height:200px;overflow-y:auto">
+          <div class="dev-section-title">Kategori Yönetim Paneli (<span id="categoriesCount">0</span>)</div>
+          <div id="categoriesManagementPanel" class="management-panel">
             <!-- Kategoriler buraya dinamik olarak eklenecek -->
           </div>
         </div>
@@ -317,13 +324,21 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
       </section>
     </main>
 
+    <!-- Kategori İstatistik Animasyonu -->
+    <div id="categoryStats" class="category-stats">
+      <div class="category-stat">Yükleniyor...</div>
+    </div>
+
     <div class="footer">CAN&D Şirketinin ürünüdür. Tüm hakları saklıdır © CAN&D</div>
   </div>
 
   <div id="previewModal" class="preview-modal" aria-hidden="true">
     <div class="preview-card">
       <div class="preview-toolbar">
-        <div id="previewTitle" style="font-weight:800">Önizleme</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <img src="https://i.hizliresim.com/sis5uti.png" style="width:24px;height:24px;border-radius:4px" alt="MALIQ">
+          <div id="previewTitle" style="font-weight:800">Önizleme</div>
+        </div>
         <div style="display:flex;gap:6px">
           <button id="downloadPreviewBtn" class="btn-primary">PDF İndir</button>
           <button id="closePreviewBtn" class="btn-ghost">Kapat</button>
@@ -1001,7 +1016,14 @@ async function generatePreviewElement(title, items, total){
   container.style.boxSizing = 'border-box';
   
   container.innerHTML = `
-    <h2 style="margin:0;font-size:18px">${title} — Maliyet</h2>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <img src="https://i.hizliresim.com/sis5uti.png" style="width:32px;height:32px;border-radius:6px" alt="MALIQ">
+      <div>
+        <div style="font-weight:800;font-size:16px">MALIQ</div>
+        <div style="font-size:12px;color:#666">Akıllı Maliyet Hesaplayıcınız</div>
+      </div>
+    </div>
+    <h2 style="margin:0;font-size:18px;border-bottom:1px solid #eee;padding-bottom:6px">${title} — Maliyet</h2>
     <div style="color:#333;margin-top:6px;font-size:14px">${new Date().toLocaleString()}</div>
     <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:14px">
       <thead>
@@ -1021,7 +1043,8 @@ async function generatePreviewElement(title, items, total){
         `).join('')}
       </tbody>
     </table>
-    <div style="margin-top:12px;font-weight:700;font-size:16px">Toplam: ${total.toFixed(2)} ₺</div>
+    <div style="margin-top:12px;font-weight:700;font-size:18px;border-top:1px solid #ddd;padding-top:8px">Toplam: ${total.toFixed(2)} ₺</div>
+    <div style="margin-top:12px;text-align:center;color:#666;font-size:11px">CAN&D Şirketinin ürünüdür. Tüm hakları saklıdır © CAN&D</div>
   `;
   
   document.body.appendChild(container);
@@ -1228,7 +1251,7 @@ function addCategory() {
   // Update UI
   renderCategories();
   updateCategorySelects();
-  renderCategoriesList();
+  renderCategoriesManagementPanel();
   
   alert('Kategori eklendi!');
 }
@@ -1243,14 +1266,10 @@ function addProduct() {
     return;
   }
   
-  // Resim URL'si kontrolü
+  // Resim URL'si kontrolü - artık zorunlu değil
   if (!imageUrl) {
-    document.getElementById('productImageWarning').style.display = 'block';
-    document.getElementById('newProductImage').classList.add('input-warning');
-    return;
-  } else {
-    document.getElementById('productImageWarning').style.display = 'none';
-    document.getElementById('newProductImage').classList.remove('input-warning');
+    const confirmAdd = confirm(`${name} ürünü için resim URL'si girilmedi. Devam etmek istiyor musunuz?`);
+    if (!confirmAdd) return;
   }
   
   // Add to RECIPES
@@ -1272,13 +1291,13 @@ function addProduct() {
   
   // Update UI
   renderProducts(null);
-  renderProductsList();
+  renderProductsManagementPanel();
   
   alert('Ürün eklendi!');
 }
 
-function renderProductsList() {
-  const container = document.getElementById('productsList');
+function renderProductsManagementPanel() {
+  const container = document.getElementById('productsManagementPanel');
   const productsCount = document.getElementById('productsCount');
   
   container.innerHTML = '';
@@ -1287,35 +1306,38 @@ function renderProductsList() {
   Object.keys(RECIPES).forEach(productName => {
     const product = RECIPES[productName];
     const productItem = document.createElement('div');
-    productItem.className = 'saved-item';
-    productItem.style.flexDirection = 'row';
-    productItem.style.justifyContent = 'space-between';
-    productItem.style.alignItems = 'center';
+    productItem.className = 'management-item';
     
     const hasImage = product.imageUrl && product.imageUrl.trim() !== '';
+    const imageUrl = hasImage ? product.imageUrl : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
     
     productItem.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px">
-        ${hasImage ? `<img src="${product.imageUrl}" style="width:24px;height:24px;object-fit:cover;border-radius:4px" alt="${productName}">` : ''}
-        <div>${productName}</div>
-        ${!hasImage ? '<div style="color:#ff6b6b;font-size:10px">Resim URL giriniz</div>' : ''}
-      </div>
-      <div style="display:flex;gap:4px">
-        <button class="dev-btn-secondary edit-product">Düzenle</button>
+      <img src="${imageUrl}" class="management-item-image" alt="${productName}">
+      <div class="management-item-name">${productName}</div>
+      <input type="text" class="management-item-url ${!hasImage ? 'input-warning' : ''}" value="${product.imageUrl || ''}" placeholder="Resim URL'si">
+      <div class="management-item-actions">
+        <button class="dev-btn-secondary update-product">Güncelle</button>
         <button class="dev-btn-secondary delete-product">Sil</button>
       </div>
     `;
     
     container.appendChild(productItem);
     
-    // Edit button event
-    productItem.querySelector('.edit-product').addEventListener('click', () => {
-      document.getElementById('newProductName').value = productName;
-      document.getElementById('newProductImage').value = product.imageUrl || '';
-      document.getElementById('productCategorySelect').value = product.category;
+    // Update button event
+    productItem.querySelector('.update-product').addEventListener('click', () => {
+      const urlInput = productItem.querySelector('.management-item-url');
+      const newUrl = urlInput.value.trim();
       
-      // Scroll to product form
-      document.getElementById('newProductName').scrollIntoView({ behavior: 'smooth' });
+      if (newUrl) {
+        RECIPES[productName].imageUrl = newUrl;
+        localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+        urlInput.classList.remove('input-warning');
+        renderProducts(null);
+        alert('Ürün güncellendi!');
+      } else {
+        urlInput.classList.add('input-warning');
+        alert('Lütfen geçerli bir URL girin!');
+      }
     });
     
     // Delete button event
@@ -1325,15 +1347,15 @@ function renderProductsList() {
         localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
         updateProductNames();
         renderProducts(null);
-        renderProductsList();
+        renderProductsManagementPanel();
         alert('Ürün silindi!');
       }
     });
   });
 }
 
-function renderCategoriesList() {
-  const container = document.getElementById('categoriesList');
+function renderCategoriesManagementPanel() {
+  const container = document.getElementById('categoriesManagementPanel');
   const categoriesCount = document.getElementById('categoriesCount');
   
   container.innerHTML = '';
@@ -1341,35 +1363,38 @@ function renderCategoriesList() {
   
   CATEGORIES.forEach(category => {
     const categoryItem = document.createElement('div');
-    categoryItem.className = 'saved-item';
-    categoryItem.style.flexDirection = 'row';
-    categoryItem.style.justifyContent = 'space-between';
-    categoryItem.style.alignItems = 'center';
+    categoryItem.className = 'management-item';
     
     const hasImage = category.imageUrl && category.imageUrl.trim() !== '';
+    const imageUrl = hasImage ? category.imageUrl : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
     
     categoryItem.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px">
-        ${hasImage ? `<img src="${category.imageUrl}" style="width:24px;height:24px;object-fit:cover;border-radius:4px" alt="${category.name}">` : ''}
-        <div>${category.name}</div>
-        ${!hasImage ? '<div style="color:#ff6b6b;font-size:10px">Resim URL giriniz</div>' : ''}
-      </div>
-      <div style="display:flex;gap:4px">
-        <button class="dev-btn-secondary edit-category">Düzenle</button>
+      <img src="${imageUrl}" class="management-item-image" alt="${category.name}">
+      <div class="management-item-name">${category.name}</div>
+      <input type="text" class="management-item-url ${!hasImage ? 'input-warning' : ''}" value="${category.imageUrl || ''}" placeholder="Resim URL'si">
+      <div class="management-item-actions">
+        <button class="dev-btn-secondary update-category">Güncelle</button>
         <button class="dev-btn-secondary delete-category">Sil</button>
       </div>
     `;
     
     container.appendChild(categoryItem);
     
-    // Edit button event
-    categoryItem.querySelector('.edit-category').addEventListener('click', () => {
-      document.getElementById('newCategoryName').value = category.name;
-      document.getElementById('newCategoryImage').value = category.imageUrl || '';
-      document.getElementById('parentCategorySelect').value = category.parentId || '';
+    // Update button event
+    categoryItem.querySelector('.update-category').addEventListener('click', () => {
+      const urlInput = categoryItem.querySelector('.management-item-url');
+      const newUrl = urlInput.value.trim();
       
-      // Scroll to category form
-      document.getElementById('newCategoryName').scrollIntoView({ behavior: 'smooth' });
+      if (newUrl) {
+        category.imageUrl = newUrl;
+        localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+        urlInput.classList.remove('input-warning');
+        renderCategories();
+        alert('Kategori güncellendi!');
+      } else {
+        urlInput.classList.add('input-warning');
+        alert('Lütfen geçerli bir URL girin!');
+      }
     });
     
     // Delete button event
@@ -1390,8 +1415,8 @@ function renderCategoriesList() {
         updateProductNames();
         renderCategories();
         renderProducts(null);
-        renderCategoriesList();
-        renderProductsList();
+        renderCategoriesManagementPanel();
+        renderProductsManagementPanel();
         alert('Kategori ve bağlı ürünler silindi!');
       }
     });
@@ -1497,8 +1522,8 @@ function quickAddProducts() {
   renderCategories();
   renderProducts(null);
   updateCategorySelects();
-  renderProductsList();
-  renderCategoriesList();
+  renderProductsManagementPanel();
+  renderCategoriesManagementPanel();
   
   alert(`${addedCategories} kategori, ${addedProducts} ürün ve ${addedIngredients} malzeme eklendi!`);
 }
@@ -1562,8 +1587,8 @@ function importAllData() {
         renderProducts(null);
         renderSaved();
         updateDevStats();
-        renderProductsList();
-        renderCategoriesList();
+        renderProductsManagementPanel();
+        renderCategoriesManagementPanel();
         updateSiteStats();
         
         alert('Veriler başarıyla içe aktarıldı!');
@@ -1605,8 +1630,8 @@ document.getElementById('tabSaved').addEventListener('click', () => { setActiveT
 document.getElementById('tabDev').addEventListener('click', () => { 
   setActiveTab('dev'); 
   updateDevStats(); 
-  renderProductsList();
-  renderCategoriesList();
+  renderProductsManagementPanel();
+  renderCategoriesManagementPanel();
 });
 
 // Admin girişi için avatar'a tıklama
@@ -1725,8 +1750,8 @@ startCategoryStatsAnimation();
 
 // Geliştirici modu aktifse listeleri render et
 if (isAdmin) {
-  renderProductsList();
-  renderCategoriesList();
+  renderProductsManagementPanel();
+  renderCategoriesManagementPanel();
 }
 </script>
 </body>
