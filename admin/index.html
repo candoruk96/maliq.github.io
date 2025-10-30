@@ -3,39 +3,50 @@
 <head>
     <meta charset="utf-8">
     <title>MALIQ Admin</title>
-    
-    <!-- FARKLI CDN DENEYELİM -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/netlify-cms/2.10.192/netlify-cms.js"></script>
-    
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script>
+    // Config'i direkt HTML içine göm
+    window.CMS_CONFIG = {
+        backend: {
+            name: "git-gateway",
+            branch: "main"
+        },
+        media_folder: "static/images",
+        public_folder: "/images",
+        collections: [{
+            name: "recipes",
+            label: "Tarifler",
+            folder: "content/recipes",
+            create: true,
+            slug: "{{slug}}",
+            fields: [
+                { name: "title", label: "Yemek Adı", widget: "string" },
+                { name: "emoji", label: "Emoji", widget: "string", required: false },
+                { name: "category", label: "Kategori", widget: "string" },
+                { 
+                    label: "Malzemeler",
+                    name: "ingredients", 
+                    widget: "list",
+                    fields: [
+                        { name: "name", label: "Ad", widget: "string" },
+                        { name: "qty", label: "Miktar", widget: "string" },
+                        { name: "unit", label: "Birim", widget: "string" }
+                    ]
+                },
+                { name: "instructions", label: "Tarif Metni", widget: "markdown" }
+            ]
+        }]
+    };
+    </script>
 </head>
 <body>
-    <div id="loading" style="text-align: center; padding: 50px;">
-        <h2>Admin Panel Yükleniyor...</h2>
-    </div>
-
     <script>
-        console.log('CMS kontrol:', typeof NetlifyCms);
-        
-        setTimeout(function() {
-            if (typeof NetlifyCms !== 'undefined') {
-                console.log('Netlify CMS başarılı!');
-                document.getElementById('loading').style.display = 'none';
-                NetlifyCms.init();
-            } else {
-                console.error('TÜM CDN\'ler engellendi!');
-                document.getElementById('loading').innerHTML = 
-                    '<h2 style="color: red;">CDN ENGELİ TESPİT EDİLDİ</h2>' +
-                    '<p><strong>Sebep:</strong> İnternet sağlayıcınız veya güvenlik duvarı CMS scriptlerini engelliyor.</p>' +
-                    '<h3>ÇÖZÜMLER:</h3>' +
-                    '<ol>' +
-                    '<li><strong>Farklı internet deneyin</strong> (telefon hotspot, cafe wifi)</li>' +
-                    '<li><strong>VPN kullanın</strong></li>' +
-                    '<li><strong>Farklı tarayıcı deneyin</strong> (Chrome, Firefox)</li>' +
-                    '<li><strong>Netlify Desktop uygulamasını indirin</strong></li>' +
-                    '</ol>' +
-                    '<p><a href="https://app.netlify.com/drop" style="color: blue;">👉 VEYA DOSYALARI SÜRÜKLE-BIRAK İLE YÜKLE</a></p>';
-            }
-        }, 3000);
+        if (typeof CMS !== 'undefined' && window.CMS_CONFIG) {
+            CMS.init({ config: window.CMS_CONFIG });
+            console.log('CMS başlatıldı!');
+        } else {
+            console.error('CMS veya config yüklenemedi!');
+        }
     </script>
 </body>
 </html>
