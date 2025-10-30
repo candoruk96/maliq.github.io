@@ -5,50 +5,69 @@
     <title>MALIQ Admin</title>
     <!-- FARKLI BİR CMS DENEYELİM -->
     <script src="https://cdn.jsdelivr.net/npm/@staticcms/app@1.0.0/dist/static-cms-app.js"></script>
-    <script>
-    // Config'i direkt buraya yaz
-    const config = {
-        backend: {
-            name: "github",
-            repo: "candoruk96/maliq.github.io",
-            branch: "main"
-        },
-        media_folder: "static/images",
-        public_folder: "/images",
-        collections: [{
-            name: "recipes",
-            label: "Tarifler",
-            folder: "content/recipes", 
-            create: true,
-            slug: "{{slug}}",
-            fields: [
-                { name: "title", label: "Yemek Adı", widget: "string" },
-                { name: "emoji", label: "Emoji", widget: "string", required: false },
-                { name: "category", label: "Kategori", widget: "string" },
-                { 
-                    label: "Malzemeler",
-                    name: "ingredients",
-                    widget: "list", 
-                    fields: [
-                        { name: "name", label: "Ad", widget: "string" },
-                        { name: "qty", label: "Miktar", widget: "string" },
-                        { name: "unit", label: "Birim", widget: "string" }
-                    ]
-                },
-                { name: "instructions", label: "Tarif Metni", widget: "markdown" }
-            ]
-        }]
-    };
-    
-    // CMS'i başlat
-    if (typeof StaticCMS !== 'undefined') {
-        StaticCMS.init({ config });
-    } else {
-        document.body.innerHTML = '<h1>CMS engellendi. Local Netlify CLI kullanın.</h1>';
-    }
-    </script>
 </head>
 <body>
-    <div id="cms-root"></div>
+    <div id="cms-root">
+        <div style="text-align: center; padding: 50px;">
+            <h2>CMS Yükleniyor...</h2>
+        </div>
+    </div>
+
+    <script>
+    // DOM yüklendikten sonra çalışsın
+    document.addEventListener('DOMContentLoaded', function() {
+        // Config'i direkt buraya yaz
+        const config = {
+            backend: {
+                name: "github",
+                repo: "candoruk96/maliq.github.io",
+                branch: "main"
+            },
+            media_folder: "static/images",
+            public_folder: "/images",
+            collections: [{
+                name: "recipes",
+                label: "Tarifler",
+                folder: "content/recipes", 
+                create: true,
+                slug: "{{slug}}",
+                fields: [
+                    { name: "title", label: "Yemek Adı", widget: "string" },
+                    { name: "emoji", label: "Emoji", widget: "string", required: false },
+                    { name: "category", label: "Kategori", widget: "string" },
+                    { 
+                        label: "Malzemeler",
+                        name: "ingredients",
+                        widget: "list", 
+                        fields: [
+                            { name: "name", label: "Ad", widget: "string" },
+                            { name: "qty", label: "Miktar", widget: "string" },
+                            { name: "unit", label: "Birim", widget: "string" }
+                        ]
+                    },
+                    { name: "instructions", label: "Tarif Metni", widget: "markdown" }
+                ]
+            }]
+        };
+        
+        // CMS'i başlat
+        setTimeout(function() {
+            if (typeof StaticCMS !== 'undefined') {
+                console.log('StaticCMS yüklendi!');
+                StaticCMS.init({ config });
+                document.getElementById('cms-root').innerHTML = '';
+            } else {
+                console.error('StaticCMS yüklenemedi!');
+                document.getElementById('cms-root').innerHTML = 
+                    '<div style="text-align: center; padding: 50px; color: red;">' +
+                    '<h2>🚨 CMS ENGELİ</h2>' +
+                    '<p>Tüm CMS scriptleri engellendi.</p>' +
+                    '<p><strong>Çözüm:</strong> Netlify CLI veya Desktop kullanın.</p>' +
+                    '<a href="https://www.netlify.com/products/dev/" style="color: blue;">👉 Netlify CLI İndir</a>' +
+                    '</div>';
+            }
+        }, 2000);
+    });
+    </script>
 </body>
 </html>
