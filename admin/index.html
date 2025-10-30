@@ -3,66 +3,49 @@
 <head>
     <meta charset="utf-8">
     <title>MALIQ Admin</title>
-    <!-- CSP YOK - Netlify headers handle edecek -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <!-- Tina CMS - daha hafif, daha az CSP sorunu -->
+    <script src="https://unpkg.com/@tinacms/app@latest/dist/index.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@tinacms/app@latest/dist/style.css">
 </head>
 <body>
-    <div id="cms-root">
-        <div style="text-align: center; padding: 50px;">
-            <h2>CMS Yükleniyor...</h2>
-        </div>
-    </div>
+    <div id="tina-root"></div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const config = {
-            backend: {
-                name: "github",
-                repo: "candoruk96/maliq.github.io",
-                branch: "main"
-            },
-            media_folder: "static/images",
-            public_folder: "/images",
-            collections: [{
-                name: "recipes",
-                label: "Tarifler",
-                folder: "content/recipes",
-                create: true,
-                slug: "{{slug}}",
-                fields: [
-                    { name: "title", label: "Yemek Adı", widget: "string" },
-                    { name: "emoji", label: "Emoji", widget: "string", required: false },
-                    { name: "category", label: "Kategori", widget: "string" },
-                    { 
-                        label: "Malzemeler",
-                        name: "ingredients",
-                        widget: "list",
-                        fields: [
-                            { name: "name", label: "Ad", widget: "string" },
-                            { name: "qty", label: "Miktar", widget: "string" },
-                            { name: "unit", label: "Birim", widget: "string" }
-                        ]
-                    },
-                    { name: "instructions", label: "Tarif Metni", widget: "markdown" }
-                ]
-            }]
-        };
-
-        setTimeout(function() {
-            if (typeof CMS !== 'undefined') {
-                console.log('CMS başarıyla yüklendi!');
-                CMS.init({ config });
-                document.getElementById('cms-root').innerHTML = '';
-            } else {
-                console.error('CMS yüklenemedi');
-                document.getElementById('cms-root').innerHTML = 
-                    '<div style="text-align: center; padding: 50px; color: red;">' +
-                    '<h2>🚨 CSP ENGELİ</h2>' +
-                    '<p>Netlify CSP ayarları "eval" kullanımını engelliyor.</p>' +
-                    '<p><strong>Çözüm:</strong> _headers veya netlify.toml dosyası ekleyin.</p>' +
-                    '</div>';
-            }
-        }, 3000);
+        if (typeof TinaCMS !== 'undefined') {
+            const cms = new TinaCMS({
+                toolbar: true,
+                sidebar: true
+            });
+            
+            console.log('Tina CMS başarıyla yüklendi!');
+            
+            // Basit bir form göster
+            document.getElementById('tina-root').innerHTML = `
+                <div style="padding: 50px; max-width: 600px; margin: 0 auto;">
+                    <h2>🎉 Tina CMS Çalışıyor!</h2>
+                    <p>CSP engeli aşıldı. Şimdi gerçek CMS'i kuralım:</p>
+                    <div style="margin: 20px;">
+                        <a href="https://tina.io/docs/setup-overview/" 
+                           style="display: block; padding: 15px; background: #ec4815; color: white; margin: 10px; text-decoration: none;">
+                           🚀 Tina CMS Kurulum Rehberi
+                        </a>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById('tina-root').innerHTML = 
+                '<div style="text-align: center; padding: 50px; color: red;">' +
+                '<h2>🚨 TÜM CMS\'LER ENGELLENDİ</h2>' +
+                '<p>Netlify ortamında CMS kullanılamıyor.</p>' +
+                '<h3>SON ÇÖZÜMLER:</h3>' +
+                '<div style="text-align: left; display: inline-block;">' +
+                '<p>1. <strong>Local development:</strong> Bilgisayarında Netlify CLI kullan</p>' +
+                '<p>2. <strong>External CMS:</strong> Strapi, Contentful gibi servisler kullan</p>' +
+                '<p>3. <strong>GitHub direkt:</strong> Repo\'da manual dosya oluştur</p>' +
+                '</div>' +
+                '</div>';
+        }
     });
     </script>
 </body>
