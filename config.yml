@@ -1,18 +1,25 @@
 backend:
-  name: github
-  repo: candoruk96/maliq.github.io
+  name: git-gateway
   branch: main
 
-media_folder: "assets/images"
+media_folder: "assets/images" 
 public_folder: "/assets/images"
 
 collections:
-  - name: "pages"
-    label: "Sayfalar"
-    files:
-      - label: "Ana Sayfa"
-        name: "index"
-        file: "index.html"
+  - name: "recipes"
+    label: "Tarifler"
+    folder: "_data/recipes"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { name: "title", label: "Yemek Adı", widget: "string" }
+      - { name: "emoji", label: "Emoji", widget: "string", required: false }
+      - { name: "category", label: "Kategori", widget: "string" }
+      - label: "Malzemeler"
+        name: "ingredients"
+        widget: "list"
         fields:
-          - { name: "title", label: "Sayfa Başlığı", widget: "string" }
-          - { name: "content", label: "İçerik", widget: "markdown" }
+          - { name: "name", label: "Ad", widget: "string" }
+          - { name: "qty", label: "Miktar", widget: "string" }
+          - { name: "unit", label: "Birim", widget: "string" }
+      - { name: "instructions", label: "Tarif Metni", widget: "markdown" }
