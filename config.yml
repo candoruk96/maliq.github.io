@@ -1,30 +1,18 @@
 backend:
   name: github
-  repo: candoruk96/candoruk96.github.io
+  repo: candoruk96/maliq.github.io
   branch: main
-  auth:
-    client_id: "Ov23liC9jwIFXPXz3jcH"
-    client_secret: "beddfbcd4bdbc29cc0807a5ae6079b5de72ab57d"
-  auth_endpoint: "https://oauth-server-teal.vercel.app/auth"
 
-media_folder: "assets/uploads"
-public_folder: "/assets/uploads"
+media_folder: "assets/images"
+public_folder: "/assets/images"
 
 collections:
-  - name: "recipes"
-    label: "Tarifler"
-    folder: "_data/recipes"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { name: "title", label: "Yemek Adı", widget: "string" }
-      - { name: "emoji", label: "Emoji", widget: "string", required: false }
-      - { name: "category", label: "Kategori", widget: "string" }
-      - label: "Malzemeler"
-        name: "ingredients"
-        widget: "list"
+  - name: "pages"
+    label: "Sayfalar"
+    files:
+      - label: "Ana Sayfa"
+        name: "index"
+        file: "index.html"
         fields:
-          - { name: "name", label: "Ad", widget: "string" }
-          - { name: "qty", label: "Miktar", widget: "string" }
-          - { name: "unit", label: "Birim", widget: "string" }
-      - { name: "instructions", label: "Tarif Metni", widget: "markdown" }
+          - { name: "title", label: "Sayfa Başlığı", widget: "string" }
+          - { name: "content", label: "İçerik", widget: "markdown" }
