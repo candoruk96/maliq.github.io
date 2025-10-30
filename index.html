@@ -4,44 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MALIQ - Akıllı Maliyet Hesaplayıcı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            background: linear-gradient(135deg, #061322 0%, #071526 50%, #04111a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            line-height: 1.6;
-            overflow-x: hidden;
+            color: #eaf4ff;
         }
 
         .login-container {
             width: 100%;
-            max-width: 440px;
-            position: relative;
-            z-index: 10;
+            max-width: 420px;
+            perspective: 1000px;
         }
 
         .login-card {
-            background: rgba(21, 21, 32, 0.95);
+            background: rgba(7, 21, 38, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            padding: 48px 40px;
-            box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.25),
-                0 0 0 1px rgba(255, 255, 255, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateY(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            backdrop-filter: blur(20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
 
@@ -49,57 +47,42 @@
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.03) 0%, rgba(0, 153, 255, 0.03) 100%);
-            pointer-events: none;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+            transition: left 0.5s ease;
         }
 
-        .login-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 136, 0.1), transparent 30%);
-            animation: rotate 10s linear infinite;
-            pointer-events: none;
+        .login-card:hover::before {
+            left: 100%;
         }
 
         .login-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(0, 255, 136, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
 
         .login-header {
             text-align: center;
-            margin-bottom: 48px;
-            position: relative;
-            z-index: 2;
+            margin-bottom: 32px;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .logo {
             width: 80px;
             height: 80px;
             border-radius: 20px;
-            background: linear-gradient(135deg, #00ff88 0%, #0099ff 100%);
+            background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 
-                0 0 40px rgba(0, 255, 136, 0.4),
-                0 0 80px rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -112,63 +95,42 @@
         }
 
         .login-header h2 {
-            color: #ffffff;
-            font-size: 2.25rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 12px;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #ffffff 0%, #a0a0b0 100%);
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #eaf4ff 0%, #9fb0c6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .login-header p {
-            color: #a0a0b0;
-            font-size: 16px;
+            color: #9fb0c6;
+            font-size: 1rem;
             font-weight: 400;
-            line-height: 1.5;
         }
 
-        /* Admin Badge */
-        .admin-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ff0080, #ff6b00);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            box-shadow: 0 0 20px rgba(255, 0, 128, 0.4);
-            z-index: 3;
-            display: none;
-        }
-
-        /* Form Styles */
         .form-group {
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             position: relative;
-            z-index: 2;
         }
 
         .input-wrapper {
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .input-wrapper input {
-            width: 100%;
-            background: rgba(26, 26, 37, 0.8);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 20px 16px;
-            color: #ffffff;
+            padding: 16px 16px 8px 16px;
+            color: #eaf4ff;
             font-size: 16px;
             font-weight: 400;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
             outline: none;
             backdrop-filter: blur(10px);
         }
@@ -177,20 +139,11 @@
             color: transparent;
         }
 
-        .input-wrapper input:focus {
-            border-color: #00ff88;
-            background: rgba(26, 26, 37, 0.9);
-            box-shadow: 
-                0 0 0 4px rgba(0, 255, 136, 0.15),
-                0 8px 32px rgba(0, 255, 136, 0.1);
-            transform: translateY(-1px);
-        }
-
         .input-wrapper label {
             position: absolute;
             left: 16px;
-            top: 20px;
-            color: #a0a0b0;
+            top: 16px;
+            color: #9fb0c6;
             font-size: 16px;
             font-weight: 400;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -198,127 +151,219 @@
             transform-origin: left top;
         }
 
-        .input-wrapper input:focus + label,
-        .input-wrapper input:not(:placeholder-shown) + label {
-            transform: translateY(-28px) scale(0.85);
-            color: #00ff88;
-            font-weight: 500;
-            background: rgba(21, 21, 32, 0.9);
-            padding: 2px 8px;
-            border-radius: 6px;
+        .input-wrapper input:focus,
+        .input-wrapper input:valid {
+            border-color: #06b6d4;
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
         }
 
-        /* Password Toggle */
+        .input-wrapper input:focus + label,
+        .input-wrapper input:valid + label {
+            transform: translateY(-8px) scale(0.85);
+            color: #06b6d4;
+            font-weight: 500;
+        }
+
         .password-wrapper {
             position: relative;
         }
 
         .password-wrapper input {
-            padding-right: 50px;
+            padding-right: 48px;
         }
 
         .password-toggle {
             position: absolute;
-            right: 16px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             cursor: pointer;
             padding: 8px;
-            color: #a0a0b0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
+            color: #9fb0c6;
+            transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
         }
 
         .password-toggle:hover {
-            color: #00ff88;
-            background: rgba(0, 255, 136, 0.1);
+            color: #06b6d4;
         }
 
-        .toggle-icon {
-            display: block;
-            width: 20px;
-            height: 20px;
-            transition: all 0.3s ease;
-        }
-
-        /* Button Styles */
-        .login-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #00ff88 0%, #0099ff 100%);
+        .btn {
+            background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);
             border: none;
             border-radius: 12px;
-            padding: 20px 32px;
-            color: #0a0a0f;
+            padding: 16px 24px;
+            color: #021026;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            z-index: 2;
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+            width: 100%;
+            margin-bottom: 16px;
         }
 
-        .login-btn::before {
+        .btn::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.6s ease;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
-        .login-btn:hover::before {
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.6);
+        }
+
+        .btn:hover::before {
             left: 100%;
         }
 
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 
-                0 12px 40px rgba(0, 255, 136, 0.4),
-                0 0 60px rgba(0, 255, 136, 0.2);
+        .btn:active {
+            transform: translateY(0);
         }
 
-        .guest-btn {
-            width: 100%;
+        .btn-ghost {
             background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #eaf4ff;
+            box-shadow: none;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(6, 182, 212, 0.3);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 24px 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider::before {
+            margin-right: 16px;
+        }
+
+        .divider::after {
+            margin-left: 16px;
+        }
+
+        .divider span {
+            color: #9fb0c6;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .social-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 18px 32px;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 12px 16px;
+            color: #eaf4ff;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 24px;
-            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .guest-btn:hover {
+        .social-btn:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(0, 255, 136, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* Admin Login Indicator */
+        .social-btn.google:hover {
+            border-color: rgba(219, 68, 55, 0.5);
+        }
+
+        .social-btn.facebook:hover {
+            border-color: rgba(59, 89, 152, 0.5);
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .success-message.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background: #06b6d4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #021026;
+            margin: 0 auto 20px;
+            animation: successPulse 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .success-message h3 {
+            color: #eaf4ff;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .success-message p {
+            color: #9fb0c6;
+            font-size: 1rem;
+        }
+
         .admin-indicator {
             text-align: center;
             margin-bottom: 20px;
             padding: 12px;
-            background: rgba(255, 0, 128, 0.1);
-            border: 1px solid rgba(255, 0, 128, 0.3);
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
             border-radius: 12px;
-            color: #ff0080;
+            color: #7c3aed;
             font-size: 14px;
             font-weight: 500;
             display: none;
@@ -330,249 +375,10 @@
             50% { opacity: 0.7; }
         }
 
-        /* Loading States */
-        .login-btn.loading {
-            pointer-events: none;
-        }
-
-        .btn-text {
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            border: 2px solid transparent;
-            border-top: 2px solid #0a0a0f;
-            border-radius: 50%;
-            opacity: 0;
-            animation: spin 1s linear infinite;
-            transition: opacity 0.3s ease;
-        }
-
-        .login-btn.loading .btn-text {
-            opacity: 0;
-        }
-
-        .login-btn.loading .btn-loader {
-            opacity: 1;
-        }
-
-        /* Divider */
-        .divider {
-            text-align: center;
-            margin: 32px 0;
-            position: relative;
-            z-index: 2;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        }
-
-        .divider span {
-            background: rgba(21, 21, 32, 0.9);
-            color: #a0a0b0;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        /* Social Login */
-        .social-login {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-            z-index: 2;
-            position: relative;
-        }
-
-        .social-btn {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 16px;
-            color: #ffffff;
-            font-size: 0;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .social-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        }
-
-        .social-icon {
-            width: 24px;
-            height: 24px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .google-icon {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'/%3E%3Cpath fill='%23ffffff' d='M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z'/%3E%3Cpath fill='%23ffffff' d='M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z'/%3E%3Cpath fill='%23ffffff' d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z'/%3E%3C/svg%3E");
-        }
-
-        .facebook-icon {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z'/%3E%3C/svg%3E");
-        }
-
-        /* Error States */
-        .error-message {
-            color: #ff4766;
-            font-size: 13px;
-            font-weight: 500;
-            margin-top: 8px;
-            margin-left: 4px;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 71, 102, 0.1);
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 71, 102, 0.2);
-        }
-
-        .error-message.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .form-group.error .input-wrapper input {
-            border-color: #ff4766;
-            background: rgba(255, 71, 102, 0.05);
-            box-shadow: 0 0 0 4px rgba(255, 71, 102, 0.1);
-        }
-
-        /* Success Message */
-        .success-message {
-            display: none;
-            text-align: center;
-            padding: 40px 24px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            z-index: 2;
-        }
-
-        .success-message.show {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #00ff88, #0099ff);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            color: #0a0a0f;
-            margin: 0 auto 24px;
-            animation: successPulse 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
-        }
-
-        .success-message h3 {
-            color: #ffffff;
-            font-size: 1.75rem;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .success-message p {
-            color: #a0a0b0;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-
-        /* Background Effects */
-        .background-effects {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.3;
-        }
-
-        .glow-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(40px);
-            opacity: 0.1;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .glow-orb-1 {
-            width: 200px;
-            height: 200px;
-            top: 10%;
-            left: -5%;
-            background: radial-gradient(circle, #00ff88, transparent 70%);
-            animation-delay: 0s;
-        }
-
-        .glow-orb-2 {
-            width: 150px;
-            height: 150px;
-            top: 60%;
-            right: -3%;
-            background: radial-gradient(circle, #0099ff, transparent 70%);
-            animation-delay: -2s;
-        }
-
-        .glow-orb-3 {
-            width: 120px;
-            height: 120px;
-            bottom: 20%;
-            left: 8%;
-            background: radial-gradient(circle, #ff0080, transparent 70%);
-            animation-delay: -4s;
-        }
-
-        /* Animations */
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) translateX(0px) scale(1); }
-            33% { transform: translateY(-15px) translateX(8px) scale(1.05); }
-            66% { transform: translateY(8px) translateX(-8px) scale(0.95); }
-        }
-
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        @keyframes successPulse {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         @keyframes shake {
@@ -581,46 +387,51 @@
             75% { transform: translateX(5px); }
         }
 
-        @keyframes successPulse {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+        .error-message {
+            display: block;
+            color: #ff6b6b;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 6px;
+            margin-left: 4px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 107, 107, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-group.error .input-wrapper input {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            animation: shake 0.5s ease-in-out;
         }
 
         /* Mobile Responsive */
         @media (max-width: 480px) {
-            body {
-                padding: 16px;
-            }
-            
             .login-card {
-                padding: 32px 24px;
+                padding: 24px;
+                margin: 10px;
                 border-radius: 20px;
             }
             
             .login-header h2 {
-                font-size: 2rem;
+                font-size: 1.75rem;
+            }
+            
+            .password-wrapper input {
+                padding-right: 44px;
             }
             
             .social-login {
                 flex-direction: column;
-            }
-            
-            .logo {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .logo img {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .admin-badge {
-                top: 15px;
-                right: 15px;
-                padding: 6px 12px;
-                font-size: 10px;
             }
         }
     </style>
@@ -628,8 +439,6 @@
 <body>
     <div class="login-container">
         <div class="login-card">
-            <div class="admin-badge" id="adminBadge">🔧 YÖNETİCİ</div>
-            
             <div class="login-header">
                 <div class="logo-container">
                     <div class="logo">
@@ -641,36 +450,31 @@
             </div>
 
             <div class="admin-indicator" id="adminIndicator">
-                🔧 Yönetici modu aktif - Geliştirici seçenekleri açılacak
+                <i class="fas fa-tools"></i> Yönetici modu aktif - Geliştirici seçenekleri açılacak
             </div>
-            
+
             <form class="login-form" id="loginForm" novalidate>
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="email" id="email" name="email" required placeholder=" " autocomplete="email">
-                        <label for="email">E-posta</label>
+                        <input type="email" id="email" name="email" required autocomplete="email">
+                        <label for="email">E-posta Adresi</label>
                     </div>
                     <span class="error-message" id="emailError"></span>
                 </div>
 
                 <div class="form-group">
                     <div class="input-wrapper password-wrapper">
-                        <input type="password" id="password" name="password" required placeholder=" " autocomplete="current-password">
+                        <input type="password" id="password" name="password" required autocomplete="current-password">
                         <label for="password">Şifre</label>
                         <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
-                            <span class="toggle-icon">👁️</span>
+                            <i class="fas fa-eye"></i>
                         </button>
                     </div>
                     <span class="error-message" id="passwordError"></span>
                 </div>
 
-                <button type="submit" class="login-btn btn">
-                    <span class="btn-text">Giriş Yap</span>
-                    <span class="btn-loader"></span>
-                </button>
-
-                <button type="button" class="guest-btn" id="guestLoginBtn">
-                    <span class="btn-text">Misafir Girişi</span>
+                <button type="submit" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Giriş Yap
                 </button>
             </form>
 
@@ -679,70 +483,39 @@
             </div>
 
             <div class="social-login">
-                <button type="button" class="social-btn google-btn" onclick="googleLogin()">
-                    <span class="social-icon google-icon"></span>
+                <button type="button" class="social-btn google" onclick="googleLogin()">
+                    <i class="fab fa-google"></i> Google
                 </button>
-                <button type="button" class="social-btn facebook-btn" onclick="facebookLogin()">
-                    <span class="social-icon facebook-icon"></span>
+                <button type="button" class="social-btn facebook" onclick="facebookLogin()">
+                    <i class="fab fa-facebook-f"></i> Facebook
                 </button>
             </div>
 
+            <button type="button" class="btn btn-ghost" id="guestLoginBtn">
+                <i class="fas fa-user"></i> Misafir Olarak Giriş Yap
+            </button>
+
             <div class="success-message" id="successMessage">
-                <div class="success-icon">✓</div>
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
                 <h3 id="successTitle">Giriş Başarılı!</h3>
                 <p id="successMessageText">MALIQ'a yönlendiriliyorsunuz...</p>
             </div>
         </div>
-        
-        <div class="background-effects">
-            <div class="glow-orb glow-orb-1"></div>
-            <div class="glow-orb glow-orb-2"></div>
-            <div class="glow-orb glow-orb-3"></div>
-        </div>
     </div>
-
-    <!-- Facebook SDK -->
-    <script>
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId: '2639504659744952',
-                cookie: true,
-                xfbml: true,
-                version: 'v18.0'
-            });
-            
-            FB.AppEvents.logPageView();
-        };
-
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); 
-            js.id = id;
-            js.src = "https://connect.facebook.net/tr_TR/sdk.js";
-            js.async = true;
-            js.defer = true;
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    </script>
-
-    <!-- Google SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
         class MALIQLogin {
             constructor() {
                 this.form = document.getElementById('loginForm');
-                this.submitBtn = this.form.querySelector('.login-btn');
                 this.guestBtn = document.getElementById('guestLoginBtn');
                 this.passwordToggle = document.getElementById('passwordToggle');
                 this.passwordInput = document.getElementById('password');
                 this.successMessage = document.getElementById('successMessage');
                 this.successTitle = document.getElementById('successTitle');
                 this.successMessageText = document.getElementById('successMessageText');
-                this.adminBadge = document.getElementById('adminBadge');
                 this.adminIndicator = document.getElementById('adminIndicator');
-                this.isSubmitting = false;
                 
                 this.adminCredentials = {
                     email: 'can@maliq.com',
@@ -788,7 +561,7 @@
                         const isPassword = this.passwordInput.type === 'password';
                         this.passwordInput.type = isPassword ? 'text' : 'password';
                         
-                        this.passwordToggle.innerHTML = isPassword ? '🔒' : '👁️';
+                        this.passwordToggle.innerHTML = isPassword ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
                         this.passwordInput.focus();
                     });
                 }
@@ -808,10 +581,8 @@
                                    password === this.adminCredentials.password;
                 
                 if (isAdminInput) {
-                    this.adminBadge.style.display = 'block';
                     this.adminIndicator.style.display = 'block';
                 } else {
-                    this.adminBadge.style.display = 'none';
                     this.adminIndicator.style.display = 'none';
                 }
             }
@@ -886,8 +657,6 @@
             async handleSubmit(e) {
                 e.preventDefault();
                 
-                if (this.isSubmitting) return;
-                
                 const isValid = this.validateForm();
                 
                 if (isValid) {
@@ -898,54 +667,33 @@
             }
             
             async handleGuestLogin() {
-                if (this.isSubmitting) return;
-                
-                this.isSubmitting = true;
-                this.guestBtn.style.opacity = '0.7';
-                this.guestBtn.style.pointerEvents = 'none';
-                
                 try {
-                    const guestCounter = parseInt(localStorage.getItem('maliq_guest_counter')) + 1;
+                    let guestCounter = parseInt(localStorage.getItem('maliq_guest_counter')) + 1;
                     localStorage.setItem('maliq_guest_counter', guestCounter.toString());
                     
+                    const guestId = String(guestCounter).padStart(6, '0');
                     const guestUser = {
-                        id: 'guest_' + String(guestCounter).padStart(7, '0'),
-                        name: 'Misafir ' + String(guestCounter).padStart(7, '0'),
-                        email: `guest${String(guestCounter).padStart(7, '0')}@maliq.com`,
+                        id: 'guest_' + guestId,
+                        name: 'Misafir ' + guestId,
+                        email: `guest${guestId}@maliq.com`,
                         isGuest: true,
                         isAdmin: false,
                         createdAt: new Date().toISOString(),
-                        lastLogin: new Date().toISOString(),
-                        isActive: true
+                        lastLogin: new Date().toISOString()
                     };
                     
                     localStorage.setItem('maliq_user', JSON.stringify(guestUser));
                     localStorage.setItem('maliq_admin', 'false');
                     
-                    const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
-                    const guestExists = existingUsers.find(u => u.id === guestUser.id);
-                    
-                    if (!guestExists) {
-                        existingUsers.push(guestUser);
-                        localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
-                    }
-                    
-                    this.showSuccessMessage(false);
+                    this.showSuccessMessage(false, guestId);
                     
                 } catch (error) {
                     console.error('Guest login error:', error);
-                    alert('Misafir girişi sırasında bir hata oluştu. Lütfen tekrar deneyin.');
-                } finally {
-                    this.isSubmitting = false;
-                    this.guestBtn.style.opacity = '1';
-                    this.guestBtn.style.pointerEvents = 'auto';
+                    alert('Misafir girişi sırasında bir hata oluştu.');
                 }
             }
             
             async submitForm() {
-                this.isSubmitting = true;
-                this.submitBtn.classList.add('loading');
-                
                 try {
                     const email = document.getElementById('email').value.trim();
                     const password = document.getElementById('password').value;
@@ -958,9 +706,6 @@
                     
                 } catch (error) {
                     this.showLoginError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
-                } finally {
-                    this.isSubmitting = false;
-                    this.submitBtn.classList.remove('loading');
                 }
             }
             
@@ -973,21 +718,12 @@
                     isDeveloper: true,
                     permissions: ['all'],
                     createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString(),
-                    isActive: true
+                    lastLogin: new Date().toISOString()
                 };
                 
                 localStorage.setItem('maliq_admin', 'true');
                 localStorage.setItem('maliq_user', JSON.stringify(adminUser));
                 localStorage.setItem('maliq_developer_mode', 'true');
-                
-                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
-                const adminExists = existingUsers.find(u => u.email === 'can@maliq.com');
-                
-                if (!adminExists) {
-                    existingUsers.push(adminUser);
-                    localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
-                }
                 
                 this.showSuccessMessage(true);
             }
@@ -1009,10 +745,13 @@
                 this.showSuccessMessage(false);
             }
             
-            showSuccessMessage(isAdmin) {
+            showSuccessMessage(isAdmin, guestId = null) {
                 if (isAdmin) {
                     this.successTitle.textContent = 'Yönetici Girişi Başarılı!';
                     this.successMessageText.textContent = 'Geliştirici seçenekleri ile yönlendiriliyorsunuz...';
+                } else if (guestId) {
+                    this.successTitle.textContent = 'Misafir Girişi Başarılı!';
+                    this.successMessageText.textContent = `Misafir ${guestId} olarak giriş yapıldı`;
                 } else {
                     this.successTitle.textContent = 'Giriş Başarılı!';
                     this.successMessageText.textContent = 'MALIQ\'a yönlendiriliyorsunuz...';
@@ -1032,13 +771,6 @@
                     }
                 });
                 
-                const card = document.querySelector('.login-card');
-                if (isAdmin) {
-                    card.style.boxShadow = '0 0 60px rgba(255, 0, 128, 0.4)';
-                } else {
-                    card.style.boxShadow = '0 0 60px rgba(0, 255, 136, 0.3)';
-                }
-                
                 setTimeout(() => {
                     this.form.style.display = 'none';
                     elementsToHide.forEach(selector => {
@@ -1049,9 +781,8 @@
                     this.successMessage.classList.add('show');
                     
                     setTimeout(() => {
-                        // Admin ise developer modunda, değilse normal modda yönlendir
                         if (isAdmin) {
-                            window.location.href = 'app.html?mode=developer';
+                            window.location.href = 'app.html?admin=true';
                         } else {
                             window.location.href = 'app.html';
                         }
@@ -1078,45 +809,10 @@
         // Social Login Functions
         function googleLogin() {
             try {
-                if (typeof google === 'undefined' || !google.accounts) {
-                    throw new Error('Google SDK yüklenemedi');
-                }
-                
-                google.accounts.id.initialize({
-                    client_id: '1008649054947-7gpj5ah0j04703605cdmbsrqp2qmhock.apps.googleusercontent.com',
-                    callback: handleGoogleResponse,
-                    auto_select: false
-                });
-                
-                google.accounts.id.prompt((notification) => {
-                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                        window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' +
-                            'client_id=1008649054947-7gpj5ah0j04703605cdmbsrqp2qmhock.apps.googleusercontent.com&' +
-                            'redirect_uri=' + encodeURIComponent(window.location.origin) + '&' +
-                            'response_type=token&' +
-                            'scope=email%20profile';
-                    }
-                });
-                
-            } catch (error) {
-                console.error('Google login error:', error);
-                alert('Google girişi şu anda kullanılamıyor. Lütfen diğer yöntemleri deneyin.');
-            }
-        }
-
-        function handleGoogleResponse(response) {
-            try {
-                const userData = parseJwt(response.credential);
-                
-                if (!userData) {
-                    throw new Error('Geçersiz Google yanıtı');
-                }
-                
                 const socialUser = {
-                    id: userData.sub || 'google_' + Date.now(),
-                    name: userData.name || 'Google Kullanıcısı',
-                    email: userData.email || `google_${Date.now()}@maliq.com`,
-                    picture: userData.picture,
+                    id: 'google_' + Date.now(),
+                    name: 'Google Kullanıcısı',
+                    email: `google_${Date.now()}@maliq.com`,
                     provider: 'google',
                     isAdmin: false,
                     isDeveloper: false,
@@ -1143,33 +839,41 @@
                 window.location.href = 'app.html';
                 
             } catch (error) {
-                console.error('Google response handling error:', error);
-                alert('Google girişi işlenirken bir hata oluştu.');
+                console.error('Google login error:', error);
+                alert('Google girişi şu anda kullanılamıyor. Lütfen diğer yöntemleri deneyin.');
             }
         }
 
         function facebookLogin() {
             try {
-                if (typeof FB === 'undefined') {
-                    throw new Error('Facebook SDK yüklenemedi');
+                const socialUser = {
+                    id: 'facebook_' + Date.now(),
+                    name: 'Facebook Kullanıcısı',
+                    email: `facebook_${Date.now()}@maliq.com`,
+                    provider: 'facebook',
+                    isAdmin: false,
+                    isDeveloper: false,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    isActive: true,
+                    isSocial: true
+                };
+                
+                localStorage.setItem('maliq_user', JSON.stringify(socialUser));
+                localStorage.setItem('maliq_admin', 'false');
+                localStorage.setItem('maliq_developer_mode', 'false');
+                
+                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
+                const existingUserIndex = existingUsers.findIndex(u => u.email === socialUser.email);
+                
+                if (existingUserIndex !== -1) {
+                    existingUsers[existingUserIndex].lastLogin = new Date().toISOString();
+                } else {
+                    existingUsers.push(socialUser);
                 }
                 
-                FB.getLoginStatus(function(response) {
-                    if (response.status === 'connected') {
-                        getFacebookUserInfo(response.authResponse.accessToken);
-                    } else {
-                        FB.login(function(response) {
-                            if (response.status === 'connected') {
-                                getFacebookUserInfo(response.authResponse.accessToken);
-                            } else {
-                                throw new Error('Facebook girişi başarısız');
-                            }
-                        }, { 
-                            scope: 'public_profile,email',
-                            return_scopes: true 
-                        });
-                    }
-                });
+                localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
+                window.location.href = 'app.html';
                 
             } catch (error) {
                 console.error('Facebook login error:', error);
@@ -1177,79 +881,8 @@
             }
         }
 
-        function getFacebookUserInfo(accessToken) {
-            FB.api('/me', { fields: 'id,name,email,picture' }, function(response) {
-                try {
-                    if (response.error) {
-                        throw new Error(response.error.message);
-                    }
-                    
-                    const socialUser = {
-                        id: response.id || 'facebook_' + Date.now(),
-                        name: response.name || 'Facebook Kullanıcısı',
-                        email: response.email || `${response.id}@facebook.com`,
-                        picture: response.picture?.data?.url,
-                        provider: 'facebook',
-                        accessToken: accessToken,
-                        isAdmin: false,
-                        isDeveloper: false,
-                        createdAt: new Date().toISOString(),
-                        lastLogin: new Date().toISOString(),
-                        isActive: true,
-                        isSocial: true
-                    };
-                    
-                    localStorage.setItem('maliq_user', JSON.stringify(socialUser));
-                    localStorage.setItem('maliq_admin', 'false');
-                    localStorage.setItem('maliq_developer_mode', 'false');
-                    
-                    const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
-                    const existingUserIndex = existingUsers.findIndex(u => u.email === socialUser.email);
-                    
-                    if (existingUserIndex !== -1) {
-                        existingUsers[existingUserIndex].lastLogin = new Date().toISOString();
-                    } else {
-                        existingUsers.push(socialUser);
-                    }
-                    
-                    localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
-                    window.location.href = 'app.html';
-                    
-                } catch (error) {
-                    console.error('Facebook user info error:', error);
-                    alert('Facebook kullanıcı bilgileri alınırken bir hata oluştu.');
-                }
-            });
-        }
-
-        function parseJwt(token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (e) {
-                console.error('JWT parsing error:', e);
-                return null;
-            }
-        }
-
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            const loginCard = document.querySelector('.login-card');
-            if (loginCard) {
-                loginCard.style.opacity = '0';
-                loginCard.style.transform = 'translateY(30px) scale(0.9)';
-                
-                setTimeout(() => {
-                    loginCard.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-                    loginCard.style.opacity = '1';
-                    loginCard.style.transform = 'translateY(0) scale(1)';
-                }, 200);
-            }
-            
             new MALIQLogin();
         });
     </script>
