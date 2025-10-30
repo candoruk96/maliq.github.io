@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>MALIQ — Akıllı Maliyet Hesaplayıcınız</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{
   --bg:#061322; --card:#071526; --accent1:#06b6d4; --accent2:#7c3aed; --muted:#9fb0c6;
@@ -148,6 +149,17 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .management-item-url{flex:2;padding:4px;border-radius:4px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit;font-size:12px}
 .management-item-url.input-warning{border-color:#ff6b6b}
 .management-item-actions{display:flex;gap:4px}
+
+/* Admin Login Modal */
+.admin-login-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:100}
+.admin-login-content{background:var(--card);padding:20px;border-radius:12px;width:95%;max-width:400px;border:1px solid rgba(255,255,255,0.1)}
+.admin-login-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.admin-login-title{font-weight:800;font-size:18px;color:var(--accent1)}
+.admin-login-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer}
+.admin-login-form{display:flex;flex-direction:column;gap:12px}
+.admin-login-input{background:var(--surface);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;color:inherit;font-size:14px}
+.admin-login-input:focus{outline:none;border-color:var(--accent1)}
+.admin-login-buttons{display:flex;gap:8px;margin-top:10px}
 </style>
 </head>
 <body>
@@ -162,7 +174,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
       </div>
       <div style="display:flex;gap:6px;align-items:center">
         <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center" id="userAvatar">M</div>
-        <div style="font-weight:700;font-size:13px" id="userName">Misafir 00001</div>
+        <div style="font-weight:700;font-size:13px" id="userName">Misafir 000001</div>
       </div>
     </div>
 
@@ -406,15 +418,15 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
   </div>
 
   <!-- Admin Login Modal -->
-  <div id="adminLoginModal" class="modal" aria-hidden="true">
-    <div class="modal-content">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-weight:900">Geliştirici Girişi</div>
-        <button id="closeAdminLoginModal" class="btn-ghost">Kapat</button>
+  <div id="adminLoginModal" class="admin-login-modal" aria-hidden="true">
+    <div class="admin-login-content">
+      <div class="admin-login-header">
+        <div class="admin-login-title">Geliştirici Girişi</div>
+        <button class="admin-login-close" id="closeAdminLoginModal">✕</button>
       </div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <input type="password" id="adminPassword" class="input-small" placeholder="Geliştirici Şifresi" />
-        <div style="display:flex;gap:6px">
+      <div class="admin-login-form">
+        <input type="password" id="adminPassword" class="admin-login-input" placeholder="Geliştirici Şifresi" />
+        <div class="admin-login-buttons">
           <button id="confirmAdminLogin" class="btn-primary">Giriş Yap</button>
           <button id="cancelAdminLogin" class="btn-ghost">İptal</button>
         </div>
@@ -431,20 +443,20 @@ let isAdmin = urlParams.get('admin') === 'true' || localStorage.getItem('maliq_a
 
 // Kullanıcı bilgilerini ayarla
 function setupUserInfo() {
+  const userData = JSON.parse(localStorage.getItem('maliq_user') || '{}');
+  
   if (isAdmin) {
     document.getElementById('userName').textContent = 'Geliştirici';
     document.getElementById('userAvatar').textContent = 'G';
     document.getElementById('tabDev').style.display = 'flex';
+    document.querySelector('.dev-tools').style.display = 'block';
   } else {
-    // Misafir kullanıcı için rastgele bir numara oluştur
-    let guestId = localStorage.getItem('maliq_guest_id');
-    if (!guestId) {
-      guestId = '0000' + Math.floor(Math.random() * 10000);
-      localStorage.setItem('maliq_guest_id', guestId);
-    }
+    // Misafir kullanıcı için numarayı al
+    let guestId = userData.id ? userData.id.replace('guest_', '') : '000001';
     document.getElementById('userName').textContent = 'Misafir ' + guestId;
     document.getElementById('userAvatar').textContent = 'M';
     document.getElementById('tabDev').style.display = 'none';
+    document.querySelector('.dev-tools').style.display = 'none';
   }
 }
 
@@ -453,9 +465,30 @@ let RECIPES = JSON.parse(localStorage.getItem('maliq_recipes') || '{}');
 // Eğer recipes boşsa, örnek verilerle doldur
 if (Object.keys(RECIPES).length === 0) {
   RECIPES = {
-    "Lahmacun": { category:'lahmacun', imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', ingredients:[{name:'Un',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200'},{name:'Kıyma',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1587332278433-702cdfd5d95e?w=200'}]},
-    "Adana Dürüm": { category:'durum', imageUrl:'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=200', ingredients:[{name:'Kuzu Kıyması',qty:200,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1587332278433-702cdfd5d95e?w=200'},{name:'Lavaş',qty:1,unit:'adet',imageUrl:'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200'}]},
-    "Pizza Margherita": { category:'pizza', imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', ingredients:[{name:'Un',qty:300,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200'},{name:'Mozzarella',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1550583727-2a5c4b1b8209?w=200'}]}
+    "Lahmacun": { 
+      category:'lahmacun', 
+      imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', 
+      ingredients:[
+        {name:'Un',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200'},
+        {name:'Kıyma',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1587332278433-702cdfd5d95e?w=200'}
+      ]
+    },
+    "Adana Dürüm": { 
+      category:'durum', 
+      imageUrl:'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=200', 
+      ingredients:[
+        {name:'Kuzu Kıyması',qty:200,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1587332278433-702cdfd5d95e?w=200'},
+        {name:'Lavaş',qty:1,unit:'adet',imageUrl:'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200'}
+      ]
+    },
+    "Pizza Margherita": { 
+      category:'pizza', 
+      imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', 
+      ingredients:[
+        {name:'Un',qty:300,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200'},
+        {name:'Mozzarella',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1550583727-2a5c4b1b8209?w=200'}
+      ]
+    }
   };
   localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
 }
@@ -1712,6 +1745,9 @@ document.getElementById('confirmAdminLogin').addEventListener('click', () => {
     isAdmin = true;
     document.getElementById('adminLoginModal').style.display = 'none';
     setupUserInfo();
+    renderProductsManagementPanel();
+    renderCategoriesManagementPanel();
+    alert('Geliştirici modu etkinleştirildi!');
   } else {
     alert('Geçersiz şifre!');
   }
