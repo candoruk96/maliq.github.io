@@ -3,17 +3,15 @@
 <head>
     <meta charset="utf-8">
     <title>MALIQ Admin</title>
-    <meta http-equiv="Content-Security-Policy" 
-          content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:;
-                  script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:;
-                  style-src 'self' 'unsafe-inline' https:;
-                  connect-src 'self' https: wss:;
-                  img-src 'self' https: data:;">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@staticcms/app@1.0.0/dist/static-cms-app.js"></script>
+    <!-- CSP YOK - Netlify headers handle edecek -->
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </head>
 <body>
-    <div id="cms-root"></div>
+    <div id="cms-root">
+        <div style="text-align: center; padding: 50px;">
+            <h2>CMS Yükleniyor...</h2>
+        </div>
+    </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -21,11 +19,8 @@
             backend: {
                 name: "github",
                 repo: "candoruk96/maliq.github.io",
-                branch: "main",
-                auth_scope: "repo",
-                api_root: "https://api.github.com"
+                branch: "main"
             },
-            local_backend: true,
             media_folder: "static/images",
             public_folder: "/images",
             collections: [{
@@ -53,26 +48,21 @@
             }]
         };
 
-        if (typeof StaticCMS !== 'undefined') {
-            StaticCMS.init({ config });
-        } else {
-            // FALLBACK: Basit form göster
-            document.getElementById('cms-root').innerHTML = `
-                <div style="padding: 50px; max-width: 600px; margin: 0 auto;">
-                    <h2>MALIQ Tarif Ekle</h2>
-                    <form onsubmit="return false;">
-                        <input type="text" placeholder="Yemek Adı" style="width: 100%; padding: 10px; margin: 5px 0;"><br>
-                        <input type="text" placeholder="Kategori" style="width: 100%; padding: 10px; margin: 5px 0;"><br>
-                        <textarea placeholder="Malzemeler" style="width: 100%; height: 100px; padding: 10px; margin: 5px 0;"></textarea><br>
-                        <textarea placeholder="Tarif" style="width: 100%; height: 150px; padding: 10px; margin: 5px 0;"></textarea><br>
-                        <button type="button" style="padding: 10px 20px; background: #007acc; color: white; border: none;">
-                            GitHub'a Kaydet
-                        </button>
-                    </form>
-                    <p><small>CMS engellendi. Manuel olarak GitHub'da dosya oluşturabilirsiniz.</small></p>
-                </div>
-            `;
-        }
+        setTimeout(function() {
+            if (typeof CMS !== 'undefined') {
+                console.log('CMS başarıyla yüklendi!');
+                CMS.init({ config });
+                document.getElementById('cms-root').innerHTML = '';
+            } else {
+                console.error('CMS yüklenemedi');
+                document.getElementById('cms-root').innerHTML = 
+                    '<div style="text-align: center; padding: 50px; color: red;">' +
+                    '<h2>🚨 CSP ENGELİ</h2>' +
+                    '<p>Netlify CSP ayarları "eval" kullanımını engelliyor.</p>' +
+                    '<p><strong>Çözüm:</strong> _headers veya netlify.toml dosyası ekleyin.</p>' +
+                    '</div>';
+            }
+        }, 3000);
     });
     </script>
 </body>
