@@ -911,7 +911,157 @@ function renderCategoriesManagementPanel() {
   });
 }
 
-// Initialize - YENİ BAŞLATMA KODU
+function updateDevStats() {
+  document.getElementById('totalVisits').textContent = visitorStats.totalVisits;
+  document.getElementById('uniqueVisitors').textContent = visitorStats.uniqueVisitors;
+  document.getElementById('devLogins').textContent = visitorStats.devLogins;
+  document.getElementById('savedCalculations').textContent = savedListArr.length;
+  updateCategorySelects();
+}
+
+function updateCategorySelects() {
+  const selects = ['parentCategorySelect', 'productCategorySelect', 'quickAddCategorySelect'];
+  selects.forEach(selectId => {
+    const select = document.getElementById(selectId);
+    while (select.children.length > 1) select.removeChild(select.lastChild);
+    CATEGORIES.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat.id;
+      option.textContent = cat.name;
+      select.appendChild(option);
+    });
+  });
+}
+
+function renderProductsManagementPanel() {
+  const container = document.getElementById('productsManagementPanel');
+  container.innerHTML = '';
+  document.getElementById('productsCount').textContent = Object.keys(RECIPES).length;
+  
+  Object.keys(RECIPES).forEach(productName => {
+    const product = RECIPES[productName];
+    const item = document.createElement('div');
+    item.className = 'management-item';
+    item.innerHTML = `
+      <img src="${product.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'}" class="management-item-image">
+      <div class="management-item-name">${productName}</div>
+      <input type="text" class="management-item-url" value="${product.imageUrl || ''}">
+      <div class="management-item-actions">
+        <button class="dev-btn-secondary update-product">Güncelle</button>
+        <button class="dev-btn-secondary delete-product">Sil</button>
+      </div>
+    `;
+    
+    item.querySelector('.update-product').addEventListener('click', () => {
+      const url = item.querySelector('.management-item-url').value.trim();
+      if (url) {
+        RECIPES[productName].imageUrl = url;
+        localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+        alert('Güncellendi!');
+      }
+    });
+    
+    item.querySelector('.delete-product').addEventListener('click', () => {
+      if (confirm('Silinsin mi?')) {
+        delete RECIPES[productName];
+        localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+        renderProductsManagementPanel();
+        renderProducts(null);
+      }
+    });
+    
+    container.appendChild(item);
+  });
+}
+
+function renderCategoriesManagementPanel() {
+  const container = document.getElementById('categoriesManagementPanel');
+  container.innerHTML = '';
+  document.getElementById('categoriesCount').textContent = CATEGORIES.length;
+  
+  CATEGORIES.forEach(category => {
+    const item = document.createElement('div');
+    item.className = 'management-item';
+    item.innerHTML = `
+      <img src="${category.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'}" class="management-item-image">
+      <div class="management-item-name">${category.name}</div>
+      <input type="text" class="management-item-url" value="${category.imageUrl || ''}">
+      <div class="management-item-actions">
+        <button class="dev-btn-secondary update-category">Güncelle</button>
+        <button class="dev-btn-secondary delete-category">Sil</button>
+      </div>
+    `;
+    
+    item.querySelector('.update-category').addEventListener('click', () => {
+      const url = item.querySelector('.management-item-url').value.trim();
+      if (url) {
+        category.imageUrl = url;
+        localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+        renderCategories();
+        alert('Güncellendi!');
+      }
+    });
+    
+    item.querySelector('.delete-category').addEventListener('click', () => {
+      if (confirm('Silinsin mi?')) {
+        CATEGORIES = CATEGORIES.filter(c => c.id !== category.id);
+        localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+        renderCategoriesManagementPanel();
+        renderCategories();
+      }
+    });
+    
+    container.appendChild(item);
+  });
+}
+
+function addCategory() {
+  const name = document.getElementById('newCategoryName').value.trim();
+  const imageUrl = document.getElementById('newCategoryImage').value.trim();
+  if (!name || !imageUrl) return alert('Gerekli alanları doldurun!');
+  
+  const newCategory = {
+    id: name.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+    name: name,
+    imageUrl: imageUrl,
+    parentId: document.getElementById('parentCategorySelect').value || null
+  };
+  
+  CATEGORIES.push(newCategory);
+  localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+  document.getElementById('newCategoryName').value = '';
+  document.getElementById('newCategoryImage').value = '';
+  renderCategories();
+  updateCategorySelects();
+  renderCategoriesManagementPanel();
+  alert('Kategori eklendi!');
+}
+
+function addProduct() {
+  const name = document.getElementById('newProductName').value.trim();
+  const imageUrl = document.getElementById('newProductImage').value.trim();
+  const category = document.getElementById('productCategorySelect').value;
+  if (!name || !category) return alert('Gerekli alanları doldurun!');
+  
+  RECIPES[name] = {
+    category: category,
+    imageUrl: imageUrl,
+    ingredients: []
+  };
+  
+  localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+  document.getElementById('newProductName').value = '';
+  document.getElementById('newProductImage').value = '';
+  renderProducts(null);
+  renderProductsManagementPanel();
+  alert('Ürün eklendi!');
+}
+
+// Event Listeners
+document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
+document.getElementById('addProductBtn').addEventListener('click', addProduct);
+
+// Initialize
 setupUserInfo();
 updateVisitorStats();
 updateProductNames();
@@ -923,12 +1073,10 @@ updateDevStats();
 updateSiteStats();
 startCategoryStatsAnimation();
 
-// Geliştirici modu aktifse listeleri render et
 if (isAdmin) {
   renderProductsManagementPanel();
   renderCategoriesManagementPanel();
 }
-
 // Çıkış butonunu dinle
 document.getElementById('logoutBtn').addEventListener('click', logout);
 
