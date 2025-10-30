@@ -1,890 +1,807 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MALIQ - Akıllı Maliyet Hesaplayıcı</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MALIQ — Akıllı Maliyet Hesaplayıcınız</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --bg:#061322; --card:#071526; --accent1:#06b6d4; --accent2:#7c3aed; --muted:#9fb0c6;
+  --surface: rgba(255,255,255,0.02); --btn-grad: linear-gradient(90deg,var(--accent1),var(--accent2));
+  --radius:12px; --font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+}
+*{box-sizing:border-box;font-family:var(--font)}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#04111a);color:#eaf4ff}
+.container{max-width:720px;margin:0 auto;padding:10px}
+.header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.brand{display:flex;gap:8px;align-items:center}
+.logo img{width:40px;height:40px;border-radius:8px}
+.title{font-weight:800;font-size:16px}
+.subtitle{font-size:11px;color:var(--muted);margin-top:-2px}
+.search-wrap-centered{width:100%;display:flex;justify-content:center;margin:6px 0 10px 0;position:relative}
+.search{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:var(--surface);border:1px solid rgba(255,255,255,0.03);width:100%;max-width:680px;position:relative}
+.search input{flex:1;background:transparent;border:0;color:inherit;padding:6px 10px;font-size:14px;outline:none}
+.search-overlay{position:absolute;left:50%;top:48%;transform:translate(-50%,-4px);pointer-events:none;color:rgba(255,255,255,0.92);font-size:14px;transition:opacity .22s,transform .22s;white-space:nowrap}
+.search-overlay.fade{opacity:0;transform:translate(-50%,-12px)}
+.tabs{display:flex;gap:6px;margin:10px 0}
+.tab{flex:1;padding:10px;border-radius:12px;text-align:center;background:transparent;color:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.03);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tab.active{background:var(--btn-grad);color:#021026;box-shadow:0 6px 20px rgba(2,6,23,0.5)}
+.section{background:var(--card);border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,0.03);margin-bottom:10px}
 
-        body {
-            background: linear-gradient(135deg, #061322 0%, #071526 50%, #04111a 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            color: #eaf4ff;
-        }
+/* cards - keep unified style and use .card-btn for both categories and products */
+.card-btn{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:10px;border-radius:10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;min-height:70px}
+.card-btn .image{width:40px;height:40px;object-fit:cover;border-radius:8px}
+.card-btn .name{font-weight:800;font-size:12px;color:inherit}
+.card-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(3,10,30,0.45)}
 
-        .login-container {
-            width: 100%;
-            max-width: 420px;
-            perspective: 1000px;
-        }
+.categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:520px){.categories-grid{grid-template-columns:repeat(4,1fr)}}
+.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+@media(min-width:520px){.products-grid{grid-template-columns:repeat(3,1fr)}}
 
-        .login-card {
-            background: rgba(7, 21, 38, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transform: translateY(0);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
+/* calculation rows */
+.calc-grid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.material-item{background:var(--surface);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:6px}
+.material-top{display:flex;align-items:center;gap:6px}
+.material-image{width:32px;height:32px;object-fit:cover;border-radius:6px}
+.row-controls{display:flex;gap:6px;align-items:center;flex-wrap:nowrap;justify-content:space-between}
+.left-controls{display:flex;gap:8px;align-items:center;min-width:0}
+.right-controls{display:flex;gap:6px;align-items:center;justify-content:flex-end;min-width:220px;flex-shrink:0}
+.input-small{padding:6px;border-radius:8px;border:0;background:rgba(255,255,255,0.02);color:inherit;font-size:13px}
+.unit-select{padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:13px}
+.cost-amount{font-weight:900;color:var(--accent1);min-width:70px;text-align:right;font-size:13px}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(6,182,212,0.04), rgba(124,58,237,0.02));font-weight:900;margin-top:6px;font-size:14px}
+.total-row .cost-amount{font-size:18px}
+.saved-list{display:flex;flex-direction:column;gap:6px}
+.saved-item{background:var(--surface);padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:13px;display:flex;flex-direction:column;gap:4px}
 
-        .login-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #06b6d4, transparent);
-            transition: left 0.5s ease;
-        }
+.preview-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:80}
+.preview-card{background:#fff;padding:10px;border-radius:8px;color:#000;width:95%;max-width:760px;height:85vh;display:flex;flex-direction:column}
+.preview-toolbar{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px}
+.preview-canvas{flex:1;overflow:auto;background:#fff;border-radius:6px;padding:6px;display:flex;align-items:center;justify-content:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:60}
+.modal-content{background:var(--card);padding:10px;border-radius:8px;width:95%;max-width:400px}
+.btn-primary{padding:8px 12px;border-radius:10px;background:var(--btn-grad);color:#021026;border:0;font-weight:800;cursor:pointer;font-size:13px}
+.btn-ghost{padding:6px 10px;border-radius:10px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-size:12px}
+.footer{margin-top:10px;text-align:center;color:var(--muted);font-size:11px}
+.small-note{color:var(--muted);font-size:12px}
 
-        .login-card:hover::before {
-            left: 100%;
-        }
+/* Developer Mode Styles */
+.dev-tools{display:none}
+.dev-section{background:var(--surface);padding:10px;border-radius:10px;margin-bottom:10px}
+.dev-section-title{font-weight:800;margin-bottom:6px;color:var(--accent1);font-size:14px}
+.dev-controls{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.dev-input{flex:1;min-width:150px}
+.dev-btn{padding:6px 10px;border-radius:8px;background:var(--btn-grad);color:#021026;border:0;font-weight:600;cursor:pointer;font-size:12px}
+.dev-btn-secondary{padding:6px 10px;border-radius:8px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-size:12px}
+.dev-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.dev-stat{background:var(--surface);padding:8px;border-radius:8px;text-align:center}
+.dev-stat-value{font-weight:800;font-size:16px;color:var(--accent1)}
+.dev-stat-label{font-size:11px;color:var(--muted)}
 
-        .login-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
+/* Search Suggestions */
+.search-suggestions{position:absolute;top:100%;left:0;right:0;background:var(--card);border-radius:10px;border:1px solid rgba(255,255,255,0.03);margin-top:4px;max-height:250px;overflow-y:auto;z-index:50;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.search-suggestion-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+.search-suggestion-item:last-child{border-bottom:none}
+.search-suggestion-item:hover{background:var(--surface)}
+.search-suggestion-image{width:24px;height:24px;object-fit:cover;border-radius:4px}
+.search-suggestion-name{font-weight:600}
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
+/* Koli özelliği için ek stiller */
+.koli-row{display:flex;gap:6px;align-items:center;margin-top:4px}
+.koli-row .input-small{flex:1}
 
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+/* Breadcrumb için stiller */
+.breadcrumb{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:13px;flex-wrap:wrap}
+.breadcrumb-item{cursor:pointer;color:var(--muted)}
+.breadcrumb-item:hover{color:var(--accent1)}
+.breadcrumb-separator{color:var(--muted)}
 
-        .logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 40px rgba(6, 182, 212, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
+/* Site İstatistikleri */
+.site-stats{display:flex;justify-content:space-around;margin:12px 0;padding:6px;background:var(--surface);border-radius:8px}
+.stat-item{text-align:center}
+.stat-value{font-weight:800;font-size:14px;color:var(--accent1)}
+.stat-label{font-size:9px;color:var(--muted)}
 
-        .logo img {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            object-fit: cover;
-        }
+/* Kategori Animasyonu */
+.category-stats{display:flex;justify-content:center;margin:8px 0;padding:6px;background:var(--surface);border-radius:8px}
+.category-stat{text-align:center;font-size:11px;color:var(--muted);transition:opacity 0.5s ease}
+.category-stat.fade{opacity:0}
 
-        .login-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #eaf4ff 0%, #9fb0c6 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .container{padding:8px}
+  .tab{padding:8px;font-size:11px}
+  .card-btn{min-height:60px;padding:8px}
+  .categories-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .products-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .row-controls{flex-direction:column;align-items:stretch;gap:8px}
+  .left-controls, .right-controls{min-width:auto;justify-content:space-between}
+  .dev-controls{flex-direction:column}
+  .dev-input{min-width:auto}
+  .koli-row{flex-direction:column}
+  .site-stats{flex-direction:column;gap:8px}
+  .calc-header-controls{flex-direction:column;gap:8px;align-items:stretch}
+  .calc-header-controls input{width:100%}
+  .calc-header-controls .btn-primary{width:100%}
+  .save-controls{flex-direction:column}
+  .save-controls .btn-primary{width:100%}
+}
 
-        .login-header p {
-            color: #9fb0c6;
-            font-size: 1rem;
-            font-weight: 400;
-        }
+/* PDF mobil uyumluluk */
+@media (max-width: 768px) {
+  .preview-card{width:98%;height:90vh}
+  .preview-toolbar{flex-direction:column;gap:8px;align-items:stretch}
+}
 
-        .form-group {
-            margin-bottom: 24px;
-            position: relative;
-        }
+/* Resim uyarıları */
+.image-warning{color:#ff6b6b;font-size:11px;margin-top:2px}
+.input-warning{border:1px solid #ff6b6b !important}
 
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
+/* Yönetim paneli */
+.management-panel{max-height:300px;overflow-y:auto;border:1px solid rgba(255,255,255,0.03);border-radius:8px;padding:6px}
+.management-item{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.management-item:last-child{border-bottom:none}
+.management-item-image{width:32px;height:32px;object-fit:cover;border-radius:4px}
+.management-item-name{flex:1;font-size:13px}
+.management-item-url{flex:2;padding:4px;border-radius:4px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit;font-size:12px}
+.management-item-url.input-warning{border-color:#ff6b6b}
+.management-item-actions{display:flex;gap:4px}
 
-        .input-wrapper input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 16px 16px 8px 16px;
-            color: #eaf4ff;
-            font-size: 16px;
-            font-weight: 400;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 100%;
-            outline: none;
-            backdrop-filter: blur(10px);
-        }
+/* Admin Login Modal */
+.admin-login-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:100}
+.admin-login-content{background:var(--card);padding:20px;border-radius:12px;width:95%;max-width:400px;border:1px solid rgba(255,255,255,0.1)}
+.admin-login-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.admin-login-title{font-weight:800;font-size:18px;color:var(--accent1)}
+.admin-login-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer}
+.admin-login-form{display:flex;flex-direction:column;gap:12px}
+.admin-login-input{background:var(--surface);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;color:inherit;font-size:14px}
+.admin-login-input:focus{outline:none;border-color:var(--accent1)}
+.admin-login-buttons{display:flex;gap:8px;margin-top:10px}
 
-        .input-wrapper input::placeholder {
-            color: transparent;
-        }
-
-        .input-wrapper label {
-            position: absolute;
-            left: 16px;
-            top: 16px;
-            color: #9fb0c6;
-            font-size: 16px;
-            font-weight: 400;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none;
-            transform-origin: left top;
-        }
-
-        .input-wrapper input:focus,
-        .input-wrapper input:valid {
-            border-color: #06b6d4;
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
-        }
-
-        .input-wrapper input:focus + label,
-        .input-wrapper input:valid + label {
-            transform: translateY(-8px) scale(0.85);
-            color: #06b6d4;
-            font-weight: 500;
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .password-wrapper input {
-            padding-right: 48px;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            color: #9fb0c6;
-            transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
-        }
-
-        .password-toggle:hover {
-            color: #06b6d4;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);
-            border: none;
-            border-radius: 12px;
-            padding: 16px 24px;
-            color: #021026;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
-            width: 100%;
-            margin-bottom: 16px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.6);
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-ghost {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #eaf4ff;
-            box-shadow: none;
-        }
-
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(6, 182, 212, 0.3);
-            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
-        }
-
-        .divider {
-            text-align: center;
-            margin: 24px 0;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .divider::before {
-            margin-right: 16px;
-        }
-
-        .divider::after {
-            margin-left: 16px;
-        }
-
-        .divider span {
-            color: #9fb0c6;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-
-        .social-login {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .social-btn {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 12px 16px;
-            color: #eaf4ff;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .social-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .social-btn.google:hover {
-            border-color: rgba(219, 68, 55, 0.5);
-        }
-
-        .social-btn.facebook:hover {
-            border-color: rgba(59, 89, 152, 0.5);
-        }
-
-        .success-message {
-            display: none;
-            text-align: center;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .success-message.show {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .success-icon {
-            width: 60px;
-            height: 60px;
-            background: #06b6d4;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #021026;
-            margin: 0 auto 20px;
-            animation: successPulse 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .success-message h3 {
-            color: #eaf4ff;
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-
-        .success-message p {
-            color: #9fb0c6;
-            font-size: 1rem;
-        }
-
-        .admin-indicator {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 12px;
-            background: rgba(124, 58, 237, 0.1);
-            border: 1px solid rgba(124, 58, 237, 0.3);
-            border-radius: 12px;
-            color: #7c3aed;
-            font-size: 14px;
-            font-weight: 500;
-            display: none;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        @keyframes successPulse {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .error-message {
-            display: block;
-            color: #ff6b6b;
-            font-size: 12px;
-            font-weight: 500;
-            margin-top: 6px;
-            margin-left: 4px;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 107, 107, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            backdrop-filter: blur(10px);
-        }
-
-        .error-message.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .form-group.error .input-wrapper input {
-            border-color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
-            animation: shake 0.5s ease-in-out;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 480px) {
-            .login-card {
-                padding: 24px;
-                margin: 10px;
-                border-radius: 20px;
-            }
-            
-            .login-header h2 {
-                font-size: 1.75rem;
-            }
-            
-            .password-wrapper input {
-                padding-right: 44px;
-            }
-            
-            .social-login {
-                flex-direction: column;
-            }
-        }
-    </style>
+/* Logout Button */
+.logout-btn{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.3s}
+.logout-btn:hover{background:rgba(255,107,107,0.2);transform:translateY(-1px)}
+</style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="logo-container">
-                    <div class="logo">
-                        <img src="https://i.hizliresim.com/sis5uti.png" alt="MALIQ Logo">
-                    </div>
-                </div>
-                <h2>HOŞGELDİNİZ</h2>
-                <p>Ben MALIQ - Akıllı Maliyet Hesaplayıcınızım</p>
-            </div>
-
-            <div class="admin-indicator" id="adminIndicator">
-                <i class="fas fa-tools"></i> Yönetici modu aktif - Geliştirici seçenekleri açılacak
-            </div>
-
-            <form class="login-form" id="loginForm" novalidate>
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <input type="email" id="email" name="email" required autocomplete="email">
-                        <label for="email">E-posta Adresi</label>
-                    </div>
-                    <span class="error-message" id="emailError"></span>
-                </div>
-
-                <div class="form-group">
-                    <div class="input-wrapper password-wrapper">
-                        <input type="password" id="password" name="password" required autocomplete="current-password">
-                        <label for="password">Şifre</label>
-                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    <span class="error-message" id="passwordError"></span>
-                </div>
-
-                <button type="submit" class="btn">
-                    <i class="fas fa-sign-in-alt"></i> Giriş Yap
-                </button>
-            </form>
-
-            <div class="divider">
-                <span>veya</span>
-            </div>
-
-            <div class="social-login">
-                <button type="button" class="social-btn google" onclick="googleLogin()">
-                    <i class="fab fa-google"></i> Google
-                </button>
-                <button type="button" class="social-btn facebook" onclick="facebookLogin()">
-                    <i class="fab fa-facebook-f"></i> Facebook
-                </button>
-            </div>
-
-            <button type="button" class="btn btn-ghost" id="guestLoginBtn">
-                <i class="fas fa-user"></i> Misafir Olarak Giriş Yap
-            </button>
-
-            <div class="success-message" id="successMessage">
-                <div class="success-icon">
-                    <i class="fas fa-check"></i>
-                </div>
-                <h3 id="successTitle">Giriş Başarılı!</h3>
-                <p id="successMessageText">MALIQ'a yönlendiriliyorsunuz...</p>
-            </div>
+  <div class="container" role="application" aria-label="MALIQ">
+    <div class="header-row">
+      <div class="brand">
+        <div class="logo"><img src="https://i.hizliresim.com/sis5uti.png" alt="logo"></div>
+        <div>
+          <div class="title">Akıllı Maliyet Hesaplayıcınız</div>
+          <div class="subtitle">Maliq sizin 1 porsiyonunuzun maliyetini hesaplar.</div>
         </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center" id="userAvatar">M</div>
+        <div style="font-weight:700;font-size:13px" id="userName">Misafir 000001</div>
+        <button class="logout-btn" id="logoutBtn" style="display:none">
+          <i class="fas fa-sign-out-alt"></i> Çıkış
+        </button>
+      </div>
     </div>
 
-    <script>
-        class MALIQLogin {
-            constructor() {
-                this.form = document.getElementById('loginForm');
-                this.guestBtn = document.getElementById('guestLoginBtn');
-                this.passwordToggle = document.getElementById('passwordToggle');
-                this.passwordInput = document.getElementById('password');
-                this.successMessage = document.getElementById('successMessage');
-                this.successTitle = document.getElementById('successTitle');
-                this.successMessageText = document.getElementById('successMessageText');
-                this.adminIndicator = document.getElementById('adminIndicator');
-                
-                this.adminCredentials = {
-                    email: 'can@maliq.com',
-                    password: 'admin1234'
-                };
-                
-                this.init();
-            }
-            
-            init() {
-                this.addEventListeners();
-                this.setupPasswordToggle();
-                this.initializeGuestCounter();
-                this.checkAdminInput();
-            }
-            
-            addEventListeners() {
-                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-                this.guestBtn.addEventListener('click', () => this.handleGuestLogin());
-                
-                const inputs = this.form.querySelectorAll('input');
-                inputs.forEach(input => {
-                    input.addEventListener('input', () => {
-                        this.clearError(input);
-                        this.checkAdminInput();
-                    });
-                });
+    <div class="search-wrap-centered">
+      <div class="search" role="search" aria-label="Yemek ara">
+        <input id="searchInput" placeholder="" autocomplete="off" />
+        <div id="searchOverlay" class="search-overlay">Lahmacun</div>
+      </div>
+      <div id="searchSuggestions" class="search-suggestions"></div>
+    </div>
 
-                // Admin email için otomatik doldurma kısayolu
-                document.addEventListener('keydown', (e) => {
-                    if (e.ctrlKey && e.key === '1') {
-                        e.preventDefault();
-                        document.getElementById('email').value = 'can@maliq.com';
-                        document.getElementById('password').value = 'admin1234';
-                        this.checkAdminInput();
-                    }
-                });
-            }
-            
-            setupPasswordToggle() {
-                if (this.passwordToggle && this.passwordInput) {
-                    this.passwordToggle.addEventListener('click', () => {
-                        const isPassword = this.passwordInput.type === 'password';
-                        this.passwordInput.type = isPassword ? 'text' : 'password';
-                        
-                        this.passwordToggle.innerHTML = isPassword ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
-                        this.passwordInput.focus();
-                    });
-                }
-            }
-            
-            initializeGuestCounter() {
-                if (!localStorage.getItem('maliq_guest_counter')) {
-                    localStorage.setItem('maliq_guest_counter', '0');
-                }
-            }
-            
-            checkAdminInput() {
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-                
-                const isAdminInput = email === this.adminCredentials.email && 
-                                   password === this.adminCredentials.password;
-                
-                if (isAdminInput) {
-                    this.adminIndicator.style.display = 'block';
-                } else {
-                    this.adminIndicator.style.display = 'none';
-                }
-            }
-            
-            validateForm() {
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-                let isValid = true;
-                
-                this.clearErrors();
-                
-                if (!email) {
-                    this.showError('email', 'E-posta adresi gereklidir');
-                    isValid = false;
-                } else if (!this.isValidEmail(email)) {
-                    this.showError('email', 'Geçerli bir e-posta adresi girin');
-                    isValid = false;
-                }
-                
-                if (!password) {
-                    this.showError('password', 'Şifre gereklidir');
-                    isValid = false;
-                } else if (password.length < 6) {
-                    this.showError('password', 'Şifre en az 6 karakter olmalıdır');
-                    isValid = false;
-                }
-                
-                return isValid;
-            }
-            
-            isValidEmail(email) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailRegex.test(email);
-            }
-            
-            showError(fieldName, message) {
-                const formGroup = document.getElementById(fieldName).closest('.form-group');
-                const errorElement = document.getElementById(fieldName + 'Error');
-                
-                formGroup.classList.add('error');
-                errorElement.textContent = message;
-                errorElement.classList.add('show');
-                
-                const field = document.getElementById(fieldName);
-                field.style.animation = 'shake 0.5s ease-in-out';
-                setTimeout(() => {
-                    field.style.animation = '';
-                }, 500);
-            }
-            
-            clearError(input) {
-                const fieldName = input.id;
-                const formGroup = input.closest('.form-group');
-                const errorElement = document.getElementById(fieldName + 'Error');
-                
-                formGroup.classList.remove('error');
-                errorElement.classList.remove('show');
-            }
-            
-            clearErrors() {
-                const errorElements = document.querySelectorAll('.error-message');
-                errorElements.forEach(element => {
-                    element.classList.remove('show');
-                });
-                
-                const formGroups = document.querySelectorAll('.form-group');
-                formGroups.forEach(group => {
-                    group.classList.remove('error');
-                });
-            }
-            
-            async handleSubmit(e) {
-                e.preventDefault();
-                
-                const isValid = this.validateForm();
-                
-                if (isValid) {
-                    await this.submitForm();
-                } else {
-                    this.shakeForm();
-                }
-            }
-            
-            async handleGuestLogin() {
-                try {
-                    let guestCounter = parseInt(localStorage.getItem('maliq_guest_counter')) + 1;
-                    localStorage.setItem('maliq_guest_counter', guestCounter.toString());
-                    
-                    const guestId = String(guestCounter).padStart(6, '0');
-                    const guestUser = {
-                        id: 'guest_' + guestId,
-                        name: 'Misafir ' + guestId,
-                        email: `guest${guestId}@maliq.com`,
-                        isGuest: true,
-                        isAdmin: false,
-                        createdAt: new Date().toISOString(),
-                        lastLogin: new Date().toISOString()
-                    };
-                    
-                    localStorage.setItem('maliq_user', JSON.stringify(guestUser));
-                    localStorage.setItem('maliq_admin', 'false');
-                    
-                    this.showSuccessMessage(false, guestId);
-                    
-                } catch (error) {
-                    console.error('Guest login error:', error);
-                    alert('Misafir girişi sırasında bir hata oluştu.');
-                }
-            }
-            
-            async submitForm() {
-                try {
-                    const email = document.getElementById('email').value.trim();
-                    const password = document.getElementById('password').value;
-                    
-                    if (email === this.adminCredentials.email && password === this.adminCredentials.password) {
-                        await this.handleAdminLogin();
-                    } else {
-                        await this.handleUserLogin(email, password);
-                    }
-                    
-                } catch (error) {
-                    this.showLoginError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
-                }
-            }
-            
-            async handleAdminLogin() {
-                const adminUser = {
-                    id: 'admin',
-                    name: 'Sistem Yöneticisi',
-                    email: 'can@maliq.com',
-                    isAdmin: true,
-                    isDeveloper: true,
-                    permissions: ['all'],
-                    createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString()
-                };
-                
-                localStorage.setItem('maliq_admin', 'true');
-                localStorage.setItem('maliq_user', JSON.stringify(adminUser));
-                localStorage.setItem('maliq_developer_mode', 'true');
-                
-                this.showSuccessMessage(true);
-            }
-            
-            async handleUserLogin(email, password) {
-                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
-                const user = existingUsers.find(u => u.email === email && u.password === password);
-                
-                if (!user) {
-                    throw new Error('Kullanıcı bulunamadı');
-                }
-                
-                user.lastLogin = new Date().toISOString();
-                localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
-                localStorage.setItem('maliq_user', JSON.stringify(user));
-                localStorage.setItem('maliq_admin', 'false');
-                localStorage.setItem('maliq_developer_mode', 'false');
-                
-                this.showSuccessMessage(false);
-            }
-            
-            showSuccessMessage(isAdmin, guestId = null) {
-                if (isAdmin) {
-                    this.successTitle.textContent = 'Yönetici Girişi Başarılı!';
-                    this.successMessageText.textContent = 'Geliştirici seçenekleri ile yönlendiriliyorsunuz...';
-                } else if (guestId) {
-                    this.successTitle.textContent = 'Misafir Girişi Başarılı!';
-                    this.successMessageText.textContent = `Misafir ${guestId} olarak giriş yapıldı`;
-                } else {
-                    this.successTitle.textContent = 'Giriş Başarılı!';
-                    this.successMessageText.textContent = 'MALIQ\'a yönlendiriliyorsunuz...';
-                }
-                
-                this.form.style.opacity = '0';
-                this.form.style.transform = 'translateY(-20px) scale(0.95)';
-                this.form.style.pointerEvents = 'none';
-                
-                const elementsToHide = ['.divider', '.social-login', '.guest-btn', '.admin-indicator'];
-                elementsToHide.forEach(selector => {
-                    const element = document.querySelector(selector);
-                    if (element) {
-                        element.style.opacity = '0';
-                        element.style.transform = 'translateY(-20px) scale(0.95)';
-                        element.style.pointerEvents = 'none';
-                    }
-                });
-                
-                setTimeout(() => {
-                    this.form.style.display = 'none';
-                    elementsToHide.forEach(selector => {
-                        const element = document.querySelector(selector);
-                        if (element) element.style.display = 'none';
-                    });
-                    
-                    this.successMessage.classList.add('show');
-                    
-                    setTimeout(() => {
-                        if (isAdmin) {
-                            window.location.href = 'app.html?admin=true';
-                        } else {
-                            window.location.href = 'app.html';
-                        }
-                    }, 2000);
-                }, 400);
-            }
-            
-            showLoginError(message) {
-                this.shakeForm();
-                setTimeout(() => {
-                    alert(message);
-                }, 500);
-            }
-            
-            shakeForm() {
-                const card = document.querySelector('.login-card');
-                card.style.animation = 'shake 0.5s ease-in-out';
-                setTimeout(() => {
-                    card.style.animation = '';
-                }, 500);
-            }
-        }
+    <!-- Site İstatistikleri -->
+    <div class="site-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="totalRecipes">0</div>
+        <div class="stat-label">Yemek Tarifi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalIngredients">0</div>
+        <div class="stat-label">Malzeme Çeşidi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalCategories">0</div>
+        <div class="stat-label">Kategori</div>
+      </div>
+    </div>
 
-        // Social Login Functions
-        function googleLogin() {
-            try {
-                const socialUser = {
-                    id: 'google_' + Date.now(),
-                    name: 'Google Kullanıcısı',
-                    email: `google_${Date.now()}@maliq.com`,
-                    provider: 'google',
-                    isAdmin: false,
-                    isDeveloper: false,
-                    createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString(),
-                    isActive: true,
-                    isSocial: true
-                };
-                
-                localStorage.setItem('maliq_user', JSON.stringify(socialUser));
-                localStorage.setItem('maliq_admin', 'false');
-                localStorage.setItem('maliq_developer_mode', 'false');
-                
-                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
-                const existingUserIndex = existingUsers.findIndex(u => u.email === socialUser.email);
-                
-                if (existingUserIndex !== -1) {
-                    existingUsers[existingUserIndex].lastLogin = new Date().toISOString();
-                } else {
-                    existingUsers.push(socialUser);
-                }
-                
-                localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
-                window.location.href = 'app.html';
-                
-            } catch (error) {
-                console.error('Google login error:', error);
-                alert('Google girişi şu anda kullanılamıyor. Lütfen diğer yöntemleri deneyin.');
-            }
-        }
+    <nav class="tabs" role="tablist">
+      <div id="tabCategories" class="tab active">KATEGORİLER</div>
+      <div id="tabProducts" class="tab">TARİFLER</div>
+      <div id="tabCalc" class="tab">HESAPLAMA</div>
+      <div id="tabSaved" class="tab">KAYITLAR</div>
+      <div id="tabDev" class="tab" style="display:none">GELİŞTİRİCİ</div>
+    </nav>
 
-        function facebookLogin() {
-            try {
-                const socialUser = {
-                    id: 'facebook_' + Date.now(),
-                    name: 'Facebook Kullanıcısı',
-                    email: `facebook_${Date.now()}@maliq.com`,
-                    provider: 'facebook',
-                    isAdmin: false,
-                    isDeveloper: false,
-                    createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString(),
-                    isActive: true,
-                    isSocial: true
-                };
-                
-                localStorage.setItem('maliq_user', JSON.stringify(socialUser));
-                localStorage.setItem('maliq_admin', 'false');
-                localStorage.setItem('maliq_developer_mode', 'false');
-                
-                const existingUsers = JSON.parse(localStorage.getItem('maliq_users') || '[]');
-                const existingUserIndex = existingUsers.findIndex(u => u.email === socialUser.email);
-                
-                if (existingUserIndex !== -1) {
-                    existingUsers[existingUserIndex].lastLogin = new Date().toISOString();
-                } else {
-                    existingUsers.push(socialUser);
-                }
-                
-                localStorage.setItem('maliq_users', JSON.stringify(existingUsers));
-                window.location.href = 'app.html';
-                
-            } catch (error) {
-                console.error('Facebook login error:', error);
-                alert('Facebook girişi şu anda kullanılamıyor. Lütfen diğer yöntemleri deneyin.');
-            }
-        }
+    <main>
+      <section id="screenCategories" class="section">
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px">Yemek Çeşitleri</div>
+        <div id="breadcrumb" class="breadcrumb"></div>
+        <div id="categoriesGrid" class="categories-grid"></div>
+      </section>
 
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new MALIQLogin();
-        });
-    </script>
+      <section id="screenProducts" class="section" style="display:none">
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px" id="productsTitle">Tüm Tarifler</div>
+        <div id="productsGrid" class="products-grid"></div>
+      </section>
+
+      <section id="screenCalc" class="section" style="display:none">
+        <div class="calc-header-controls" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div>
+            <div style="font-weight:900;font-size:14px" id="calcTitle">Hesaplama</div>
+            <div id="calcSubtitle" class="small-note"></div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input id="calcName" class="input-small" placeholder="Ürün adı" style="width:100px" />
+            <button id="clearBtn" class="btn-ghost">Temizle</button>
+          </div>
+        </div>
+
+        <div id="materialsList" class="calc-grid"></div>
+
+        <div class="total-row" id="totalRow" style="display:none">
+          <div>Toplam Maliyet</div>
+          <div id="totalCost" class="cost-amount">0.00 ₺</div>
+        </div>
+
+        <div style="margin-top:8px;display:flex;gap:6px" class="save-controls">
+          <button id="addMaterialBtn" class="btn-ghost">+ Malzeme Ekle</button>
+          <button id="saveBtn" class="btn-primary">Kaydet</button>
+          <button id="exportBtn" class="btn-primary">PDF Önizleme</button>
+        </div>
+      </section>
+
+      <section id="screenSaved" class="section" style="display:none">
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px">Maliyet Tablom</div>
+        <div id="savedList" class="saved-list"></div>
+      </section>
+
+      <!-- Developer Tools Section -->
+      <section id="screenDev" class="section dev-tools" style="display:none">
+        <div style="font-weight:900;margin-bottom:12px;color:var(--accent1);font-size:18px;text-align:center">GELİŞTİRİCİ SEÇENEKLERİ</div>
+        
+        <!-- Visitor Statistics -->
+        <div class="dev-section">
+          <div class="dev-section-title">Ziyaretçi İstatistikleri</div>
+          <div class="dev-stats">
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalVisits">0</div>
+              <div class="dev-stat-label">Toplam Ziyaret</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="uniqueVisitors">0</div>
+              <div class="dev-stat-label">Benzersiz Ziyaretçi</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="devLogins">0</div>
+              <div class="dev-stat-label">Geliştirici Girişi</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="savedCalculations">0</div>
+              <div class="dev-stat-label">Kayıtlı Hesaplama</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Category Management -->
+        <div class="dev-section">
+          <div class="dev-section-title">Kategori Yönetimi</div>
+          <div class="dev-controls">
+            <input type="text" id="newCategoryName" class="dev-input input-small" placeholder="Kategori Adı">
+            <input type="text" id="newCategoryImage" class="dev-input input-small" placeholder="Resim URL">
+            <select id="parentCategorySelect" class="unit-select">
+              <option value="">Ana Kategori</option>
+            </select>
+            <button id="addCategoryBtn" class="dev-btn">Kategori Ekle</button>
+          </div>
+          <div id="categoryImageWarning" class="image-warning" style="display:none">Kategori için resim URL'si gerekli!</div>
+        </div>
+        
+        <!-- Product Management -->
+        <div class="dev-section">
+          <div class="dev-section-title">Ürün Yönetimi</div>
+          <div class="dev-controls">
+            <input type="text" id="newProductName" class="dev-input input-small" placeholder="Ürün Adı">
+            <input type="text" id="newProductImage" class="dev-input input-small" placeholder="Resim URL">
+            <select id="productCategorySelect" class="unit-select">
+              <option value="">Kategori Seç</option>
+            </select>
+            <button id="addProductBtn" class="dev-btn">Ürün Ekle</button>
+          </div>
+          <div id="productImageWarning" class="image-warning" style="display:none">Ürün için resim URL'si gerekli!</div>
+        </div>
+
+        <!-- Products Management Panel -->
+        <div class="dev-section">
+          <div class="dev-section-title">Ürün Yönetim Paneli (<span id="productsCount">0</span>)</div>
+          <div id="productsManagementPanel" class="management-panel">
+            <!-- Ürünler buraya dinamik olarak eklenecek -->
+          </div>
+        </div>
+
+        <!-- Categories Management Panel -->
+        <div class="dev-section">
+          <div class="dev-section-title">Kategori Yönetim Paneli (<span id="categoriesCount">0</span>)</div>
+          <div id="categoriesManagementPanel" class="management-panel">
+            <!-- Kategoriler buraya dinamik olarak eklenecek -->
+          </div>
+        </div>
+        
+        <!-- Data Management -->
+        <div class="dev-section">
+          <div class="dev-section-title">Veri Yönetimi</div>
+          <div class="dev-controls">
+            <button id="exportAllDataBtn" class="dev-btn">Tüm Veriyi Dışa Aktar</button>
+            <button id="importAllDataBtn" class="dev-btn-secondary">Tüm Veriyi İçe Aktar</button>
+            <button id="resetDataBtn" class="dev-btn-secondary" style="background:#ff6b6b">Verileri Sıfırla</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Kategori İstatistik Animasyonu -->
+    <div id="categoryStats" class="category-stats">
+      <div class="category-stat">Yükleniyor...</div>
+    </div>
+
+    <div class="footer">CAN&D Şirketinin ürünüdür. Tüm hakları saklıdır © CAN&D</div>
+  </div>
+
+  <!-- Diğer modal'lar burada olacak -->
+
+  <!-- Admin Login Modal -->
+  <div id="adminLoginModal" class="admin-login-modal" aria-hidden="true">
+    <div class="admin-login-content">
+      <div class="admin-login-header">
+        <div class="admin-login-title">Geliştirici Girişi</div>
+        <button class="admin-login-close" id="closeAdminLoginModal">✕</button>
+      </div>
+      <div class="admin-login-form">
+        <input type="password" id="adminPassword" class="admin-login-input" placeholder="Geliştirici Şifresi" />
+        <div class="admin-login-buttons">
+          <button id="confirmAdminLogin" class="btn-primary">Giriş Yap</button>
+          <button id="cancelAdminLogin" class="btn-ghost">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// URL parametrelerini kontrol et
+const urlParams = new URLSearchParams(window.location.search);
+let isAdmin = urlParams.get('admin') === 'true' || localStorage.getItem('maliq_admin') === 'true';
+
+// Kullanıcı bilgilerini ayarla
+function setupUserInfo() {
+  const userData = JSON.parse(localStorage.getItem('maliq_user') || '{}');
+  
+  if (isAdmin) {
+    document.getElementById('userName').textContent = 'Geliştirici';
+    document.getElementById('userAvatar').textContent = 'G';
+    document.getElementById('tabDev').style.display = 'flex';
+    document.querySelector('.dev-tools').style.display = 'block';
+    document.getElementById('logoutBtn').style.display = 'block';
+  } else {
+    // Misafir kullanıcı için numarayı al
+    let guestId = localStorage.getItem('maliq_guest_id') || '000001';
+    document.getElementById('userName').textContent = 'Misafir ' + guestId;
+    document.getElementById('userAvatar').textContent = 'M';
+    document.getElementById('tabDev').style.display = 'none';
+    document.querySelector('.dev-tools').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'block';
+  }
+}
+
+// Çıkış yapma fonksiyonu
+function logout() {
+  if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
+    localStorage.removeItem('maliq_user');
+    localStorage.removeItem('maliq_admin');
+    localStorage.removeItem('maliq_developer_mode');
+    window.location.href = 'index.html';
+  }
+}
+
+/* Data */
+let RECIPES = JSON.parse(localStorage.getItem('maliq_recipes') || '{}');
+// Eğer recipes boşsa, örnek verilerle doldur
+if (Object.keys(RECIPES).length === 0) {
+  RECIPES = {
+    "Lahmacun": { 
+      category:'lahmacun', 
+      imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', 
+      ingredients:[
+        {name:'Un',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200'},
+        {name:'Kıyma',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1587332278433-702cdfd5d95e?w=200'}
+      ]
+    },
+    "Adana Dürüm": { 
+      category:'durum', 
+      imageUrl:'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=200', 
+      ingredients:[
+        {name:'Kuzu Kıyması',qty:200,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1587332278433-702cdfd5d95e?w=200'},
+        {name:'Lavaş',qty:1,unit:'adet',imageUrl:'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200'}
+      ]
+    },
+    "Pizza Margherita": { 
+      category:'pizza', 
+      imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', 
+      ingredients:[
+        {name:'Un',qty:300,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200'},
+        {name:'Mozzarella',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1550583727-2a5c4b1b8209?w=200'}
+      ]
+    }
+  };
+  localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+}
+
+let currentProduct = null;
+let calcItems = [];
+let savedListArr = JSON.parse(localStorage.getItem('maliq_saved')||'[]');
+
+/* Developer Mode Variables */
+let visitorStats = JSON.parse(localStorage.getItem('maliq_stats')||'{"totalVisits":0,"uniqueVisitors":0,"devLogins":0,"lastVisit":null}');
+
+/* Kategori ve Breadcrumb Yönetimi */
+let CATEGORIES = JSON.parse(localStorage.getItem('maliq_categories')||'[]');
+let currentCategoryPath = [];
+
+if (CATEGORIES.length === 0) {
+  // Initialize with default categories
+  CATEGORIES = [
+    { id: 'kahvalti', name: 'Kahvaltı', imageUrl: 'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200' },
+    { id: 'corba', name: 'Çorba', imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200' },
+    { id: 'ana', name: 'Ana Yemek', imageUrl: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=200' },
+    { id: 'pide', name: 'Pide', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200' },
+    { id: 'lahmacun', name: 'Lahmacun', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200' },
+    { id: 'pizza', name: 'Pizza', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200' },
+    { id: 'durum', name: 'Dürüm', imageUrl: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=200' },
+    { id: 'fast', name: 'Fast Food', imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200' },
+    { id: 'icecek', name: 'İçecek', imageUrl: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=200' }
+  ];
+  localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+}
+
+// Kategori istatistik animasyonu
+let categoryStatsIndex = 0;
+let categoryStatsTimer = null;
+
+function startCategoryStatsAnimation() {
+  if (categoryStatsTimer) return;
+  
+  function updateCategoryStats() {
+    const categoryStatsEl = document.getElementById('categoryStats');
+    const categoriesWithProducts = CATEGORIES.filter(cat => {
+      const productCount = Object.values(RECIPES).filter(recipe => recipe.category === cat.id).length;
+      return productCount > 0;
+    });
+    
+    if (categoriesWithProducts.length === 0) {
+      categoryStatsEl.innerHTML = '<div class="category-stat">Henüz kategori bulunmuyor</div>';
+      return;
+    }
+    
+    categoryStatsIndex = (categoryStatsIndex + 1) % categoriesWithProducts.length;
+    const currentCategory = categoriesWithProducts[categoryStatsIndex];
+    const productCount = Object.values(RECIPES).filter(recipe => recipe.category === currentCategory.id).length;
+    
+    // Fade efekti
+    categoryStatsEl.innerHTML = `
+      <div class="category-stat fade">${currentCategory.name} - ${productCount} tarif</div>
+    `;
+    
+    setTimeout(() => {
+      categoryStatsEl.innerHTML = `
+        <div class="category-stat">${currentCategory.name} - ${productCount} tarif</div>
+      `;
+    }, 500);
+  }
+  
+  // Hemen bir kere çalıştır
+  updateCategoryStats();
+  
+  // Her 5 saniyede bir güncelle
+  categoryStatsTimer = setInterval(updateCategoryStats, 5000);
+}
+
+// İstatistikleri güncelle
+function updateSiteStats() {
+  const totalRecipes = Object.keys(RECIPES).length;
+  const totalIngredients = Object.values(RECIPES).reduce((acc, recipe) => acc + (recipe.ingredients ? recipe.ingredients.length : 0), 0);
+  const totalCategories = CATEGORIES.length;
+  
+  document.getElementById('totalRecipes').textContent = totalRecipes;
+  document.getElementById('totalIngredients').textContent = totalIngredients;
+  document.getElementById('totalCategories').textContent = totalCategories;
+}
+
+/* Search Animation */
+let allProductNames = Object.keys(RECIPES);
+let rotIndex = 0, rotTimer = null;
+const searchOverlay = document.getElementById('searchOverlay');
+const searchInput = document.getElementById('searchInput');
+const searchSuggestions = document.getElementById('searchSuggestions');
+
+function updateProductNames() {
+  allProductNames = Object.keys(RECIPES);
+  if (allProductNames.length > 0 && !rotTimer) {
+    startRot();
+  }
+}
+
+function rotateOnce(){ 
+  if(!searchOverlay || allProductNames.length === 0) return; 
+  searchOverlay.classList.add('fade'); 
+  setTimeout(()=>{ 
+    rotIndex = (rotIndex + 1) % allProductNames.length; 
+    searchOverlay.textContent = allProductNames[rotIndex]; 
+    searchOverlay.classList.remove('fade'); 
+  }, 220); 
+}
+
+function startRot(){ 
+  if(rotTimer || allProductNames.length === 0) return; 
+  rotTimer = setInterval(rotateOnce, 2000); 
+}
+
+function stopRot(){ 
+  if(!rotTimer) return; 
+  clearInterval(rotTimer); 
+  rotTimer = null; 
+}
+
+if(allProductNames.length) {
+  searchOverlay.textContent = allProductNames[0];
+  startRot();
+}
+
+/* Search Suggestions */
+searchInput.addEventListener('input', (e)=>{ 
+  const v = e.target.value || ''; 
+  if(v.length > 0){ 
+    stopRot(); 
+    searchOverlay.style.opacity = '0'; 
+    searchOverlay.style.transform = 'translate(-50%,-12px)'; 
+    
+    // Show suggestions
+    const q = v.trim().toLowerCase();
+    if(!q) {
+      searchSuggestions.style.display = 'none';
+      return;
+    }
+    
+    let matches = allProductNames.filter(k => k.toLowerCase().includes(q));
+    if(matches.length === 0) {
+      searchSuggestions.style.display = 'none';
+      return;
+    }
+    
+    searchSuggestions.innerHTML = '';
+    matches.slice(0, 10).forEach(m => {
+      const item = document.createElement('div');
+      item.className = 'search-suggestion-item';
+      const imageUrl = RECIPES[m].imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
+      item.innerHTML = `
+        <img src="${imageUrl}" class="search-suggestion-image" alt="${m}">
+        <div class="search-suggestion-name">${m}</div>
+      `;
+      item.addEventListener('click', () => {
+        searchInput.value = '';
+        searchSuggestions.style.display = 'none';
+        openCalcFor(m);
+        setActiveTab('calc');
+      });
+      searchSuggestions.appendChild(item);
+    });
+    
+    searchSuggestions.style.display = 'block';
+  } else { 
+    searchOverlay.style.opacity = '1'; 
+    searchOverlay.style.transform = 'translate(-50%,-4px)'; 
+    startRot(); 
+    searchSuggestions.style.display = 'none';
+  }
+});
+
+// Close suggestions when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-wrap-centered')) {
+    searchSuggestions.style.display = 'none';
+  }
+});
+
+/* Breadcrumb Functions */
+function updateBreadcrumb() {
+  const breadcrumbEl = document.getElementById('breadcrumb');
+  breadcrumbEl.innerHTML = '';
+  
+  if (currentCategoryPath.length === 0) {
+    breadcrumbEl.style.display = 'none';
+    return;
+  }
+  
+  breadcrumbEl.style.display = 'flex';
+  
+  // Ana sayfa linki
+  const homeItem = document.createElement('div');
+  homeItem.className = 'breadcrumb-item';
+  homeItem.textContent = 'Ana Sayfa';
+  homeItem.addEventListener('click', () => {
+    currentCategoryPath = [];
+    renderCategories();
+  });
+  breadcrumbEl.appendChild(homeItem);
+  
+  // Kategori yolu
+  currentCategoryPath.forEach((catId, index) => {
+    const separator = document.createElement('div');
+    separator.className = 'breadcrumb-separator';
+    separator.textContent = '›';
+    breadcrumbEl.appendChild(separator);
+    
+    const catItem = document.createElement('div');
+    catItem.className = 'breadcrumb-item';
+    const category = CATEGORIES.find(c => c.id === catId);
+    catItem.textContent = category ? category.name : 'Kategori';
+    catItem.addEventListener('click', () => {
+      // Tıklanan kategoriye kadar olan kısmı al
+      currentCategoryPath = currentCategoryPath.slice(0, index + 1);
+      showNestedCategories(catId);
+    });
+    breadcrumbEl.appendChild(catItem);
+  });
+}
+
+/* Helpers & renderers */
+function setActiveTab(tab){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if(tab === 'categories') document.getElementById('tabCategories').classList.add('active');
+  if(tab === 'products') document.getElementById('tabProducts').classList.add('active');
+  if(tab === 'calc') document.getElementById('tabCalc').classList.add('active');
+  if(tab === 'saved') document.getElementById('tabSaved').classList.add('active');
+  if(tab === 'dev') document.getElementById('tabDev').classList.add('active');
+  
+  document.getElementById('screenCategories').style.display = tab === 'categories' ? 'block' : 'none';
+  document.getElementById('screenProducts').style.display = tab === 'products' ? 'block' : 'none';
+  document.getElementById('screenCalc').style.display = tab === 'calc' ? 'block' : 'none';
+  document.getElementById('screenSaved').style.display = tab === 'saved' ? 'block' : 'none';
+  document.getElementById('screenDev').style.display = tab === 'dev' ? 'block' : 'none';
+}
+
+function renderCategories(){
+  const container = document.getElementById('categoriesGrid'); 
+  container.innerHTML = '';
+  
+  // Get categories for current level
+  const currentParentId = currentCategoryPath.length > 0 
+    ? currentCategoryPath[currentCategoryPath.length - 1] 
+    : null;
+  
+  const currentCategories = CATEGORIES.filter(cat => cat.parentId === currentParentId);
+  
+  if (currentCategories.length === 0) {
+    // No subcategories, show products directly
+    if (currentParentId) {
+      const parentCategory = CATEGORIES.find(cat => cat.id === currentParentId);
+      if (parentCategory) {
+        document.getElementById('productsTitle').textContent = `${parentCategory.name} Tarifleri`;
+        renderProducts(currentParentId);
+        setActiveTab('products');
+      }
+    }
+    return;
+  }
+  
+  currentCategories.forEach(cat => {
+    const d = document.createElement('div'); 
+    d.className = 'card-btn';
+    const imageUrl = cat.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
+    d.innerHTML = `<img src="${imageUrl}" class="image" alt="${cat.name}"><div class="name">${cat.name}</div>`;
+    d.addEventListener('click', () => { 
+      // Add to path and show nested categories
+      currentCategoryPath.push(cat.id);
+      showNestedCategories(cat.id);
+    });
+    container.appendChild(d);
+  });
+  
+  updateBreadcrumb();
+}
+
+function showNestedCategories(parentId) {
+  renderCategories();
+}
+
+function renderProducts(categoryKey){
+  const container = document.getElementById('productsGrid'); 
+  container.innerHTML = '';
+  const keys = Object.keys(RECIPES).filter(k => !categoryKey || RECIPES[k].category === categoryKey);
+  
+  if (keys.length === 0) {
+    container.innerHTML = '<div class="small-note">Bu kategoride henüz ürün bulunmuyor</div>';
+    return;
+  }
+  
+  keys.forEach(k => { 
+    const r = RECIPES[k]; 
+    const p = document.createElement('div'); 
+    p.className = 'card-btn'; 
+    const imageUrl = r.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
+    p.innerHTML = `<img src="${imageUrl}" class="image" alt="${k}"><div class="name">${k}</div>`; 
+    p.addEventListener('click', () => { 
+      openCalcFor(k); 
+      setActiveTab('calc'); 
+    }); 
+    container.appendChild(p); 
+  });
+}
+
+// Diğer fonksiyonlar aynı kalacak...
+
+// Initialize
+setupUserInfo();
+updateVisitorStats();
+updateProductNames();
+renderCategories();
+renderProducts(null);
+setActiveTab('categories');
+renderSaved();
+updateDevStats();
+updateSiteStats();
+startCategoryStatsAnimation();
+
+// Geliştirici modu aktifse listeleri render et
+if (isAdmin) {
+  renderProductsManagementPanel();
+  renderCategoriesManagementPanel();
+}
+
+// Çıkış butonunu dinle
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+// Admin girişi için avatar'a tıklama
+document.getElementById('userAvatar').addEventListener('click', () => {
+  if (!isAdmin) {
+    showAdminLoginModal();
+  }
+});
+
+// Admin login modal fonksiyonları
+function showAdminLoginModal() {
+  document.getElementById('adminLoginModal').style.display = 'flex';
+}
+
+document.getElementById('closeAdminLoginModal').addEventListener('click', () => {
+  document.getElementById('adminLoginModal').style.display = 'none';
+});
+
+document.getElementById('confirmAdminLogin').addEventListener('click', () => {
+  const password = document.getElementById('adminPassword').value;
+  if (password === 'developer123') {
+    localStorage.setItem('maliq_admin', 'true');
+    localStorage.setItem('maliq_developer_mode', 'true');
+    isAdmin = true;
+    document.getElementById('adminLoginModal').style.display = 'none';
+    setupUserInfo();
+    renderProductsManagementPanel();
+    renderCategoriesManagementPanel();
+    alert('Geliştirici modu etkinleştirildi!');
+  } else {
+    alert('Geçersiz şifre!');
+  }
+});
+
+document.getElementById('cancelAdminLogin').addEventListener('click', () => {
+  document.getElementById('adminLoginModal').style.display = 'none';
+});
+
+// Diğer fonksiyonlar buraya gelecek...
+</script>
 </body>
 </html>
