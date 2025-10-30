@@ -5,51 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MALIQ Admin</title>
     
-    <!-- Config yolunu MANUEL belirt -->
-    <script>
-        window.CMS_MANUAL_INIT = true;
-        CMS_CONFIG_URL = "https://candoruk96.github.io/maliq.github.io/config.yml";
-    </script>
+    <!-- Netlify CMS kullan -->
+    <script src="https://unpkg.com/netlify-cms@^2.10.0/dist/netlify-cms.js"></script>
     
-    <!-- Decap CMS -->
-    <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <!-- Config linki -->
+    <link 
+        href="https://candoruk96.github.io/maliq.github.io/config.yml" 
+        type="text/yaml" 
+        rel="cms-config-url"
+    >
 </head>
 <body>
-    <div id="cms-root"></div>
-
     <script>
-        console.log('CMS yükleniyor...');
+        console.log('Netlify CMS test...');
         
-        // CMS yüklendikten sonra
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof CMS !== 'undefined') {
-                console.log('CMS başlatılıyor...');
-                
-                // Manuel config yükleme
-                CMS.registerBackend('git-gateway', window.CMS.getBackend('git-gateway'));
-                
-                // Config'i manuel yükle
-                fetch(CMS_CONFIG_URL)
-                    .then(response => response.text())
-                    .then(configYaml => {
-                        const config = CMS.parseYAML(configYaml);
-                        CMS.init({ config });
-                        console.log('CMS başarıyla başlatıldı!');
-                    })
-                    .catch(error => {
-                        console.error('Config yükleme hatası:', error);
-                    });
-            } else {
-                console.error('CMS tanımlı değil!');
-                // Alternatif CDN deneyelim
-                const script = document.createElement('script');
-                script.src = 'https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js';
-                script.onload = function() {
-                    location.reload();
-                };
-                document.head.appendChild(script);
-            }
-        });
+        // Netlify CMS otomatik başlar
+        if (window.NetlifyCms) {
+            console.log('Netlify CMS loaded successfully');
+        } else {
+            console.error('Netlify CMS failed to load');
+            
+            // Son çare: Decap CMS farklı versiyon
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://cdn.jsdelivr.net/npm/decap-cms@2.15.0/dist/decap-cms.js';
+            document.head.appendChild(fallbackScript);
+        }
     </script>
 </body>
 </html>
