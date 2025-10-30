@@ -3,45 +3,48 @@
 <head>
     <meta charset="utf-8">
     <title>MALIQ Admin</title>
-    <script src="https://unpkg.com/@staticcms/app@^1.0.0/dist/static-cms-app.js"></script>
-    <script>
-    StaticCMS.init({
-        config: {
-            backend: {
-                name: "git-gateway",
-                branch: "main"
-            },
-            local_backend: true,
-            media_folder: "static/images",
-            public_folder: "/images",
-            collections: [{
-                name: "recipes",
-                label: "Tarifler", 
-                folder: "content/recipes",
-                create: true,
-                slug: "{{slug}}",
-                fields: [
-                    { name: "title", label: "Yemek Adı", widget: "string" },
-                    { name: "emoji", label: "Emoji", widget: "string", required: false },
-                    { name: "category", label: "Kategori", widget: "string" },
-                    { 
-                        label: "Malzemeler",
-                        name: "ingredients",
-                        widget: "list",
-                        fields: [
-                            { name: "name", label: "Ad", widget: "string" },
-                            { name: "qty", label: "Miktar", widget: "string" },
-                            { name: "unit", label: "Birim", widget: "string" }
-                        ]
-                    },
-                    { name: "instructions", label: "Tarif Metni", widget: "markdown" }
-                ]
-            }]
-        }
-    });
-    </script>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .fallback { text-align: center; padding: 50px; }
+        .btn { display: inline-block; padding: 15px 30px; margin: 10px; 
+               background: #007acc; color: white; text-decoration: none; 
+               border-radius: 5px; }
+    </style>
 </head>
 <body>
-    <div id="cms-root"></div>
+    <iframe src="https://stackblitz.com/github/netlify-templates/one-click-hugo-cms" 
+            id="cmsFrame"
+            onerror="showFallback()">
+    </iframe>
+
+    <div id="fallback" class="fallback" style="display: none;">
+        <h2>Iframe de engellendi</h2>
+        <p>Son çözüm:</p>
+        <a href="https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/one-click-hugo-cms" 
+           class="btn">
+            🚀 YENİ BİR SITE OLUŞTUR
+        </a>
+        <p><small>Bu sizi Netlify'da SIFIRDAN çalışan bir admin panel kuracak</small></p>
+    </div>
+
+    <script>
+        function showFallback() {
+            document.getElementById('cmsFrame').style.display = 'none';
+            document.getElementById('fallback').style.display = 'block';
+        }
+        
+        // 10 saniye sonra kontrol et
+        setTimeout(function() {
+            try {
+                var iframe = document.getElementById('cmsFrame');
+                if (iframe.contentWindow.location.href === 'about:blank') {
+                    showFallback();
+                }
+            } catch (e) {
+                showFallback();
+            }
+        }, 10000);
+    </script>
 </body>
 </html>
