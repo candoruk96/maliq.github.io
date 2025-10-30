@@ -3,50 +3,45 @@
 <head>
     <meta charset="utf-8">
     <title>MALIQ Admin</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 50px; text-align: center; }
-        .btn { display: inline-block; padding: 15px 30px; margin: 10px; 
-               background: #007acc; color: white; text-decoration: none; 
-               border-radius: 5px; font-size: 16px; }
-    </style>
+    <script src="https://unpkg.com/@staticcms/app@^1.0.0/dist/static-cms-app.js"></script>
+    <script>
+    StaticCMS.init({
+        config: {
+            backend: {
+                name: "git-gateway",
+                branch: "main"
+            },
+            local_backend: true,
+            media_folder: "static/images",
+            public_folder: "/images",
+            collections: [{
+                name: "recipes",
+                label: "Tarifler", 
+                folder: "content/recipes",
+                create: true,
+                slug: "{{slug}}",
+                fields: [
+                    { name: "title", label: "Yemek Adı", widget: "string" },
+                    { name: "emoji", label: "Emoji", widget: "string", required: false },
+                    { name: "category", label: "Kategori", widget: "string" },
+                    { 
+                        label: "Malzemeler",
+                        name: "ingredients",
+                        widget: "list",
+                        fields: [
+                            { name: "name", label: "Ad", widget: "string" },
+                            { name: "qty", label: "Miktar", widget: "string" },
+                            { name: "unit", label: "Birim", widget: "string" }
+                        ]
+                    },
+                    { name: "instructions", label: "Tarif Metni", widget: "markdown" }
+                ]
+            }]
+        }
+    });
+    </script>
 </head>
 <body>
-    <h1>🚨 CMS ENGELİ TESPİT EDİLDİ</h1>
-    
-    <p><strong>Problem:</strong> Tüm CMS scriptleri engelleniyor</p>
-    <p><strong>Sebep:</strong> Güvenlik duvarı, okul/iş interneti veya bölgesel kısıtlama</p>
-
-    <h3>🎯 ÇÖZÜM SEÇENEKLERİ:</h3>
-
-    <a href="https://www.netlify.com/products/dev/" class="btn" style="background: #00a859;">
-        📥 NETLIFY DEV İNDİR (Local CMS)
-    </a>
-    
-    <br>
-    
-    <a href="https://stackblitz.com/github/netlify-templates/one-click-hugo-cms" 
-       class="btn" style="background: #166af4;">
-        ⚡ ONLINE EDITOR AÇ
-    </a>
-
-    <br>
-
-    <a href="https://app.netlify.com/drop" class="btn" style="background: #ff6b6b;">
-        📁 DOSYA SÜRÜKLE-BIRAK
-    </a>
-
-    <br><br>
-
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: left; display: inline-block;">
-        <h4>🔧 MANUEL ÇÖZÜM:</h4>
-        <ol>
-            <li>GitHub'da direkt dosya düzenle</li>
-            <li>Visual Studio Code kullan</li>
-            <li>Notion'da içerik yaz, sonra kopyala</li>
-        </ol>
-    </div>
-
-    <br><br>
-    <p><strong>Not:</strong> Bu teknik bir engel. CMS scriptleri olmadan admin panel çalışmaz.</p>
+    <div id="cms-root"></div>
 </body>
 </html>
