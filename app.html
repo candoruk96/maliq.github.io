@@ -13,87 +13,99 @@
 }
 *{box-sizing:border-box;font-family:var(--font)}
 html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#04111a);color:#eaf4ff}
-.container{max-width:720px;margin:0 auto;padding:14px}
+.container{max-width:720px;margin:0 auto;padding:10px}
 .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.brand{display:flex;gap:10px;align-items:center}
-.logo img{width:46px;height:46px;border-radius:8px}
-.title{font-weight:800;font-size:18px}
-.search-wrap-centered{width:100%;display:flex;justify-content:center;margin:8px 0 12px 0;position:relative}
-.search{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;background:var(--surface);border:1px solid rgba(255,255,255,0.03);width:100%;max-width:680px;position:relative}
-.search input{flex:1;background:transparent;border:0;color:inherit;padding:8px 12px;font-size:15px;outline:none}
-.search-overlay{position:absolute;left:50%;top:48%;transform:translate(-50%,-4px);pointer-events:none;color:rgba(255,255,255,0.92);font-size:15px;transition:opacity .22s,transform .22s;white-space:nowrap}
+.brand{display:flex;gap:8px;align-items:center}
+.logo img{width:40px;height:40px;border-radius:8px}
+.title{font-weight:800;font-size:16px}
+.search-wrap-centered{width:100%;display:flex;justify-content:center;margin:6px 0 10px 0;position:relative}
+.search{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:var(--surface);border:1px solid rgba(255,255,255,0.03);width:100%;max-width:680px;position:relative}
+.search input{flex:1;background:transparent;border:0;color:inherit;padding:6px 10px;font-size:14px;outline:none}
+.search-overlay{position:absolute;left:50%;top:48%;transform:translate(-50%,-4px);pointer-events:none;color:rgba(255,255,255,0.92);font-size:14px;transition:opacity .22s,transform .22s;white-space:nowrap}
 .search-overlay.fade{opacity:0;transform:translate(-50%,-12px)}
-.tabs{display:flex;gap:8px;margin:12px 0}
-.tab{flex:1;padding:12px;border-radius:14px;text-align:center;background:transparent;color:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.03);font-weight:800;display:flex;align-items:center;justify-content:center}
-.tab.active{background:var(--btn-grad);color:#021026;box-shadow:0 8px 28px rgba(2,6,23,0.5)}
-.section{background:var(--card);border-radius:14px;padding:12px;border:1px solid rgba(255,255,255,0.03);margin-bottom:12px}
+.tabs{display:flex;gap:6px;margin:10px 0}
+.tab{flex:1;padding:10px;border-radius:12px;text-align:center;background:transparent;color:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.03);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tab.active{background:var(--btn-grad);color:#021026;box-shadow:0 6px 20px rgba(2,6,23,0.5)}
+.section{background:var(--card);border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,0.03);margin-bottom:10px}
 
 /* cards - keep unified style and use .card-btn for both categories and products */
-.card-btn{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:12px;border-radius:12px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;min-height:80px}
-.card-btn .emoji{font-size:22px}
-.card-btn .name{font-weight:800;font-size:13px;color:inherit}
-.card-btn:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(3,10,30,0.45)}
+.card-btn{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:10px;border-radius:10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;min-height:70px}
+.card-btn .emoji{font-size:20px}
+.card-btn .name{font-weight:800;font-size:12px;color:inherit}
+.card-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(3,10,30,0.45)}
 
-.categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 @media(min-width:520px){.categories-grid{grid-template-columns:repeat(4,1fr)}}
-.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
 @media(min-width:520px){.products-grid{grid-template-columns:repeat(3,1fr)}}
 
 /* calculation rows */
-.calc-grid{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.material-item{background:var(--surface);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:8px}
-.material-top{display:flex;align-items:center;gap:8px}
-.material-emoji{width:36px;text-align:center}
-.row-controls{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;justify-content:space-between}
-.left-controls{display:flex;gap:12px;align-items:center;min-width:0}
-.right-controls{display:flex;gap:8px;align-items:center;justify-content:flex-end;min-width:260px;flex-shrink:0}
-.input-small{padding:8px;border-radius:10px;border:0;background:rgba(255,255,255,0.02);color:inherit}
-.unit-select{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-.cost-amount{font-weight:900;color:var(--accent1);min-width:90px;text-align:right}
-.total-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(90deg, rgba(6,182,212,0.04), rgba(124,58,237,0.02));font-weight:900;margin-top:8px}
-.saved-list{display:flex;flex-direction:column;gap:8px}
-.saved-item{background:var(--surface);padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);font-size:14px;display:flex;flex-direction:column;gap:6px}
+.calc-grid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.material-item{background:var(--surface);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:6px}
+.material-top{display:flex;align-items:center;gap:6px}
+.material-emoji{width:32px;text-align:center}
+.row-controls{display:flex;gap:6px;align-items:center;flex-wrap:nowrap;justify-content:space-between}
+.left-controls{display:flex;gap:8px;align-items:center;min-width:0}
+.right-controls{display:flex;gap:6px;align-items:center;justify-content:flex-end;min-width:220px;flex-shrink:0}
+.input-small{padding:6px;border-radius:8px;border:0;background:rgba(255,255,255,0.02);color:inherit;font-size:13px}
+.unit-select{padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:13px}
+.cost-amount{font-weight:900;color:var(--accent1);min-width:70px;text-align:right;font-size:13px}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(6,182,212,0.04), rgba(124,58,237,0.02));font-weight:900;margin-top:6px;font-size:14px}
+.saved-list{display:flex;flex-direction:column;gap:6px}
+.saved-item{background:var(--surface);padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:13px;display:flex;flex-direction:column;gap:4px}
 
 .preview-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:80}
-.preview-card{background:#fff;padding:12px;border-radius:10px;color:#000;width:92%;max-width:760px;height:80vh;display:flex;flex-direction:column}
-.preview-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.preview-card{background:#fff;padding:10px;border-radius:8px;color:#000;width:95%;max-width:760px;height:85vh;display:flex;flex-direction:column}
+.preview-toolbar{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px}
 .preview-canvas{flex:1;overflow:auto;background:#fff;border-radius:6px;padding:6px;display:flex;align-items:center;justify-content:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:60}
-.modal-content{background:var(--card);padding:12px;border-radius:10px;width:92%;max-width:420px}
-.btn-primary{padding:10px 14px;border-radius:12px;background:var(--btn-grad);color:#021026;border:0;font-weight:800;cursor:pointer}
-.btn-ghost{padding:8px 12px;border-radius:12px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
-.footer{margin-top:12px;text-align:center;color:var(--muted);font-size:12px}
-.small-note{color:var(--muted);font-size:13px}
+.modal-content{background:var(--card);padding:10px;border-radius:8px;width:95%;max-width:400px}
+.btn-primary{padding:8px 12px;border-radius:10px;background:var(--btn-grad);color:#021026;border:0;font-weight:800;cursor:pointer;font-size:13px}
+.btn-ghost{padding:6px 10px;border-radius:10px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-size:12px}
+.footer{margin-top:10px;text-align:center;color:var(--muted);font-size:11px}
+.small-note{color:var(--muted);font-size:12px}
 
 /* Developer Mode Styles */
 .dev-tools{display:none}
-.dev-tools.active{display:block}
-.dev-section{background:var(--surface);padding:12px;border-radius:12px;margin-bottom:12px}
-.dev-section-title{font-weight:800;margin-bottom:8px;color:var(--accent1)}
-.dev-controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.dev-input{flex:1;min-width:200px}
-.dev-btn{padding:8px 12px;border-radius:10px;background:var(--btn-grad);color:#021026;border:0;font-weight:600;cursor:pointer;font-size:13px}
-.dev-btn-secondary{padding:8px 12px;border-radius:10px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-size:13px}
-.dev-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.dev-stat{background:var(--surface);padding:10px;border-radius:10px;text-align:center}
-.dev-stat-value{font-weight:800;font-size:18px;color:var(--accent1)}
-.dev-stat-label{font-size:12px;color:var(--muted)}
+.dev-section{background:var(--surface);padding:10px;border-radius:10px;margin-bottom:10px}
+.dev-section-title{font-weight:800;margin-bottom:6px;color:var(--accent1);font-size:14px}
+.dev-controls{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.dev-input{flex:1;min-width:150px}
+.dev-btn{padding:6px 10px;border-radius:8px;background:var(--btn-grad);color:#021026;border:0;font-weight:600;cursor:pointer;font-size:12px}
+.dev-btn-secondary{padding:6px 10px;border-radius:8px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-size:12px}
+.dev-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.dev-stat{background:var(--surface);padding:8px;border-radius:8px;text-align:center}
+.dev-stat-value{font-weight:800;font-size:16px;color:var(--accent1)}
+.dev-stat-label{font-size:11px;color:var(--muted)}
 
 /* Search Suggestions */
-.search-suggestions{position:absolute;top:100%;left:0;right:0;background:var(--card);border-radius:12px;border:1px solid rgba(255,255,255,0.03);margin-top:4px;max-height:300px;overflow-y:auto;z-index:50;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-.search-suggestion-item{padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.search-suggestions{position:absolute;top:100%;left:0;right:0;background:var(--card);border-radius:10px;border:1px solid rgba(255,255,255,0.03);margin-top:4px;max-height:250px;overflow-y:auto;z-index:50;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.search-suggestion-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
 .search-suggestion-item:last-child{border-bottom:none}
 .search-suggestion-item:hover{background:var(--surface)}
-.search-suggestion-emoji{font-size:18px}
+.search-suggestion-emoji{font-size:16px}
 .search-suggestion-name{font-weight:600}
 
 /* Nested Categories */
-.nested-categories{margin-top:12px;display:none;grid-template-columns:repeat(3,1fr);gap:10px}
+.nested-categories{margin-top:10px;display:none;grid-template-columns:repeat(3,1fr);gap:8px}
 .nested-categories.active{display:grid}
 @media(min-width:520px){.nested-categories{grid-template-columns:repeat(4,1fr)}}
 
 /* Quick Add Modal */
-.quick-add-textarea{min-height:400px;font-family:monospace;font-size:13px;line-height:1.4}
+.quick-add-textarea{min-height:300px;font-family:monospace;font-size:12px;line-height:1.4}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .container{padding:8px}
+  .tab{padding:8px;font-size:11px}
+  .card-btn{min-height:60px;padding:8px}
+  .categories-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .products-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .row-controls{flex-direction:column;align-items:stretch;gap:8px}
+  .left-controls, .right-controls{min-width:auto;justify-content:space-between}
+  .dev-controls{flex-direction:column}
+  .dev-input{min-width:auto}
+}
 </style>
 </head>
 <body>
@@ -103,10 +115,9 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
         <div class="logo"><img src="https://i.hizliresim.com/sis5uti.png" alt="logo"></div>
         <div><div class="title">Akıllı Maliyet Hesaplayıcınız</div></div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center" id="userAvatar">G</div>
-        <div style="font-weight:700" id="userName">Geliştirici</div>
-        <button id="devModeToggle" class="btn-ghost" style="font-size:12px">Geliştirici Modu</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center" id="userAvatar">G</div>
+        <div style="font-weight:700;font-size:13px" id="userName">Geliştirici</div>
       </div>
     </div>
 
@@ -122,30 +133,30 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
       <div id="tabCategories" class="tab active">KATEGORİLER</div>
       <div id="tabProducts" class="tab">ÜRÜNLER</div>
       <div id="tabCalc" class="tab">HESAPLAMA</div>
-      <div id="tabSaved" class="tab">MALİYET TABLOM</div>
-      <div id="tabDev" class="tab">GELİŞTİRİCİ</div>
+      <div id="tabSaved" class="tab">KAYITLAR</div>
+      <div id="tabDev" class="tab" style="display:none">GELİŞTİRİCİ</div>
     </nav>
 
     <main>
       <section id="screenCategories" class="section">
-        <div style="font-weight:900;margin-bottom:8px">Yemek Çeşitleri</div>
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px">Yemek Çeşitleri</div>
         <div id="categoriesGrid" class="categories-grid"></div>
         <div id="nestedCategories" class="nested-categories"></div>
       </section>
 
       <section id="screenProducts" class="section" style="display:none">
-        <div style="font-weight:900;margin-bottom:8px" id="productsTitle">Seçilen Kategori: Tümü</div>
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px" id="productsTitle">Seçilen Kategori: Tümü</div>
         <div id="productsGrid" class="products-grid"></div>
       </section>
 
       <section id="screenCalc" class="section" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <div>
-            <div style="font-weight:900" id="calcTitle">Hesaplama</div>
+            <div style="font-weight:900;font-size:14px" id="calcTitle">Hesaplama</div>
             <div id="calcSubtitle" class="small-note"></div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="calcName" class="input-small" placeholder="Ürün adı" />
+          <div style="display:flex;gap:6px;align-items:center">
+            <input id="calcName" class="input-small" placeholder="Ürün adı" style="width:100px" />
             <button id="saveBtn" class="btn-primary">Kaydet</button>
             <button id="clearBtn" class="btn-ghost">Temizle</button>
           </div>
@@ -158,20 +169,20 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           <div id="totalCost" class="cost-amount">0.00 ₺</div>
         </div>
 
-        <div style="margin-top:10px;display:flex;gap:8px">
+        <div style="margin-top:8px;display:flex;gap:6px">
           <button id="addMaterialBtn" class="btn-ghost">+ Malzeme Ekle</button>
           <button id="exportBtn" class="btn-primary">PDF Önizleme</button>
         </div>
       </section>
 
       <section id="screenSaved" class="section" style="display:none">
-        <div style="font-weight:900;margin-bottom:8px">Maliyet Tablom</div>
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px">Maliyet Tablom</div>
         <div id="savedList" class="saved-list"></div>
       </section>
 
       <!-- Developer Tools Section -->
-      <section id="screenDev" class="section dev-tools active">
-        <div style="font-weight:900;margin-bottom:8px;color:var(--accent1)">Geliştirici Seçenekleri</div>
+      <section id="screenDev" class="section dev-tools" style="display:none">
+        <div style="font-weight:900;margin-bottom:6px;color:var(--accent1);font-size:14px">Geliştirici Seçenekleri</div>
         
         <!-- Visitor Statistics -->
         <div class="dev-section">
@@ -201,7 +212,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           <div class="dev-section-title">Kategori Yönetimi</div>
           <div class="dev-controls">
             <input type="text" id="newCategoryName" class="dev-input input-small" placeholder="Kategori Adı">
-            <input type="text" id="newCategoryEmoji" class="input-small" placeholder="Emoji" style="width:80px">
+            <input type="text" id="newCategoryEmoji" class="input-small" placeholder="Emoji" style="width:70px">
             <select id="parentCategorySelect" class="unit-select">
               <option value="">Ana Kategori</option>
             </select>
@@ -218,7 +229,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           <div class="dev-section-title">Ürün Yönetimi</div>
           <div class="dev-controls">
             <input type="text" id="newProductName" class="dev-input input-small" placeholder="Ürün Adı">
-            <input type="text" id="newProductEmoji" class="input-small" placeholder="Emoji" style="width:80px">
+            <input type="text" id="newProductEmoji" class="input-small" placeholder="Emoji" style="width:70px">
             <select id="productCategorySelect" class="unit-select">
               <option value="">Kategori Seç</option>
             </select>
@@ -250,7 +261,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
     <div class="preview-card">
       <div class="preview-toolbar">
         <div id="previewTitle" style="font-weight:800">Önizleme</div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:6px">
           <button id="downloadPreviewBtn" class="btn-primary">PDF İndir</button>
           <button id="closePreviewBtn" class="btn-ghost">Kapat</button>
         </div>
@@ -261,19 +272,19 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 
   <div id="addModal" class="modal" aria-hidden="true">
     <div class="modal-content">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <div style="font-weight:900">Malzeme Ekle</div>
         <button id="closeAddModal" class="btn-ghost">Kapat</button>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;flex-direction:column;gap:6px">
         <input id="addName" class="input-small" placeholder="Malzeme adı" />
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:6px">
           <input id="addQty" type="number" class="input-small" value="100" />
           <select id="addUnit" class="unit-select">
             <option value="gr">gr</option><option value="kg">kg</option><option value="ml">ml</option><option value="lt">lt</option><option value="adet">adet</option>
           </select>
         </div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:6px">
           <select id="addPriceUnit" class="unit-select">
             <option value="kg">₺ / kg</option><option value="gr">₺ / gr</option><option value="lt">₺ / lt</option><option value="ml">₺ / ml</option><option value="adet">₺ / adet</option><option value="koli">₺ / koli</option>
           </select>
@@ -282,7 +293,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
         <div id="addKoliRow" style="display:none">
           <input id="addKoliSize" type="number" class="input-small" placeholder="Koli adeti" min="1" />
         </div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:6px">
           <button id="confirmAdd" class="btn-primary">Ekle</button>
           <button id="cancelAdd" class="btn-ghost">İptal</button>
         </div>
@@ -293,18 +304,18 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
   <!-- Quick Add Modal -->
   <div id="quickAddModal" class="modal" aria-hidden="true">
     <div class="modal-content">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <div style="font-weight:900">Hızlı Ürün Ekle</div>
         <button id="closeQuickAddModal" class="btn-ghost">Kapat</button>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;flex-direction:column;gap:6px">
         <div class="small-note">+ işareti kategori, - işareti ürün ekler. Malzemeleri ürün altına yazın.</div>
         <div class="small-note" style="color:var(--accent1)">Örnek:<br>+🍳 YUMURTA ÇEŞİTLERİ<br>-🌶️ Sucuklu Yumurta<br>🌶️ Sucuk: 120 gr<br>🥚 Yumurta: 3 adet</div>
         <textarea id="quickProductsText" class="input-small quick-add-textarea" placeholder="Buraya verileri yapıştırın..." style="resize:vertical"></textarea>
         <select id="quickAddCategorySelect" class="unit-select">
           <option value="">Mevcut Kategori Seç (isteğe bağlı)</option>
         </select>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:6px">
           <button id="confirmQuickAdd" class="btn-primary">Ekle</button>
           <button id="cancelQuickAdd" class="btn-ghost">İptal</button>
         </div>
@@ -315,6 +326,15 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
+// URL parametrelerini kontrol et
+const urlParams = new URLSearchParams(window.location.search);
+const isAdmin = urlParams.get('admin') === 'true' || localStorage.getItem('maliq_admin') === 'true';
+
+// Admin durumunu localStorage'a kaydet
+if (isAdmin) {
+  localStorage.setItem('maliq_admin', 'true');
+}
+
 /* Data */
 const RECIPES = {
   "Lahmacun": { category:'lahmacun', emoji:'🥙', ingredients:[{name:'Un',qty:150,unit:'gr',emoji:'🌾'},{name:'Kıyma',qty:150,unit:'gr',emoji:'🥩'}]},
@@ -330,7 +350,6 @@ let calcItems = [];
 let savedListArr = JSON.parse(localStorage.getItem('maliq_saved')||'[]');
 
 /* Developer Mode Variables */
-let isDeveloperMode = true; // Default olarak geliştirici modu açık
 let visitorStats = JSON.parse(localStorage.getItem('maliq_stats')||'{"totalVisits":0,"uniqueVisitors":0,"devLogins":0,"lastVisit":null}');
 
 /* Nested Categories */
@@ -353,6 +372,16 @@ if (CATEGORIES.length === 0) {
     { id: 'vegan', name: 'Vejetaryen', emoji: '🥗', parentId: null }
   ];
   localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+}
+
+// Admin ise geliştirici sekmesini göster
+if (isAdmin) {
+  document.getElementById('tabDev').style.display = 'flex';
+  document.getElementById('userName').textContent = 'Geliştirici';
+  document.getElementById('userAvatar').textContent = 'G';
+} else {
+  document.getElementById('userName').textContent = 'Misafir';
+  document.getElementById('userAvatar').textContent = 'M';
 }
 
 /* Search Animation */
@@ -592,7 +621,7 @@ function renderCalcItems(){
 
       <div class="row-controls">
         <div class="left-controls">
-          <input type="number" id="qty_${idx}" class="input-small" value="${it.qty}" style="width:88px" title="Miktar" />
+          <input type="number" id="qty_${idx}" class="input-small" value="${it.qty}" style="width:80px" title="Miktar" />
           <select id="unit_${idx}" class="unit-select" title="Birim">
             <option value="gr" ${it.unit === 'gr' ? 'selected' : ''}>gr</option>
             <option value="kg" ${it.unit === 'kg' ? 'selected' : ''}>kg</option>
@@ -605,7 +634,7 @@ function renderCalcItems(){
 
         <div class="right-controls">
           <select id="priceUnit_${idx}" class="unit-select" title="Fiyat birimi">${priceUnitOptions}</select>
-          <input type="number" id="price_${idx}" class="input-small" placeholder="Fiyat (TL)" style="width:110px" title="Fiyat gir (örn: kg fiyatı girilecek)" />
+          <input type="number" id="price_${idx}" class="input-small" placeholder="Fiyat (TL)" style="width:100px" title="Fiyat gir (örn: kg fiyatı girilecek)" />
           <div class="cost-amount" id="cost_${idx}">${(it.calculated || 0).toFixed(2)} ₺</div>
         </div>
       </div>
@@ -637,7 +666,7 @@ function renderCalcItems(){
     const rem = document.createElement('button'); 
     rem.className = 'btn-ghost'; 
     rem.textContent = 'Kaldır'; 
-    rem.style.marginLeft = '8px';
+    rem.style.marginLeft = '6px';
     rem.addEventListener('click', () => { 
       calcItems.splice(idx, 1); 
       renderCalcItems(); 
@@ -768,7 +797,7 @@ let lastPreviewDataUrl = null;
 
 async function generatePreviewElement(title, items, total){
   const container = document.createElement('div'); 
-  container.style.padding = '12px'; 
+  container.style.padding = '10px'; 
   container.style.background = '#fff'; 
   container.style.color = '#000'; 
   container.style.width = '800px';
@@ -1193,14 +1222,6 @@ function resetData() {
   }
 }
 
-function toggleDevMode() {
-  isDeveloperMode = !isDeveloperMode;
-  document.getElementById('screenDev').classList.toggle('active', isDeveloperMode);
-  document.getElementById('userName').textContent = isDeveloperMode ? 'Geliştirici' : 'Misafir';
-  document.getElementById('userAvatar').textContent = isDeveloperMode ? 'G' : 'M';
-  document.getElementById('devModeToggle').textContent = isDeveloperMode ? 'Misafir Modu' : 'Geliştirici Modu';
-}
-
 // wiring tabs and init
 document.getElementById('tabCategories').addEventListener('click', () => setActiveTab('categories'));
 document.getElementById('tabProducts').addEventListener('click', () => setActiveTab('products'));
@@ -1245,8 +1266,6 @@ document.getElementById('clearBtn').addEventListener('click', () => {
 document.getElementById('exportBtn').addEventListener('click', () => showPreviewForCurrent());
 
 // Developer mode event listeners
-document.getElementById('devModeToggle').addEventListener('click', toggleDevMode);
-
 document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
 document.getElementById('addProductBtn').addEventListener('click', addProduct);
 
