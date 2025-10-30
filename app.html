@@ -80,26 +80,6 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .management-item-name{flex:1;font-size:13px}
 .management-item-url{flex:2;padding:4px;border-radius:4px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit;font-size:12px}
 .management-item-actions{display:flex;gap:4px}
-  /* Quick Add Modal için ek stiller */
-#quickProductsText {
-  background: var(--surface);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: inherit;
-  font-family: monospace;
-  font-size: 13px;
-}
-
-.dev-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.dev-controls .dev-btn {
-  flex: 1;
-  min-width: 120px;
-}
 
 .site-stats{display:flex;justify-content:space-around;margin:12px 0;padding:6px;background:var(--surface);border-radius:8px}
 .stat-item{text-align:center}
@@ -216,6 +196,28 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
         <div style="font-weight:900;margin-bottom:12px;color:var(--accent1);font-size:18px;text-align:center">GELİŞTİRİCİ SEÇENEKLERİ</div>
         
         <div class="dev-section">
+          <div class="dev-section-title">İstatistikler</div>
+          <div class="dev-stats">
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalProducts">0</div>
+              <div class="dev-stat-label">Toplam Ürün</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalCats">0</div>
+              <div class="dev-stat-label">Toplam Kategori</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalMats">0</div>
+              <div class="dev-stat-label">Toplam Malzeme</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalSaves">0</div>
+              <div class="dev-stat-label">Kayıtlı Hesaplama</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dev-section">
           <div class="dev-section-title">Kategori Yönetimi</div>
           <div class="dev-controls">
             <input type="text" id="newCategoryName" class="dev-input input-small" placeholder="Kategori Adı">
@@ -234,6 +236,16 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
         </div>
 
         <div class="dev-section">
+          <div class="dev-section-title">Toplu İçerik Ekleme</div>
+          <div class="dev-controls">
+            <button id="quickAddBtn" class="dev-btn">Hızlı Ürün Ekle</button>
+            <button id="exportDataBtn" class="dev-btn">Verileri Dışa Aktar</button>
+            <button id="importDataBtn" class="dev-btn">Verileri İçe Aktar</button>
+            <button id="resetDataBtn" class="dev-btn" style="background:#ff6b6b">Verileri Sıfırla</button>
+          </div>
+        </div>
+
+        <div class="dev-section">
           <div class="dev-section-title">Ürün Yönetim Paneli</div>
           <div id="productsManagementPanel" class="management-panel"></div>
         </div>
@@ -241,16 +253,6 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
         <div class="dev-section">
           <div class="dev-section-title">Kategori Yönetim Paneli</div>
           <div id="categoriesManagementPanel" class="management-panel"></div>
-        </div>
-      </section>
-              <div class="dev-section">
-          <div class="dev-section-title">Toplu İçerik Ekleme</div>
-          <div class="dev-controls">
-            <button id="quickAddProductsBtn" class="dev-btn">Hızlı Ürün Ekle</button>
-            <button id="exportAllDataBtn" class="dev-btn">Tüm Veriyi Dışa Aktar</button>
-            <button id="importAllDataBtn" class="dev-btn">Tüm Veriyi İçe Aktar</button>
-            <button id="resetDataBtn" class="dev-btn" style="background:#ff6b6b">Verileri Sıfırla</button>
-          </div>
         </div>
       </section>
     </main>
@@ -282,6 +284,24 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
         <div style="display:flex;gap:6px">
           <button id="confirmAdd" class="btn-primary">Ekle</button>
           <button id="cancelAdd" class="btn-ghost">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quickAddModal" class="modal">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:900">Hızlı Ürün Ekle</div>
+        <button id="closeQuickAddModal" class="btn-ghost">Kapat</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="small-note">+ işareti kategori, - işareti ürün ekler. Malzemeleri ürün altına yazın.</div>
+        <div class="small-note" style="color:var(--accent1)">Örnek:<br>+ YUMURTA ÇEŞİTLERİ<br>- Sucuklu Yumurta<br>Sucuk: 120 gr<br>Yumurta: 3 adet</div>
+        <textarea id="quickProductsText" class="input-small" placeholder="Buraya verileri yapıştırın..." rows="12" style="resize:vertical"></textarea>
+        <div style="display:flex;gap:6px">
+          <button id="confirmQuickAdd" class="btn-primary">Ekle</button>
+          <button id="cancelQuickAdd" class="btn-ghost">İptal</button>
         </div>
       </div>
     </div>
@@ -359,6 +379,7 @@ function setActiveTab(tab){
   } else if(tab === 'dev') {
     document.getElementById('tabDev').classList.add('active');
     document.getElementById('screenDev').style.display = 'block';
+    updateDevStats();
   }
 }
 
@@ -555,6 +576,13 @@ function renderSaved(){
 }
 
 // Geliştirici Fonksiyonları
+function updateDevStats() {
+  document.getElementById('totalProducts').textContent = Object.keys(RECIPES).length;
+  document.getElementById('totalCats').textContent = CATEGORIES.length;
+  document.getElementById('totalMats').textContent = Object.values(RECIPES).reduce((acc, recipe) => acc + (recipe.ingredients ? recipe.ingredients.length : 0), 0);
+  document.getElementById('totalSaves').textContent = savedListArr.length;
+}
+
 function renderProductsManagementPanel() {
   const container = document.getElementById('productsManagementPanel');
   container.innerHTML = '';
@@ -585,6 +613,7 @@ function renderProductsManagementPanel() {
         delete RECIPES[productName];
         localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
         renderProductsManagementPanel();
+        renderProducts(null);
       }
     });
     
@@ -647,6 +676,7 @@ function addCategory() {
   document.getElementById('newCategoryImage').value = '';
   renderCategories();
   renderCategoriesManagementPanel();
+  updateDevStats();
   alert('Kategori eklendi!');
 }
 
@@ -665,82 +695,12 @@ function addProduct() {
   document.getElementById('newProductName').value = '';
   document.getElementById('newProductImage').value = '';
   renderProductsManagementPanel();
+  renderProducts(null);
+  updateDevStats();
   alert('Ürün eklendi!');
 }
 
-// Event Listeners
-document.getElementById('tabCategories').addEventListener('click', () => {
-  setActiveTab('categories');
-  currentCategoryPath = [];
-  renderCategories();
-});
-
-document.getElementById('tabProducts').addEventListener('click', () => {
-  setActiveTab('products');
-  document.getElementById('productsTitle').textContent = 'Tüm Tarifler';
-  renderProducts(null);
-});
-
-document.getElementById('tabCalc').addEventListener('click', () => setActiveTab('calc'));
-document.getElementById('tabSaved').addEventListener('click', () => { 
-  setActiveTab('saved'); 
-  renderSaved(); 
-});
-document.getElementById('tabDev').addEventListener('click', () => { 
-  setActiveTab('dev'); 
-});
-
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
-    localStorage.removeItem('maliq_user');
-    localStorage.removeItem('maliq_admin');
-    window.location.href = 'index.html';
-  }
-});
-
-document.getElementById('addMaterialBtn').addEventListener('click', () => { 
-  document.getElementById('addModal').style.display = 'flex'; 
-});
-
-document.getElementById('closeAddModal').addEventListener('click', () => { 
-  document.getElementById('addModal').style.display = 'none'; 
-});
-
-document.getElementById('confirmAdd').addEventListener('click', () => {
-  const name = document.getElementById('addName').value || 'Yeni Malzeme';
-  const qty = parseFloat(document.getElementById('addQty').value || 0);
-  const unit = document.getElementById('addUnit').value;
-  const price = parseFloat(document.getElementById('addPrice').value || 0);
-  calcItems.push({ name, qty, unit, price, calculated: 0 });
-  document.getElementById('addModal').style.display = 'none';
-  renderCalcItems();
-});
-
-document.getElementById('saveBtn').addEventListener('click', () => saveSnapshot());
-document.getElementById('clearBtn').addEventListener('click', () => { 
-  if(confirm('Temizlensin mi?')){ 
-    calcItems = []; 
-    renderCalcItems(); 
-  } 
-});
-
-document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
-document.getElementById('addProductBtn').addEventListener('click', addProduct);
-  // Toplu ekleme fonksiyonları
-document.getElementById('quickAddProductsBtn').addEventListener('click', () => {
-  document.getElementById('quickAddModal').style.display = 'flex';
-});
-
-document.getElementById('closeQuickAddModal').addEventListener('click', () => {
-  document.getElementById('quickAddModal').style.display = 'none';
-});
-
-document.getElementById('confirmQuickAdd').addEventListener('click', quickAddProducts);
-
-document.getElementById('cancelQuickAdd').addEventListener('click', () => {
-  document.getElementById('quickAddModal').style.display = 'none';
-});
-
+// Toplu Ekleme Fonksiyonları
 function quickAddProducts() {
   const text = document.getElementById('quickProductsText').value.trim();
   if (!text) {
@@ -762,14 +722,8 @@ function quickAddProducts() {
     if (line.startsWith('+')) {
       // Kategori satırı
       const name = line.substring(1).trim();
-      const categoryId = name.toLowerCase()
-        .replace(/[ğüşıöç]/g, function(match) {
-          const map = {'ğ':'g','ü':'u','ş':'s','ı':'i','ö':'o','ç':'c'};
-          return map[match];
-        })
-        .replace(/[^a-z0-9]/g, '_');
+      const categoryId = name.toLowerCase().replace(/ /g, '_');
       
-      // Kategori var mı kontrol et
       let existingCategory = CATEGORIES.find(cat => cat.id === categoryId);
       if (!existingCategory) {
         const newCategory = {
@@ -832,15 +786,11 @@ function quickAddProducts() {
   renderProducts(null);
   renderProductsManagementPanel();
   renderCategoriesManagementPanel();
+  updateDevStats();
   updateSiteStats();
   
   alert(`${addedCategories} kategori, ${addedProducts} ürün ve ${addedIngredients} malzeme eklendi!`);
 }
-
-// Veri yönetimi fonksiyonları
-document.getElementById('exportAllDataBtn').addEventListener('click', exportAllData);
-document.getElementById('importAllDataBtn').addEventListener('click', importAllData);
-document.getElementById('resetDataBtn').addEventListener('click', resetData);
 
 function exportAllData() {
   const data = {
@@ -896,6 +846,7 @@ function importAllData() {
           renderProducts(null);
           renderProductsManagementPanel();
           renderCategoriesManagementPanel();
+          updateDevStats();
           updateSiteStats();
           
           alert('Veriler başarıyla içe aktarıldı!');
@@ -918,41 +869,94 @@ function resetData() {
   }
 }
 
-// Initialize
-setupUserInfo();
-renderCategories();
-renderProducts(null);
-setActiveTab('categories');
-updateSiteStats();
+// Event Listeners
+document.getElementById('tabCategories').addEventListener('click', () => {
+  setActiveTab('categories');
+  currentCategoryPath = [];
+  renderCategories();
+});
 
+document.getElementById('tabProducts').addEventListener('click', () => {
+  setActiveTab('products');
+  document.getElementById('productsTitle').textContent = 'Tüm Tarifler';
+  renderProducts(null);
+});
+
+document.getElementById('tabCalc').addEventListener('click', () => setActiveTab('calc'));
+document.getElementById('tabSaved').addEventListener('click', () => { 
+  setActiveTab('saved'); 
+  renderSaved(); 
+});
+document.getElementById('tabDev').addEventListener('click', () => { 
+  setActiveTab('dev'); 
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
+    localStorage.removeItem('maliq_user');
+    localStorage.removeItem('maliq_admin');
+    window.location.href = 'index.html';
+  }
+});
+
+document.getElementById('addMaterialBtn').addEventListener('click', () => { 
+  document.getElementById('addModal').style.display = 'flex'; 
+});
+
+document.getElementById('closeAddModal').addEventListener('click', () => { 
+  document.getElementById('addModal').style.display = 'none'; 
+});
+
+document.getElementById('confirmAdd').addEventListener('click', () => {
+  const name = document.getElementById('addName').value || 'Yeni Malzeme';
+  const qty = parseFloat(document.getElementById('addQty').value || 0);
+  const unit = document.getElementById('addUnit').value;
+  const price = parseFloat(document.getElementById('addPrice').value || 0);
+  calcItems.push({ name, qty, unit, price, calculated: 0 });
+  document.getElementById('addModal').style.display = 'none';
+  renderCalcItems();
+});
+
+document.getElementById('saveBtn').addEventListener('click', () => saveSnapshot());
+document.getElementById('clearBtn').addEventListener('click', () => { 
+  if(confirm('Temizlensin mi?')){ 
+    calcItems = []; 
+    renderCalcItems(); 
+  } 
+});
+
+// Geliştirici Event Listeners
+document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
+document.getElementById('addProductBtn').addEventListener('click', addProduct);
+document.getElementById('quickAddBtn').addEventListener('click', () => {
+  document.getElementById('quickAddModal').style.display = 'flex';
+});
+document.getElementById('closeQuickAddModal').addEventListener('click', () => {
+  document.getElementById('quickAddModal').style.display = 'none';
+});
+document.getElementById('confirmQuickAdd').addEventListener('click', quickAddProducts);
+document.getElementById('exportDataBtn').addEventListener('click', exportAllData);
+document.getElementById('importDataBtn').addEventListener('click', importAllData);
+document.getElementById('resetDataBtn').addEventListener('click', resetData);
+
+// Initialize
 function updateSiteStats() {
   document.getElementById('totalRecipes').textContent = Object.keys(RECIPES).length;
   document.getElementById('totalIngredients').textContent = Object.values(RECIPES).reduce((acc, recipe) => acc + (recipe.ingredients ? recipe.ingredients.length : 0), 0);
   document.getElementById('totalCategories').textContent = CATEGORIES.length;
 }
 
+setupUserInfo();
+renderCategories();
+renderProducts(null);
+setActiveTab('categories');
+updateSiteStats();
+
 if (isAdmin) {
   renderProductsManagementPanel();
   renderCategoriesManagementPanel();
+  updateDevStats();
 }
-  <!-- Quick Add Modal -->
-  <div id="quickAddModal" class="modal">
-    <div class="modal-content">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-weight:900">Hızlı Ürün Ekle</div>
-        <button id="closeQuickAddModal" class="btn-ghost">Kapat</button>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div class="small-note">+ işareti kategori, - işareti ürün ekler. Malzemeleri ürün altına yazın.</div>
-        <div class="small-note" style="color:var(--accent1)">Örnek:<br>+ YUMURTA ÇEŞİTLERİ<br>- Sucuklu Yumurta<br>Sucuk: 120 gr<br>Yumurta: 3 adet</div>
-        <textarea id="quickProductsText" class="input-small" placeholder="Buraya verileri yapıştırın..." rows="12" style="resize:vertical"></textarea>
-        <div style="display:flex;gap:6px">
-          <button id="confirmQuickAdd" class="btn-primary">Ekle</button>
-          <button id="cancelQuickAdd" class="btn-ghost">İptal</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </script>
 </body>
 </html>
