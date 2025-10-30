@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MALIQ - Gelişmiş Admin Paneli</title>
+    <title>MALIQ - Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -16,9 +16,8 @@
             --dark: #1e293b;
             --light: #f8fafc;
             --gray: #64748b;
-            --gray-light: #cbd5e1;
             --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --radius: 8px;
         }
 
@@ -26,13 +25,12 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
-            background-color: #f1f5f9;
+            background: #f1f5f9;
             color: #334155;
-            line-height: 1.6;
         }
 
         .admin-container {
@@ -40,19 +38,16 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 260px;
             background: var(--dark);
             color: white;
-            transition: all 0.3s;
             box-shadow: var(--shadow);
-            z-index: 100;
         }
 
         .sidebar-header {
             padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -62,11 +57,6 @@
             width: 40px;
             height: 40px;
             border-radius: var(--radius);
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
         }
 
         .sidebar-menu {
@@ -80,26 +70,19 @@
             gap: 12px;
             cursor: pointer;
             transition: all 0.2s;
-            color: var(--gray-light);
+            color: #cbd5e1;
         }
 
         .menu-item:hover, .menu-item.active {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             color: white;
             border-left: 4px solid var(--primary);
         }
 
-        .menu-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
         .topbar {
@@ -109,23 +92,6 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
-            z-index: 90;
-        }
-
-        .breadcrumb {
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        .breadcrumb a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
         }
 
         .user-avatar {
@@ -151,7 +117,6 @@
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             margin-bottom: 1.5rem;
-            overflow: hidden;
         }
 
         .card-header {
@@ -162,22 +127,10 @@
             align-items: center;
         }
 
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
         .card-body {
             padding: 1.5rem;
         }
 
-        .card-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border);
-            background: #f8fafc;
-        }
-
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -205,26 +158,6 @@
             font-size: 1.5rem;
         }
 
-        .stat-info {
-            flex: 1;
-        }
-
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        .stat-label {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        /* Tables */
-        .table-responsive {
-            overflow-x: auto;
-        }
-
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -240,14 +173,41 @@
             background: #f8fafc;
             font-weight: 600;
             color: var(--gray);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--gray);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
             font-size: 0.875rem;
         }
 
-        .table tr:hover {
-            background: #f8fafc;
-        }
-
-        /* Forms */
         .form-group {
             margin-bottom: 1.25rem;
         }
@@ -264,122 +224,12 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             font-size: 1rem;
-            transition: all 0.2s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .form-col {
-            flex: 1;
         }
 
         textarea.form-control {
             min-height: 120px;
             resize: vertical;
             font-family: monospace;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--gray);
-        }
-
-        .btn-outline:hover {
-            background: #f8fafc;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        /* Badges */
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge-primary {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-        }
-
-        .badge-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 1.5rem;
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-
-        .tab.active {
-            border-bottom-color: var(--primary);
-            color: var(--primary);
         }
 
         .tab-content {
@@ -390,78 +240,37 @@
             display: block;
         }
 
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: white;
+        .preview-container {
+            background: #f8fafc;
+            border: 1px solid var(--border);
             border-radius: var(--radius);
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
             overflow-y: auto;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: translateY(20px);
-            transition: transform 0.3s;
         }
 
-        .modal.active .modal-content {
-            transform: translateY(0);
+        .preview-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
         }
 
-        .modal-header {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gray);
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
         }
 
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-        }
-
-        /* Quick Actions */
         .quick-actions {
             display: flex;
             gap: 1rem;
@@ -482,98 +291,6 @@
         .quick-action-btn:hover {
             border-color: var(--primary);
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .quick-action-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 80px;
-            }
-            .sidebar-header h2, .menu-item span {
-                display: none;
-            }
-            .menu-item {
-                justify-content: center;
-                padding: 1rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .admin-container {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-            }
-            .sidebar-menu {
-                display: flex;
-                overflow-x: auto;
-            }
-            .menu-item {
-                flex-direction: column;
-                padding: 0.75rem;
-                min-width: 80px;
-            }
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            .quick-actions {
-                flex-direction: column;
-            }
-        }
-
-        /* Text Import Preview */
-        .preview-container {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            margin-top: 1rem;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .preview-item {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .preview-item-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .preview-item-name {
-            font-weight: 600;
-        }
-
-        .preview-ingredients {
-            font-size: 0.875rem;
-            color: var(--gray);
-        }
-
-        .ingredient-item {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .ingredient-emoji {
-            width: 20px;
         }
     </style>
 </head>
@@ -594,10 +311,6 @@
                     <i class="fas fa-utensils"></i>
                     <span>Ürün Yönetimi</span>
                 </div>
-                <div class="menu-item" data-tab="categories">
-                    <i class="fas fa-tags"></i>
-                    <span>Kategori Yönetimi</span>
-                </div>
                 <div class="menu-item" data-tab="bulk-import">
                     <i class="fas fa-file-import"></i>
                     <span>Toplu Ürün Ekle</span>
@@ -605,10 +318,6 @@
                 <div class="menu-item" data-tab="quick-add">
                     <i class="fas fa-bolt"></i>
                     <span>Hızlı Ürün Ekle</span>
-                </div>
-                <div class="menu-item" data-tab="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Ayarlar</span>
                 </div>
                 <div class="menu-item" onclick="visitSite()">
                     <i class="fas fa-external-link-alt"></i>
@@ -621,80 +330,57 @@
         <div class="main-content">
             <!-- Topbar -->
             <div class="topbar">
-                <div class="breadcrumb">
-                    <a href="#">Dashboard</a> / <span>Genel Bakış</span>
-                </div>
-                <div class="user-menu">
+                <div style="font-weight: 600; color: var(--gray);">MALIQ Admin Paneli</div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
                     <div class="user-avatar">A</div>
                     <div>
                         <div style="font-weight: 600;">Admin</div>
-                        <div style="font-size: 0.875rem; color: var(--gray);">Yönetici</div>
                     </div>
                 </div>
             </div>
 
             <!-- Content -->
             <div class="content">
-                <!-- Dashboard Tab -->
+                <!-- Dashboard -->
                 <div class="tab-content active" id="dashboard">
-                    <!-- Stats -->
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--primary);">
                                 <i class="fas fa-utensils"></i>
                             </div>
-                            <div class="stat-info">
-                                <div class="stat-value" id="totalProducts">0</div>
-                                <div class="stat-label">Toplam Ürün</div>
+                            <div>
+                                <div style="font-size: 1.75rem; font-weight: 700;" id="totalProducts">0</div>
+                                <div style="color: var(--gray);">Toplam Ürün</div>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
                                 <i class="fas fa-tags"></i>
                             </div>
-                            <div class="stat-info">
-                                <div class="stat-value" id="totalCategories">0</div>
-                                <div class="stat-label">Kategori</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
-                                <i class="fas fa-calculator"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-value" id="totalCalculations">0</div>
-                                <div class="stat-label">Hesaplama</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-value" id="avgCost">₺0</div>
-                                <div class="stat-label">Ort. Maliyet</div>
+                            <div>
+                                <div style="font-size: 1.75rem; font-weight: 700;" id="totalCategories">0</div>
+                                <div style="color: var(--gray);">Kategori</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Quick Actions -->
                     <div class="quick-actions">
                         <div class="quick-action-btn" onclick="setActiveTab('quick-add')">
-                            <div class="quick-action-icon">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary);">
                                 <i class="fas fa-plus-circle"></i>
                             </div>
                             <div style="font-weight: 600;">Hızlı Ürün Ekle</div>
                             <div style="font-size: 0.875rem; color: var(--gray);">Tek ürün ekle</div>
                         </div>
                         <div class="quick-action-btn" onclick="setActiveTab('bulk-import')">
-                            <div class="quick-action-icon">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary);">
                                 <i class="fas fa-file-import"></i>
                             </div>
                             <div style="font-weight: 600;">Toplu Ürün Ekle</div>
                             <div style="font-size: 0.875rem; color: var(--gray);">Çoklu ürün ekle</div>
                         </div>
                         <div class="quick-action-btn" onclick="visitSite()">
-                            <div class="quick-action-icon">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary);">
                                 <i class="fas fa-external-link-alt"></i>
                             </div>
                             <div style="font-weight: 600;">Siteyi Ziyaret Et</div>
@@ -702,23 +388,21 @@
                         </div>
                     </div>
 
-                    <!-- Recent Products -->
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">Son Eklenen Ürünler</div>
+                            <div style="font-size: 1.25rem; font-weight: 600;">Son Eklenen Ürünler</div>
                             <button class="btn btn-outline btn-sm" onclick="setActiveTab('products')">
                                 Tümünü Gör <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
+                            <div style="overflow-x: auto;">
                                 <table class="table">
                                     <thead>
                                         <tr>
                                             <th>Ürün Adı</th>
                                             <th>Kategori</th>
                                             <th>Malzeme Sayısı</th>
-                                            <th>Eklenme Tarihi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="recentProductsTable">
@@ -730,25 +414,23 @@
                     </div>
                 </div>
 
-                <!-- Products Management Tab -->
+                <!-- Products Management -->
                 <div class="tab-content" id="products">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">Ürün Yönetimi</div>
-                            <button class="btn btn-primary" id="addProductBtn">
+                            <div style="font-size: 1.25rem; font-weight: 600;">Ürün Yönetimi</div>
+                            <button class="btn btn-primary" onclick="showAddProductModal()">
                                 <i class="fas fa-plus"></i> Yeni Ürün Ekle
                             </button>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
+                            <div style="overflow-x: auto;">
                                 <table class="table">
                                     <thead>
                                         <tr>
                                             <th>Ürün Adı</th>
                                             <th>Kategori</th>
                                             <th>Malzeme Sayısı</th>
-                                            <th>Ort. Maliyet</th>
-                                            <th>Durum</th>
                                             <th>İşlemler</th>
                                         </tr>
                                     </thead>
@@ -761,48 +443,17 @@
                     </div>
                 </div>
 
-                <!-- Categories Management Tab -->
-                <div class="tab-content" id="categories">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Kategori Yönetimi</div>
-                            <button class="btn btn-primary" id="addCategoryBtn">
-                                <i class="fas fa-plus"></i> Yeni Kategori Ekle
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Kategori Adı</th>
-                                            <th>Ürün Sayısı</th>
-                                            <th>Emoji</th>
-                                            <th>Durum</th>
-                                            <th>İşlemler</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="categoriesTable">
-                                        <!-- Categories will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bulk Import Tab -->
+                <!-- Bulk Import -->
                 <div class="tab-content" id="bulk-import">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">Toplu Ürün Ekleme</div>
+                            <div style="font-size: 1.25rem; font-weight: 600;">Toplu Ürün Ekleme</div>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
                                 <label class="form-label">Kategori Seçin</label>
                                 <select class="form-control" id="bulkCategorySelect">
                                     <option value="">Kategori Seçin</option>
-                                    <!-- Categories will be populated here -->
                                 </select>
                             </div>
                             <div class="form-group">
@@ -825,10 +476,10 @@ Her ürün için:
 - Sonraki satırlar: Malzemeler (Emoji + İsim: Miktar Birim)"></textarea>
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-primary" id="previewBulkProducts">
+                                <button class="btn btn-primary" onclick="previewBulkProducts()">
                                     <i class="fas fa-eye"></i> Önizleme Yap
                                 </button>
-                                <button class="btn btn-success" id="importBulkProducts" style="display: none;">
+                                <button class="btn btn-success" onclick="importBulkProducts()" style="display: none;" id="importBulkBtn">
                                     <i class="fas fa-file-import"></i> Ürünleri İçe Aktar
                                 </button>
                             </div>
@@ -839,18 +490,17 @@ Her ürün için:
                     </div>
                 </div>
 
-                <!-- Quick Add Tab -->
+                <!-- Quick Add -->
                 <div class="tab-content" id="quick-add">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">Hızlı Ürün Ekleme</div>
+                            <div style="font-size: 1.25rem; font-weight: 600;">Hızlı Ürün Ekleme</div>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
                                 <label class="form-label">Kategori Seçin</label>
                                 <select class="form-control" id="quickCategorySelect">
                                     <option value="">Kategori Seçin</option>
-                                    <!-- Categories will be populated here -->
                                 </select>
                             </div>
                             <div class="form-group">
@@ -866,10 +516,10 @@ Her ürün için:
 Sonraki satırlar: Malzemeler (Emoji + İsim: Miktar Birim)"></textarea>
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-primary" id="previewQuickProduct">
+                                <button class="btn btn-primary" onclick="previewQuickProduct()">
                                     <i class="fas fa-eye"></i> Önizleme Yap
                                 </button>
-                                <button class="btn btn-success" id="addQuickProduct" style="display: none;">
+                                <button class="btn btn-success" onclick="addQuickProduct()" style="display: none;" id="addQuickBtn">
                                     <i class="fas fa-plus"></i> Ürünü Ekle
                                 </button>
                             </div>
@@ -879,264 +529,91 @@ Sonraki satırlar: Malzemeler (Emoji + İsim: Miktar Birim)"></textarea>
                         </div>
                     </div>
                 </div>
-
-                <!-- Settings Tab -->
-                <div class="tab-content" id="settings">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Sistem Ayarları</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label class="form-label">Site Başlığı</label>
-                                <input type="text" class="form-control" id="siteTitle" value="MALIQ — Akıllı Maliyet Hesaplayıcınız">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Varsayılan Birim</label>
-                                <select class="form-control" id="defaultUnit">
-                                    <option value="gr">Gram (gr)</option>
-                                    <option value="kg">Kilogram (kg)</option>
-                                    <option value="ml">Mililitre (ml)</option>
-                                    <option value="lt">Litre (lt)</option>
-                                    <option value="adet">Adet</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Varsayılan Fiyat Birimi</label>
-                                <select class="form-control" id="defaultPriceUnit">
-                                    <option value="kg">₺ / kg</option>
-                                    <option value="gr">₺ / gr</option>
-                                    <option value="lt">₺ / lt</option>
-                                    <option value="ml">₺ / ml</option>
-                                    <option value="adet">₺ / adet</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <button class="btn btn-primary" id="saveSettings">
-                                    <i class="fas fa-save"></i> Ayarları Kaydet
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Product Modal -->
-    <div class="modal" id="addProductModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Yeni Ürün Ekle</div>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Ürün Adı</label>
-                    <input type="text" class="form-control" id="productName" placeholder="Örn: Lahmacun">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Kategori</label>
-                    <select class="form-control" id="productCategory">
-                        <option value="">Kategori Seçin</option>
-                        <!-- Categories will be populated here -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Emoji</label>
-                    <input type="text" class="form-control" id="productEmoji" placeholder="🥙">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Malzemeler</label>
-                    <div id="ingredientsContainer">
-                        <div class="form-row" style="margin-bottom: 0.5rem;">
-                            <div class="form-col">
-                                <input type="text" class="form-control" placeholder="Malzeme adı">
-                            </div>
-                            <div class="form-col">
-                                <input type="number" class="form-control" placeholder="Miktar">
-                            </div>
-                            <div class="form-col">
-                                <select class="form-control">
-                                    <option value="gr">gr</option>
-                                    <option value="kg">kg</option>
-                                    <option value="ml">ml</option>
-                                    <option value="lt">lt</option>
-                                    <option value="adet">adet</option>
-                                </select>
-                            </div>
-                            <div class="form-col">
-                                <input type="text" class="form-control" placeholder="Emoji">
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-outline btn-sm" id="addIngredientBtn">
-                        <i class="fas fa-plus"></i> Malzeme Ekle
-                    </button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancelProduct">İptal</button>
-                <button class="btn btn-primary" id="saveProduct">Ürünü Kaydet</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Category Modal -->
-    <div class="modal" id="addCategoryModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Yeni Kategori Ekle</div>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Kategori Adı</label>
-                    <input type="text" class="form-control" id="categoryName" placeholder="Örn: Lahmacun">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Kategori Anahtarı</label>
-                    <input type="text" class="form-control" id="categoryKey" placeholder="Örn: lahmacun">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Emoji</label>
-                    <input type="text" class="form-control" id="categoryEmoji" placeholder="🥙">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancelCategory">İptal</button>
-                <button class="btn btn-primary" id="saveCategory">Kategoriyi Kaydet</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Data Management
-        let RECIPES = JSON.parse(localStorage.getItem('maliq_recipes') || '{}');
-        let CATEGORIES = JSON.parse(localStorage.getItem('maliq_categories') || '[]');
-        
-        // Initialize default data if empty
-        if (Object.keys(RECIPES).length === 0) {
-            RECIPES = {
-                "Lahmacun": { category:'lahmacun', emoji:'🥙', ingredients:[{name:'Un',qty:150,unit:'gr',emoji:'🌾'},{name:'Kıyma',qty:150,unit:'gr',emoji:'🥩'}]},
-                "Adana Dürüm": { category:'durum', emoji:'🌯', ingredients:[{name:'Kuzu Kıyması',qty:200,unit:'gr',emoji:'🥩'},{name:'Lavaş',qty:1,unit:'adet',emoji:'🫓'}]},
-                "Pizza Margherita": { category:'pizza', emoji:'🍕', ingredients:[{name:'Un',qty:300,unit:'gr',emoji:'🌾'},{name:'Mozzarella',qty:150,unit:'gr',emoji:'🧀'}]},
-                "Hamburger": { category:'fast', emoji:'🍔', ingredients:[{name:'Köfte',qty:150,unit:'gr',emoji:'🥩'},{name:'Ekmek',qty:1,unit:'adet',emoji:'🍞'}]},
-                "Cola": { category:'icecek', emoji:'🥤', ingredients:[{name:'Cola',qty:330,unit:'ml',emoji:'🥤'}]},
-                "Şalgam": { category:'icecek', emoji:'🧃', ingredients:[{name:'Şalgam',qty:330,unit:'ml',emoji:'🧃'}]}
-            };
-            localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
-        }
-        
-        if (CATEGORIES.length === 0) {
-            CATEGORIES = [
-                { key:'kahvalti', name:'Kahvaltı', emoji:'🥐' },
-                { key:'corba', name:'Çorba', emoji:'🥣' },
-                { key:'ana', name:'Ana Yemek', emoji:'🍽️' },
-                { key:'pide', name:'Pide', emoji:'🥙' },
-                { key:'lahmacun', name:'Lahmacun', emoji:'🥙' },
-                { key:'pizza', name:'Pizza', emoji:'🍕' },
-                { key:'durum', name:'Dürüm', emoji:'🌯' },
-                { key:'fast', name:'Fast Food', emoji:'🍔' },
-                { key:'icecek', name:'İçecek', emoji:'🥤' },
-                { key:'tatli', name:'Tatlı', emoji:'🍨' },
-                { key:'garnitur', name:'Garnitür', emoji:'🍟' },
-                { key:'deniz', name:'Deniz', emoji:'🐟' },
-                { key:'vegan', name:'Vejetaryen', emoji:'🥗' }
-            ];
-            localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+        // MALIQ uygulamasıyla TAM UYUMLU veri yapısı
+        let RECIPES = {};
+        let CATEGORIES = [];
+
+        // Sayfa yüklendiğinde MALIQ verilerini yükle
+        function loadMALIQData() {
+            // MALIQ uygulamasındaki RECIPES verisini al
+            const maliqRecipes = localStorage.getItem('RECIPES');
+            if (maliqRecipes) {
+                RECIPES = JSON.parse(maliqRecipes);
+            } else {
+                // Varsayılan MALIQ verileri
+                RECIPES = {
+                    "Lahmacun": { category:'lahmacun', emoji:'🥙', ingredients:[{name:'Un',qty:150,unit:'gr',emoji:'🌾'},{name:'Kıyma',qty:150,unit:'gr',emoji:'🥩'}]},
+                    "Adana Dürüm": { category:'durum', emoji:'🌯', ingredients:[{name:'Kuzu Kıyması',qty:200,unit:'gr',emoji:'🥩'},{name:'Lavaş',qty:1,unit:'adet',emoji:'🫓'}]},
+                    "Pizza Margherita": { category:'pizza', emoji:'🍕', ingredients:[{name:'Un',qty:300,unit:'gr',emoji:'🌾'},{name:'Mozzarella',qty:150,unit:'gr',emoji:'🧀'}]},
+                    "Hamburger": { category:'fast', emoji:'🍔', ingredients:[{name:'Köfte',qty:150,unit:'gr',emoji:'🥩'},{name:'Ekmek',qty:1,unit:'adet',emoji:'🍞'}]},
+                    "Cola": { category:'icecek', emoji:'🥤', ingredients:[{name:'Cola',qty:330,unit:'ml',emoji:'🥤'}]},
+                    "Şalgam": { category:'icecek', emoji:'🧃', ingredients:[{name:'Şalgam',qty:330,unit:'ml',emoji:'🧃'}]}
+                };
+                localStorage.setItem('RECIPES', JSON.stringify(RECIPES));
+            }
+
+            // MALIQ kategorilerini al
+            const maliqCategories = localStorage.getItem('CATEGORIES');
+            if (maliqCategories) {
+                CATEGORIES = JSON.parse(maliqCategories);
+            } else {
+                // Varsayılan MALIQ kategorileri
+                CATEGORIES = [
+                    { key:'kahvalti', name:'Kahvaltı', emoji:'🥐' },
+                    { key:'corba', name:'Çorba', emoji:'🥣' },
+                    { key:'ana', name:'Ana Yemek', emoji:'🍽️' },
+                    { key:'pide', name:'Pide', emoji:'🥙' },
+                    { key:'lahmacun', name:'Lahmacun', emoji:'🥙' },
+                    { key:'pizza', name:'Pizza', emoji:'🍕' },
+                    { key:'durum', name:'Dürüm', emoji:'🌯' },
+                    { key:'fast', name:'Fast Food', emoji:'🍔' },
+                    { key:'icecek', name:'İçecek', emoji:'🥤' },
+                    { key:'tatli', name:'Tatlı', emoji:'🍨' },
+                    { key:'garnitur', name:'Garnitür', emoji:'🍟' },
+                    { key:'deniz', name:'Deniz', emoji:'🐟' },
+                    { key:'vegan', name:'Vejetaryen', emoji:'🥗' }
+                ];
+                localStorage.setItem('CATEGORIES', JSON.stringify(CATEGORIES));
+            }
+
+            updateUI();
         }
 
-        // UI Management
+        // MALIQ verilerini güncelle
+        function updateMALIQData() {
+            localStorage.setItem('RECIPES', JSON.stringify(RECIPES));
+            localStorage.setItem('CATEGORIES', JSON.stringify(CATEGORIES));
+            updateUI();
+        }
+
+        // UI güncelle
+        function updateUI() {
+            document.getElementById('totalProducts').textContent = Object.keys(RECIPES).length;
+            document.getElementById('totalCategories').textContent = CATEGORIES.length;
+            renderProductsTable();
+            renderRecentProducts();
+            populateCategorySelects();
+        }
+
+        // Tab yönetimi
         function setActiveTab(tabName) {
-            // Update menu items
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active');
             });
-            document.querySelector(`.menu-item[data-tab="${tabName}"]`).classList.add('active');
             
-            // Update tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
             document.getElementById(tabName).classList.add('active');
-            
-            // Update breadcrumb
-            const breadcrumb = document.querySelector('.breadcrumb');
-            const tabTitles = {
-                'dashboard': 'Dashboard',
-                'products': 'Ürün Yönetimi',
-                'categories': 'Kategori Yönetimi',
-                'bulk-import': 'Toplu Ürün Ekle',
-                'quick-add': 'Hızlı Ürün Ekle',
-                'settings': 'Ayarlar'
-            };
-            breadcrumb.innerHTML = `<a href="#">Dashboard</a> / <span>${tabTitles[tabName]}</span>`;
-            
-            // Refresh data if needed
-            if (tabName === 'products') {
-                renderProductsTable();
-            } else if (tabName === 'categories') {
-                renderCategoriesTable();
-            } else if (tabName === 'dashboard') {
-                updateDashboardStats();
-            }
+            document.querySelector(`.menu-item[data-tab="${tabName}"]`).classList.add('active');
         }
 
-        function updateDashboardStats() {
-            document.getElementById('totalProducts').textContent = Object.keys(RECIPES).length;
-            document.getElementById('totalCategories').textContent = CATEGORIES.length;
-            
-            // Calculate total calculations (saved items)
-            const savedItems = JSON.parse(localStorage.getItem('maliq_saved') || '[]');
-            document.getElementById('totalCalculations').textContent = savedItems.length;
-            
-            // Calculate average cost
-            let totalCost = 0;
-            let costCount = 0;
-            savedItems.forEach(item => {
-                if (item.total && item.total > 0) {
-                    totalCost += item.total;
-                    costCount++;
-                }
-            });
-            const avgCost = costCount > 0 ? (totalCost / costCount).toFixed(2) : 0;
-            document.getElementById('avgCost').textContent = `₺${avgCost}`;
-            
-            // Render recent products
-            renderRecentProducts();
-        }
-
-        function renderRecentProducts() {
-            const container = document.getElementById('recentProductsTable');
-            container.innerHTML = '';
-            
-            const products = Object.keys(RECIPES).slice(0, 5); // Get first 5 products
-            
-            products.forEach(productName => {
-                const product = RECIPES[productName];
-                const category = CATEGORIES.find(cat => cat.key === product.category) || { name: 'Belirsiz' };
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span>${product.emoji}</span>
-                            <div>${productName}</div>
-                        </div>
-                    </td>
-                    <td>${category.name}</td>
-                    <td>${product.ingredients.length}</td>
-                    <td>${new Date().toLocaleDateString('tr-TR')}</td>
-                `;
-                container.appendChild(row);
-            });
-            
-            if (products.length === 0) {
-                container.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--gray);">Henüz ürün eklenmemiş</td></tr>';
-            }
-        }
-
+        // Ürün tablosunu render et
         function renderProductsTable() {
             const container = document.getElementById('productsTable');
             container.innerHTML = '';
@@ -1150,67 +627,52 @@ Sonraki satırlar: Malzemeler (Emoji + İsim: Miktar Birim)"></textarea>
                     <td>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span>${product.emoji}</span>
-                            <div>
-                                <div style="font-weight: 600;">${productName}</div>
-                                <div style="font-size: 0.875rem; color: var(--gray);">${product.ingredients.length} malzeme</div>
-                            </div>
+                            <div style="font-weight: 600;">${productName}</div>
                         </div>
                     </td>
                     <td>${category.name}</td>
                     <td>${product.ingredients.length}</td>
-                    <td>₺0.00</td>
-                    <td><span class="badge badge-success">Aktif</span></td>
                     <td>
-                        <button class="btn btn-outline btn-sm" onclick="editProduct('${productName}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
                         <button class="btn btn-outline btn-sm" onclick="deleteProduct('${productName}')">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash"></i> Sil
                         </button>
                     </td>
                 `;
                 container.appendChild(row);
             });
-            
-            if (Object.keys(RECIPES).length === 0) {
-                container.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--gray);">Henüz ürün eklenmemiş</td></tr>';
-            }
         }
 
-        function renderCategoriesTable() {
-            const container = document.getElementById('categoriesTable');
+        // Son ürünleri göster
+        function renderRecentProducts() {
+            const container = document.getElementById('recentProductsTable');
             container.innerHTML = '';
             
-            CATEGORIES.forEach(category => {
-                const productCount = Object.values(RECIPES).filter(product => product.category === category.key).length;
+            const recentProducts = Object.keys(RECIPES).slice(-5).reverse();
+            
+            recentProducts.forEach(productName => {
+                const product = RECIPES[productName];
+                const category = CATEGORIES.find(cat => cat.key === product.category) || { name: 'Belirsiz' };
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span>${category.emoji}</span>
-                            <div style="font-weight: 600;">${category.name}</div>
+                            <span>${product.emoji}</span>
+                            <div>${productName}</div>
                         </div>
                     </td>
-                    <td>${productCount}</td>
-                    <td>${category.emoji}</td>
-                    <td><span class="badge badge-success">Aktif</span></td>
-                    <td>
-                        <button class="btn btn-outline btn-sm" onclick="editCategory('${category.key}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-outline btn-sm" onclick="deleteCategory('${category.key}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
+                    <td>${category.name}</td>
+                    <td>${product.ingredients.length}</td>
                 `;
                 container.appendChild(row);
             });
         }
 
+        // Kategori select'lerini doldur
         function populateCategorySelects() {
-            const selects = document.querySelectorAll('select[id$="CategorySelect"], #productCategory');
-            selects.forEach(select => {
+            const selects = ['bulkCategorySelect', 'quickCategorySelect'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
                 select.innerHTML = '<option value="">Kategori Seçin</option>';
                 CATEGORIES.forEach(category => {
                     const option = document.createElement('option');
@@ -1221,35 +683,30 @@ Sonraki satırlar: Malzemeler (Emoji + İsim: Miktar Birim)"></textarea>
             });
         }
 
-        // Text Parsing Functions
+        // Metin parsing fonksiyonları
         function parseProductText(text, category) {
             const lines = text.split('\n').filter(line => line.trim() !== '');
             if (lines.length === 0) return null;
             
-            // First line is product name with emoji
+            // İlk satır ürün adı ve emoji
             const firstLine = lines[0].trim();
             const emojiMatch = firstLine.match(/^(\p{Emoji})/u);
             const emoji = emojiMatch ? emojiMatch[0] : '🍽️';
             const productName = firstLine.replace(/^\p{Emoji}\s?/u, '').trim();
             
-            // Remaining lines are ingredients
+            // Malzemeler
             const ingredients = [];
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (line === '') continue;
                 
-                const ingredientMatch = line.match(/^(\p{Emoji})?\s?(.+?):\s*(\d+(?:\.\d+)?)\s*([a-zA-ZğüşıöçĞÜŞİÖÇ]+)/u);
-                if (ingredientMatch) {
-                    const ingredientEmoji = ingredientMatch[1] || '🧾';
-                    const ingredientName = ingredientMatch[2].trim();
-                    const quantity = parseFloat(ingredientMatch[3]);
-                    const unit = ingredientMatch[4].trim();
-                    
+                const match = line.match(/^(\p{Emoji})?\s?(.+?):\s*(\d+(?:\.\d+)?)\s*([a-zA-ZğüşıöçĞÜŞİÖÇ]+)/u);
+                if (match) {
                     ingredients.push({
-                        name: ingredientName,
-                        qty: quantity,
-                        unit: unit,
-                        emoji: ingredientEmoji
+                        name: match[2].trim(),
+                        qty: parseFloat(match[3]),
+                        unit: match[4].trim(),
+                        emoji: match[1] || '🧾'
                     });
                 }
             }
@@ -1268,386 +725,164 @@ Sonraki satırlar: Malzemeler (Emoji + İsim: Miktar Birim)"></textarea>
             
             blocks.forEach(block => {
                 const product = parseProductText(block, category);
-                if (product) {
-                    products.push(product);
-                }
+                if (product) products.push(product);
             });
             
             return products;
         }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize UI
-            updateDashboardStats();
-            populateCategorySelects();
+        // Toplu ürün önizleme
+        function previewBulkProducts() {
+            const category = document.getElementById('bulkCategorySelect').value;
+            const text = document.getElementById('bulkProductsText').value.trim();
             
-            // Menu item clicks
+            if (!category) {
+                alert('Lütfen kategori seçin!');
+                return;
+            }
+            
+            const products = parseBulkProductsText(text, category);
+            
+            if (products.length === 0) {
+                alert('Geçerli ürün bulunamadı!');
+                return;
+            }
+            
+            const container = document.getElementById('bulkPreviewContainer');
+            container.innerHTML = '';
+            container.style.display = 'block';
+            
+            products.forEach(product => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span>${product.emoji}</span>
+                        <strong>${product.name}</strong>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">
+                        ${product.ingredients.map(ing => 
+                            `${ing.emoji} ${ing.name}: ${ing.qty} ${ing.unit}`
+                        ).join('<br>')}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            
+            document.getElementById('importBulkBtn').style.display = 'inline-flex';
+        }
+
+        // Toplu ürün ekle
+        function importBulkProducts() {
+            const category = document.getElementById('bulkCategorySelect').value;
+            const text = document.getElementById('bulkProductsText').value.trim();
+            const products = parseBulkProductsText(text, category);
+            
+            let added = 0;
+            products.forEach(product => {
+                if (!RECIPES[product.name]) {
+                    RECIPES[product.name] = {
+                        category: product.category,
+                        emoji: product.emoji,
+                        ingredients: product.ingredients
+                    };
+                    added++;
+                }
+            });
+            
+            updateMALIQData();
+            alert(`${added} yeni ürün eklendi!`);
+            document.getElementById('bulkPreviewContainer').style.display = 'none';
+            document.getElementById('importBulkBtn').style.display = 'none';
+            document.getElementById('bulkProductsText').value = '';
+        }
+
+        // Hızlı ürün önizleme
+        function previewQuickProduct() {
+            const category = document.getElementById('quickCategorySelect').value;
+            const text = document.getElementById('quickProductText').value.trim();
+            
+            if (!category) {
+                alert('Lütfen kategori seçin!');
+                return;
+            }
+            
+            const product = parseProductText(text, category);
+            
+            if (!product) {
+                alert('Geçerli ürün formatı değil!');
+                return;
+            }
+            
+            const container = document.getElementById('quickPreviewContainer');
+            container.innerHTML = '';
+            container.style.display = 'block';
+            
+            container.innerHTML = `
+                <div class="preview-item">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span>${product.emoji}</span>
+                        <strong>${product.name}</strong>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #666;">
+                        ${product.ingredients.map(ing => 
+                            `${ing.emoji} ${ing.name}: ${ing.qty} ${ing.unit}`
+                        ).join('<br>')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('addQuickBtn').style.display = 'inline-flex';
+        }
+
+        // Hızlı ürün ekle
+        function addQuickProduct() {
+            const category = document.getElementById('quickCategorySelect').value;
+            const text = document.getElementById('quickProductText').value.trim();
+            const product = parseProductText(text, category);
+            
+            if (RECIPES[product.name] && !confirm('Bu ürün zaten var. Üzerine yazılsın mı?')) {
+                return;
+            }
+            
+            RECIPES[product.name] = {
+                category: product.category,
+                emoji: product.emoji,
+                ingredients: product.ingredients
+            };
+            
+            updateMALIQData();
+            alert('Ürün başarıyla eklendi!');
+            document.getElementById('quickPreviewContainer').style.display = 'none';
+            document.getElementById('addQuickBtn').style.display = 'none';
+            document.getElementById('quickProductText').value = '';
+        }
+
+        // Ürün sil
+        function deleteProduct(productName) {
+            if (confirm(`"${productName}" ürününü silmek istediğinizden emin misiniz?`)) {
+                delete RECIPES[productName];
+                updateMALIQData();
+                alert('Ürün silindi!');
+            }
+        }
+
+        // Siteyi ziyaret et
+        function visitSite() {
+            window.open('app.html', '_blank');
+        }
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMALIQData();
+            
+            // Menü item event'leri
             document.querySelectorAll('.menu-item[data-tab]').forEach(item => {
                 item.addEventListener('click', function() {
                     setActiveTab(this.getAttribute('data-tab'));
                 });
             });
-            
-            // Add Product Modal
-            document.getElementById('addProductBtn').addEventListener('click', function() {
-                document.getElementById('addProductModal').classList.add('active');
-            });
-            
-            document.getElementById('cancelProduct').addEventListener('click', function() {
-                document.getElementById('addProductModal').classList.remove('active');
-            });
-            
-            document.getElementById('saveProduct').addEventListener('click', function() {
-                const name = document.getElementById('productName').value.trim();
-                const category = document.getElementById('productCategory').value;
-                const emoji = document.getElementById('productEmoji').value.trim() || '🍽️';
-                
-                if (!name || !category) {
-                    alert('Lütfen ürün adı ve kategori seçin.');
-                    return;
-                }
-                
-                // Collect ingredients
-                const ingredients = [];
-                const ingredientRows = document.querySelectorAll('#ingredientsContainer .form-row');
-                ingredientRows.forEach(row => {
-                    const inputs = row.querySelectorAll('input, select');
-                    const ingredientName = inputs[0].value.trim();
-                    const quantity = parseFloat(inputs[1].value) || 0;
-                    const unit = inputs[2].value;
-                    const ingredientEmoji = inputs[3].value.trim() || '🧾';
-                    
-                    if (ingredientName) {
-                        ingredients.push({
-                            name: ingredientName,
-                            qty: quantity,
-                            unit: unit,
-                            emoji: ingredientEmoji
-                        });
-                    }
-                });
-                
-                // Save product
-                RECIPES[name] = {
-                    category: category,
-                    emoji: emoji,
-                    ingredients: ingredients
-                };
-                localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
-                
-                alert('Ürün başarıyla eklendi!');
-                document.getElementById('addProductModal').classList.remove('active');
-                renderProductsTable();
-                updateDashboardStats();
-            });
-            
-            // Add ingredient row
-            document.getElementById('addIngredientBtn').addEventListener('click', function() {
-                const container = document.getElementById('ingredientsContainer');
-                const newRow = document.createElement('div');
-                newRow.className = 'form-row';
-                newRow.style.marginBottom = '0.5rem';
-                newRow.innerHTML = `
-                    <div class="form-col">
-                        <input type="text" class="form-control" placeholder="Malzeme adı">
-                    </div>
-                    <div class="form-col">
-                        <input type="number" class="form-control" placeholder="Miktar">
-                    </div>
-                    <div class="form-col">
-                        <select class="form-control">
-                            <option value="gr">gr</option>
-                            <option value="kg">kg</option>
-                            <option value="ml">ml</option>
-                            <option value="lt">lt</option>
-                            <option value="adet">adet</option>
-                        </select>
-                    </div>
-                    <div class="form-col">
-                        <input type="text" class="form-control" placeholder="Emoji">
-                    </div>
-                `;
-                container.appendChild(newRow);
-            });
-            
-            // Add Category Modal
-            document.getElementById('addCategoryBtn').addEventListener('click', function() {
-                document.getElementById('addCategoryModal').classList.add('active');
-            });
-            
-            document.getElementById('cancelCategory').addEventListener('click', function() {
-                document.getElementById('addCategoryModal').classList.remove('active');
-            });
-            
-            document.getElementById('saveCategory').addEventListener('click', function() {
-                const name = document.getElementById('categoryName').value.trim();
-                const key = document.getElementById('categoryKey').value.trim();
-                const emoji = document.getElementById('categoryEmoji').value.trim() || '🏷️';
-                
-                if (!name || !key) {
-                    alert('Lütfen kategori adı ve anahtar girin.');
-                    return;
-                }
-                
-                // Check if key already exists
-                if (CATEGORIES.some(cat => cat.key === key)) {
-                    alert('Bu anahtara sahip bir kategori zaten var.');
-                    return;
-                }
-                
-                // Save category
-                CATEGORIES.push({
-                    key: key,
-                    name: name,
-                    emoji: emoji
-                });
-                localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
-                
-                alert('Kategori başarıyla eklendi!');
-                document.getElementById('addCategoryModal').classList.remove('active');
-                populateCategorySelects();
-                renderCategoriesTable();
-            });
-            
-            // Bulk Import
-            document.getElementById('previewBulkProducts').addEventListener('click', function() {
-                const category = document.getElementById('bulkCategorySelect').value;
-                const text = document.getElementById('bulkProductsText').value.trim();
-                
-                if (!category) {
-                    alert('Lütfen bir kategori seçin.');
-                    return;
-                }
-                
-                if (!text) {
-                    alert('Lütfen ürün metnini girin.');
-                    return;
-                }
-                
-                const products = parseBulkProductsText(text, category);
-                
-                if (products.length === 0) {
-                    alert('Geçerli ürün formatı bulunamadı.');
-                    return;
-                }
-                
-                // Show preview
-                const previewContainer = document.getElementById('bulkPreviewContainer');
-                previewContainer.innerHTML = '';
-                previewContainer.style.display = 'block';
-                
-                products.forEach(product => {
-                    const previewItem = document.createElement('div');
-                    previewItem.className = 'preview-item';
-                    
-                    let ingredientsHtml = '';
-                    product.ingredients.forEach(ingredient => {
-                        ingredientsHtml += `
-                            <div class="ingredient-item">
-                                <span class="ingredient-emoji">${ingredient.emoji}</span>
-                                <span>${ingredient.name}: ${ingredient.qty} ${ingredient.unit}</span>
-                            </div>
-                        `;
-                    });
-                    
-                    previewItem.innerHTML = `
-                        <div class="preview-item-header">
-                            <span>${product.emoji}</span>
-                            <span class="preview-item-name">${product.name}</span>
-                        </div>
-                        <div class="preview-ingredients">
-                            ${ingredientsHtml}
-                        </div>
-                    `;
-                    
-                    previewContainer.appendChild(previewItem);
-                });
-                
-                document.getElementById('importBulkProducts').style.display = 'inline-flex';
-            });
-            
-            document.getElementById('importBulkProducts').addEventListener('click', function() {
-                const category = document.getElementById('bulkCategorySelect').value;
-                const text = document.getElementById('bulkProductsText').value.trim();
-                const products = parseBulkProductsText(text, category);
-                
-                let addedCount = 0;
-                products.forEach(product => {
-                    if (!RECIPES[product.name]) {
-                        RECIPES[product.name] = {
-                            category: product.category,
-                            emoji: product.emoji,
-                            ingredients: product.ingredients
-                        };
-                        addedCount++;
-                    }
-                });
-                
-                localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
-                
-                alert(`${addedCount} ürün başarıyla eklendi!`);
-                document.getElementById('bulkPreviewContainer').style.display = 'none';
-                document.getElementById('importBulkProducts').style.display = 'none';
-                document.getElementById('bulkProductsText').value = '';
-                updateDashboardStats();
-            });
-            
-            // Quick Add
-            document.getElementById('previewQuickProduct').addEventListener('click', function() {
-                const category = document.getElementById('quickCategorySelect').value;
-                const text = document.getElementById('quickProductText').value.trim();
-                
-                if (!category) {
-                    alert('Lütfen bir kategori seçin.');
-                    return;
-                }
-                
-                if (!text) {
-                    alert('Lütfen ürün metnini girin.');
-                    return;
-                }
-                
-                const product = parseProductText(text, category);
-                
-                if (!product) {
-                    alert('Geçerli ürün formatı bulunamadı.');
-                    return;
-                }
-                
-                // Show preview
-                const previewContainer = document.getElementById('quickPreviewContainer');
-                previewContainer.innerHTML = '';
-                previewContainer.style.display = 'block';
-                
-                let ingredientsHtml = '';
-                product.ingredients.forEach(ingredient => {
-                    ingredientsHtml += `
-                        <div class="ingredient-item">
-                            <span class="ingredient-emoji">${ingredient.emoji}</span>
-                            <span>${ingredient.name}: ${ingredient.qty} ${ingredient.unit}</span>
-                        </div>
-                    `;
-                });
-                
-                previewContainer.innerHTML = `
-                    <div class="preview-item">
-                        <div class="preview-item-header">
-                            <span>${product.emoji}</span>
-                            <span class="preview-item-name">${product.name}</span>
-                        </div>
-                        <div class="preview-ingredients">
-                            ${ingredientsHtml}
-                        </div>
-                    </div>
-                `;
-                
-                document.getElementById('addQuickProduct').style.display = 'inline-flex';
-            });
-            
-            document.getElementById('addQuickProduct').addEventListener('click', function() {
-                const category = document.getElementById('quickCategorySelect').value;
-                const text = document.getElementById('quickProductText').value.trim();
-                const product = parseProductText(text, category);
-                
-                if (RECIPES[product.name]) {
-                    if (!confirm('Bu isimde bir ürün zaten var. Üzerine yazılsın mı?')) {
-                        return;
-                    }
-                }
-                
-                RECIPES[product.name] = {
-                    category: product.category,
-                    emoji: product.emoji,
-                    ingredients: product.ingredients
-                };
-                
-                localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
-                
-                alert('Ürün başarıyla eklendi!');
-                document.getElementById('quickPreviewContainer').style.display = 'none';
-                document.getElementById('addQuickProduct').style.display = 'none';
-                document.getElementById('quickProductText').value = '';
-                updateDashboardStats();
-            });
-            
-            // Settings
-            document.getElementById('saveSettings').addEventListener('click', function() {
-                const siteTitle = document.getElementById('siteTitle').value;
-                const defaultUnit = document.getElementById('defaultUnit').value;
-                const defaultPriceUnit = document.getElementById('defaultPriceUnit').value;
-                
-                // Save settings to localStorage
-                const settings = {
-                    siteTitle: siteTitle,
-                    defaultUnit: defaultUnit,
-                    defaultPriceUnit: defaultPriceUnit
-                };
-                localStorage.setItem('maliq_settings', JSON.stringify(settings));
-                
-                alert('Ayarlar başarıyla kaydedildi!');
-            });
-            
-            // Load settings
-            const settings = JSON.parse(localStorage.getItem('maliq_settings') || '{}');
-            if (settings.siteTitle) {
-                document.getElementById('siteTitle').value = settings.siteTitle;
-            }
-            if (settings.defaultUnit) {
-                document.getElementById('defaultUnit').value = settings.defaultUnit;
-            }
-            if (settings.defaultPriceUnit) {
-                document.getElementById('defaultPriceUnit').value = settings.defaultPriceUnit;
-            }
-            
-            // Modal close buttons
-            document.querySelectorAll('.modal-close').forEach(button => {
-                button.addEventListener('click', function() {
-                    this.closest('.modal').classList.remove('active');
-                });
-            });
         });
-
-        // Utility Functions
-        function editProduct(productName) {
-            alert(`"${productName}" ürünü düzenlenecek - Bu özellik geliştirme aşamasında`);
-        }
-
-        function deleteProduct(productName) {
-            if (confirm(`"${productName}" ürününü silmek istediğinizden emin misiniz?`)) {
-                delete RECIPES[productName];
-                localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
-                renderProductsTable();
-                updateDashboardStats();
-                alert('Ürün silindi!');
-            }
-        }
-
-        function editCategory(categoryKey) {
-            alert(`"${categoryKey}" kategorisi düzenlenecek - Bu özellik geliştirme aşamasında`);
-        }
-
-        function deleteCategory(categoryKey) {
-            // Check if category is used by any products
-            const usedByProducts = Object.values(RECIPES).some(product => product.category === categoryKey);
-            
-            if (usedByProducts) {
-                alert('Bu kategori kullanımdadır ve silinemez!');
-                return;
-            }
-            
-            if (confirm(`"${categoryKey}" kategorisini silmek istediğinizden emin misiniz?`)) {
-                CATEGORIES = CATEGORIES.filter(cat => cat.key !== categoryKey);
-                localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
-                populateCategorySelects();
-                renderCategoriesTable();
-                alert('Kategori silindi!');
-            }
-        }
-
-        function visitSite() {
-            window.open('app.html', '_blank');
-        }
     </script>
 </body>
 </html>
