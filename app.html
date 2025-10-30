@@ -80,6 +80,26 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .management-item-name{flex:1;font-size:13px}
 .management-item-url{flex:2;padding:4px;border-radius:4px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit;font-size:12px}
 .management-item-actions{display:flex;gap:4px}
+  /* Quick Add Modal için ek stiller */
+#quickProductsText {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: inherit;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.dev-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.dev-controls .dev-btn {
+  flex: 1;
+  min-width: 120px;
+}
 
 .site-stats{display:flex;justify-content:space-around;margin:12px 0;padding:6px;background:var(--surface);border-radius:8px}
 .stat-item{text-align:center}
@@ -706,6 +726,197 @@ document.getElementById('clearBtn').addEventListener('click', () => {
 
 document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
 document.getElementById('addProductBtn').addEventListener('click', addProduct);
+  // Toplu ekleme fonksiyonları
+document.getElementById('quickAddProductsBtn').addEventListener('click', () => {
+  document.getElementById('quickAddModal').style.display = 'flex';
+});
+
+document.getElementById('closeQuickAddModal').addEventListener('click', () => {
+  document.getElementById('quickAddModal').style.display = 'none';
+});
+
+document.getElementById('confirmQuickAdd').addEventListener('click', quickAddProducts);
+
+document.getElementById('cancelQuickAdd').addEventListener('click', () => {
+  document.getElementById('quickAddModal').style.display = 'none';
+});
+
+function quickAddProducts() {
+  const text = document.getElementById('quickProductsText').value.trim();
+  if (!text) {
+    alert('Lütfen ürün verilerini girin!');
+    return;
+  }
+  
+  const lines = text.split('\n');
+  let currentCategory = null;
+  let currentProduct = null;
+  let addedCategories = 0;
+  let addedProducts = 0;
+  let addedIngredients = 0;
+  
+  lines.forEach(line => {
+    line = line.trim();
+    if (!line) return;
+    
+    if (line.startsWith('+')) {
+      // Kategori satırı
+      const name = line.substring(1).trim();
+      const categoryId = name.toLowerCase()
+        .replace(/[ğüşıöç]/g, function(match) {
+          const map = {'ğ':'g','ü':'u','ş':'s','ı':'i','ö':'o','ç':'c'};
+          return map[match];
+        })
+        .replace(/[^a-z0-9]/g, '_');
+      
+      // Kategori var mı kontrol et
+      let existingCategory = CATEGORIES.find(cat => cat.id === categoryId);
+      if (!existingCategory) {
+        const newCategory = {
+          id: categoryId,
+          name: name,
+          imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'
+        };
+        CATEGORIES.push(newCategory);
+        addedCategories++;
+      }
+      currentCategory = categoryId;
+      currentProduct = null;
+      
+    } else if (line.startsWith('-')) {
+      // Ürün satırı
+      const name = line.substring(1).trim();
+      if (!currentCategory) {
+        alert('Lütfen önce bir kategori ekleyin!');
+        return;
+      }
+      
+      RECIPES[name] = {
+        category: currentCategory,
+        imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200',
+        ingredients: []
+      };
+      
+      currentProduct = name;
+      addedProducts++;
+      
+    } else if (line && currentProduct) {
+      // Malzeme satırı
+      const ingredientMatch = line.match(/^([^:]+):\s*(\d+(\.\d+)?)\s*(\S+)$/);
+      if (ingredientMatch) {
+        const name = ingredientMatch[1].trim();
+        const qty = parseFloat(ingredientMatch[2]);
+        const unit = ingredientMatch[4].trim();
+        
+        if (RECIPES[currentProduct]) {
+          RECIPES[currentProduct].ingredients.push({
+            name: name,
+            qty: qty,
+            unit: unit
+          });
+          addedIngredients++;
+        }
+      }
+    }
+  });
+  
+  // LocalStorage'a kaydet
+  localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+  localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+  
+  // UI'yı güncelle
+  document.getElementById('quickAddModal').style.display = 'none';
+  document.getElementById('quickProductsText').value = '';
+  
+  renderCategories();
+  renderProducts(null);
+  renderProductsManagementPanel();
+  renderCategoriesManagementPanel();
+  updateSiteStats();
+  
+  alert(`${addedCategories} kategori, ${addedProducts} ürün ve ${addedIngredients} malzeme eklendi!`);
+}
+
+// Veri yönetimi fonksiyonları
+document.getElementById('exportAllDataBtn').addEventListener('click', exportAllData);
+document.getElementById('importAllDataBtn').addEventListener('click', importAllData);
+document.getElementById('resetDataBtn').addEventListener('click', resetData);
+
+function exportAllData() {
+  const data = {
+    categories: CATEGORIES,
+    recipes: RECIPES,
+    saved: savedListArr,
+    exportDate: new Date().toISOString()
+  };
+  
+  const dataStr = JSON.stringify(data, null, 2);
+  const dataBlob = new Blob([dataStr], {type: 'application/json'});
+  
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'maliq_backup_' + new Date().toISOString().split('T')[0] + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function importAllData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(event) {
+      try {
+        const data = JSON.parse(event.target.result);
+        
+        if (confirm('Mevcut verilerin üzerine yazılacak. Emin misiniz?')) {
+          if (data.categories) {
+            CATEGORIES = data.categories;
+            localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+          }
+          
+          if (data.recipes) {
+            RECIPES = data.recipes;
+            localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+          }
+          
+          if (data.saved) {
+            savedListArr = data.saved;
+            localStorage.setItem('maliq_saved', JSON.stringify(savedListArr));
+          }
+          
+          // UI'yı yenile
+          renderCategories();
+          renderProducts(null);
+          renderProductsManagementPanel();
+          renderCategoriesManagementPanel();
+          updateSiteStats();
+          
+          alert('Veriler başarıyla içe aktarıldı!');
+        }
+      } catch (err) {
+        alert('Dosya okunamadı: ' + err.message);
+      }
+    };
+    
+    reader.readAsText(file);
+  };
+  
+  input.click();
+}
+
+function resetData() {
+  if (confirm('TÜM veriler sıfırlanacak. Bu işlem geri alınamaz! Emin misiniz?')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
 
 // Initialize
 setupUserInfo();
@@ -724,6 +935,24 @@ if (isAdmin) {
   renderProductsManagementPanel();
   renderCategoriesManagementPanel();
 }
+  <!-- Quick Add Modal -->
+  <div id="quickAddModal" class="modal">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:900">Hızlı Ürün Ekle</div>
+        <button id="closeQuickAddModal" class="btn-ghost">Kapat</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="small-note">+ işareti kategori, - işareti ürün ekler. Malzemeleri ürün altına yazın.</div>
+        <div class="small-note" style="color:var(--accent1)">Örnek:<br>+ YUMURTA ÇEŞİTLERİ<br>- Sucuklu Yumurta<br>Sucuk: 120 gr<br>Yumurta: 3 adet</div>
+        <textarea id="quickProductsText" class="input-small" placeholder="Buraya verileri yapıştırın..." rows="12" style="resize:vertical"></textarea>
+        <div style="display:flex;gap:6px">
+          <button id="confirmQuickAdd" class="btn-primary">Ekle</button>
+          <button id="cancelQuickAdd" class="btn-ghost">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </script>
 </body>
 </html>
