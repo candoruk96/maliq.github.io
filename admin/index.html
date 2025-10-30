@@ -1,20 +1,39 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MALIQ - Admin Panel</title>
-  <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MALIQ Admin</title>
+    
+    <!-- Decap CMS Script -->
+    <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </head>
 <body>
-  <script>
-    // Decap CMS'i başlat
-    CMS.init();
-    
-    // Hata yakalama
-    window.addEventListener('error', function(e) {
-      console.error('Admin panel hatası:', e.error);
-    });
-  </script>
+    <!-- Basit bir yükleme mesajı -->
+    <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
+        <h2>MALIQ Admin Paneli Yükleniyor...</h2>
+        <p>Eğer bu mesaj uzun süre görünürse, sayfayı yenileyin.</p>
+    </div>
+
+    <script>
+        console.log('Sayfa yüklendi, CMS kontrol ediliyor...');
+        
+        // CMS'in yüklenmesini bekleyelim
+        setTimeout(function() {
+            if (typeof CMS !== 'undefined') {
+                console.log('CMS bulundu, başlatılıyor...');
+                CMS.init();
+                console.log('CMS başlatıldı');
+                
+                // Yükleme mesajını gizle
+                document.querySelector('div').style.display = 'none';
+            } else {
+                console.error('CMS tanımlı değil!');
+                document.querySelector('div').innerHTML = 
+                    '<h2 style="color: red;">Hata: CMS yüklenemedi</h2>' +
+                    '<p>Lütfen sayfayı yenileyin veya console hatalarını kontrol edin.</p>';
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
