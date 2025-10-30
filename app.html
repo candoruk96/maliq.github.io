@@ -30,7 +30,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 
 /* cards - keep unified style and use .card-btn for both categories and products */
 .card-btn{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:10px;border-radius:10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;min-height:70px}
-.card-btn .emoji{font-size:20px}
+.card-btn .image{width:40px;height:40px;object-fit:cover;border-radius:8px}
 .card-btn .name{font-weight:800;font-size:12px;color:inherit}
 .card-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(3,10,30,0.45)}
 
@@ -43,7 +43,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .calc-grid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .material-item{background:var(--surface);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:6px}
 .material-top{display:flex;align-items:center;gap:6px}
-.material-emoji{width:32px;text-align:center}
+.material-image{width:32px;height:32px;object-fit:cover;border-radius:6px}
 .row-controls{display:flex;gap:6px;align-items:center;flex-wrap:nowrap;justify-content:space-between}
 .left-controls{display:flex;gap:8px;align-items:center;min-width:0}
 .right-controls{display:flex;gap:6px;align-items:center;justify-content:flex-end;min-width:220px;flex-shrink:0}
@@ -83,7 +83,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .search-suggestion-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
 .search-suggestion-item:last-child{border-bottom:none}
 .search-suggestion-item:hover{background:var(--surface)}
-.search-suggestion-emoji{font-size:16px}
+.search-suggestion-image{width:24px;height:24px;object-fit:cover;border-radius:4px}
 .search-suggestion-name{font-weight:600}
 
 /* Koli özelliği için ek stiller */
@@ -95,6 +95,17 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 .breadcrumb-item{cursor:pointer;color:var(--muted)}
 .breadcrumb-item:hover{color:var(--accent1)}
 .breadcrumb-separator{color:var(--muted)}
+
+/* Site İstatistikleri */
+.site-stats{display:flex;justify-content:space-around;margin:12px 0;padding:8px;background:var(--surface);border-radius:10px}
+.stat-item{text-align:center}
+.stat-value{font-weight:800;font-size:16px;color:var(--accent1)}
+.stat-label{font-size:10px;color:var(--muted)}
+
+/* Kategori Animasyonu */
+.category-stats{display:flex;justify-content:center;margin:8px 0;padding:6px;background:var(--surface);border-radius:8px}
+.category-stat{text-align:center;font-size:12px;color:var(--muted);transition:opacity 0.5s ease}
+.category-stat.fade{opacity:0}
 
 /* Mobile optimizations */
 @media (max-width: 480px) {
@@ -108,6 +119,10 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
   .dev-controls{flex-direction:column}
   .dev-input{min-width:auto}
   .koli-row{flex-direction:column}
+  .site-stats{flex-direction:column;gap:8px}
+  .calc-header-controls{flex-direction:column;gap:8px;align-items:stretch}
+  .calc-header-controls input{width:100%}
+  .calc-header-controls .btn-primary{width:100%}
 }
 
 /* PDF mobil uyumluluk */
@@ -115,6 +130,10 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
   .preview-card{width:98%;height:90vh}
   .preview-toolbar{flex-direction:column;gap:8px;align-items:stretch}
 }
+
+/* Resim uyarıları */
+.image-warning{color:#ff6b6b;font-size:11px;margin-top:2px}
+.input-warning{border:1px solid #ff6b6b !important}
 </style>
 </head>
 <body>
@@ -125,8 +144,8 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
         <div><div class="title">Akıllı Maliyet Hesaplayıcınız</div></div>
       </div>
       <div style="display:flex;gap:6px;align-items:center">
-        <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center" id="userAvatar">G</div>
-        <div style="font-weight:700;font-size:13px" id="userName">Geliştirici</div>
+        <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center" id="userAvatar">M</div>
+        <div style="font-weight:700;font-size:13px" id="userName">Misafir 00001</div>
       </div>
     </div>
 
@@ -138,9 +157,30 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
       <div id="searchSuggestions" class="search-suggestions"></div>
     </div>
 
+    <!-- Kategori İstatistik Animasyonu -->
+    <div id="categoryStats" class="category-stats">
+      <div class="category-stat">Yükleniyor...</div>
+    </div>
+
+    <!-- Site İstatistikleri -->
+    <div class="site-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="totalRecipes">0</div>
+        <div class="stat-label">Yemek Tarifi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalIngredients">0</div>
+        <div class="stat-label">Malzeme Çeşidi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalCategories">0</div>
+        <div class="stat-label">Kategori</div>
+      </div>
+    </div>
+
     <nav class="tabs" role="tablist">
       <div id="tabCategories" class="tab active">KATEGORİLER</div>
-      <div id="tabProducts" class="tab">ÜRÜNLER</div>
+      <div id="tabProducts" class="tab">TARİFLER</div>
       <div id="tabCalc" class="tab">HESAPLAMA</div>
       <div id="tabSaved" class="tab">KAYITLAR</div>
       <div id="tabDev" class="tab" style="display:none">GELİŞTİRİCİ</div>
@@ -154,12 +194,12 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
       </section>
 
       <section id="screenProducts" class="section" style="display:none">
-        <div style="font-weight:900;margin-bottom:6px;font-size:14px" id="productsTitle">Seçilen Kategori: Tümü</div>
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px" id="productsTitle">Tüm Tarifler</div>
         <div id="productsGrid" class="products-grid"></div>
       </section>
 
       <section id="screenCalc" class="section" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="calc-header-controls" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <div>
             <div style="font-weight:900;font-size:14px" id="calcTitle">Hesaplama</div>
             <div id="calcSubtitle" class="small-note"></div>
@@ -191,7 +231,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 
       <!-- Developer Tools Section -->
       <section id="screenDev" class="section dev-tools" style="display:none">
-        <div style="font-weight:900;margin-bottom:6px;color:var(--accent1);font-size:14px">Geliştirici Seçenekleri</div>
+        <div style="font-weight:900;margin-bottom:12px;color:var(--accent1);font-size:18px;text-align:center">GELİŞTİRİCİ SEÇENEKLERİ</div>
         
         <!-- Visitor Statistics -->
         <div class="dev-section">
@@ -221,7 +261,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           <div class="dev-section-title">Kategori Yönetimi</div>
           <div class="dev-controls">
             <input type="text" id="newCategoryName" class="dev-input input-small" placeholder="Kategori Adı">
-            <input type="text" id="newCategoryEmoji" class="input-small" placeholder="Emoji" style="width:70px">
+            <input type="text" id="newCategoryImage" class="dev-input input-small" placeholder="Resim URL">
             <select id="parentCategorySelect" class="unit-select">
               <option value="">Ana Kategori</option>
             </select>
@@ -232,6 +272,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
             <button id="exportCategoriesBtn" class="dev-btn-secondary">Kategorileri Dışa Aktar</button>
             <button id="importCategoriesBtn" class="dev-btn-secondary">Kategorileri İçe Aktar</button>
           </div>
+          <div id="categoryImageWarning" class="image-warning" style="display:none">Kategori için resim URL'si gerekli!</div>
         </div>
         
         <!-- Product Management -->
@@ -239,11 +280,28 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           <div class="dev-section-title">Ürün Yönetimi</div>
           <div class="dev-controls">
             <input type="text" id="newProductName" class="dev-input input-small" placeholder="Ürün Adı">
-            <input type="text" id="newProductEmoji" class="input-small" placeholder="Emoji" style="width:70px">
+            <input type="text" id="newProductImage" class="dev-input input-small" placeholder="Resim URL">
             <select id="productCategorySelect" class="unit-select">
               <option value="">Kategori Seç</option>
             </select>
             <button id="addProductBtn" class="dev-btn">Ürün Ekle</button>
+          </div>
+          <div id="productImageWarning" class="image-warning" style="display:none">Ürün için resim URL'si gerekli!</div>
+        </div>
+
+        <!-- Products List -->
+        <div class="dev-section">
+          <div class="dev-section-title">Tüm Ürünler (<span id="productsCount">0</span>)</div>
+          <div id="productsList" class="dev-controls" style="flex-direction:column;max-height:200px;overflow-y:auto">
+            <!-- Ürünler buraya dinamik olarak eklenecek -->
+          </div>
+        </div>
+
+        <!-- Categories List -->
+        <div class="dev-section">
+          <div class="dev-section-title">Tüm Kategoriler (<span id="categoriesCount">0</span>)</div>
+          <div id="categoriesList" class="dev-controls" style="flex-direction:column;max-height:200px;overflow-y:auto">
+            <!-- Kategoriler buraya dinamik olarak eklenecek -->
           </div>
         </div>
         
@@ -319,7 +377,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
       </div>
       <div style="display:flex;flex-direction:column;gap:6px">
         <div class="small-note">+ işareti kategori, - işareti ürün ekler. Malzemeleri ürün altına yazın.</div>
-        <div class="small-note" style="color:var(--accent1)">Örnek:<br>+🍳 YUMURTA ÇEŞİTLERİ<br>-🌶️ Sucuklu Yumurta<br>🌶️ Sucuk: 120 gr<br>🥚 Yumurta: 3 adet</div>
+        <div class="small-note" style="color:var(--accent1)">Örnek:<br>+ YUMURTA ÇEŞİTLERİ<br>- Sucuklu Yumurta<br>Sucuk: 120 gr<br>Yumurta: 3 adet</div>
         <textarea id="quickProductsText" class="input-small" placeholder="Buraya verileri yapıştırın..." rows="12" style="resize:vertical"></textarea>
         <select id="quickAddCategorySelect" class="unit-select">
           <option value="">Mevcut Kategori Seç (isteğe bağlı)</option>
@@ -332,19 +390,47 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
     </div>
   </div>
 
+  <!-- Admin Login Modal -->
+  <div id="adminLoginModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:900">Geliştirici Girişi</div>
+        <button id="closeAdminLoginModal" class="btn-ghost">Kapat</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <input type="password" id="adminPassword" class="input-small" placeholder="Geliştirici Şifresi" />
+        <div style="display:flex;gap:6px">
+          <button id="confirmAdminLogin" class="btn-primary">Giriş Yap</button>
+          <button id="cancelAdminLogin" class="btn-ghost">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 // URL parametrelerini kontrol et
 const urlParams = new URLSearchParams(window.location.search);
-const isAdmin = urlParams.get('admin') === 'true' || localStorage.getItem('maliq_admin') === 'true';
+let isAdmin = urlParams.get('admin') === 'true' || localStorage.getItem('maliq_admin') === 'true';
 
-// Admin durumunu localStorage'a kaydet
-if (isAdmin) {
-  localStorage.setItem('maliq_admin', 'true');
-  document.getElementById('tabDev').style.display = 'flex';
-  document.getElementById('userName').textContent = 'Geliştirici';
-  document.getElementById('userAvatar').textContent = 'G';
+// Kullanıcı bilgilerini ayarla
+function setupUserInfo() {
+  if (isAdmin) {
+    document.getElementById('userName').textContent = 'Geliştirici';
+    document.getElementById('userAvatar').textContent = 'G';
+    document.getElementById('tabDev').style.display = 'flex';
+  } else {
+    // Misafir kullanıcı için rastgele bir numara oluştur
+    let guestId = localStorage.getItem('maliq_guest_id');
+    if (!guestId) {
+      guestId = '0000' + Math.floor(Math.random() * 10000);
+      localStorage.setItem('maliq_guest_id', guestId);
+    }
+    document.getElementById('userName').textContent = 'Misafir ' + guestId;
+    document.getElementById('userAvatar').textContent = 'M';
+    document.getElementById('tabDev').style.display = 'none';
+  }
 }
 
 /* Data */
@@ -352,12 +438,9 @@ let RECIPES = JSON.parse(localStorage.getItem('maliq_recipes') || '{}');
 // Eğer recipes boşsa, örnek verilerle doldur
 if (Object.keys(RECIPES).length === 0) {
   RECIPES = {
-    "Lahmacun": { category:'lahmacun', emoji:'🥙', ingredients:[{name:'Un',qty:150,unit:'gr',emoji:'🌾'},{name:'Kıyma',qty:150,unit:'gr',emoji:'🥩'}]},
-    "Adana Dürüm": { category:'durum', emoji:'🌯', ingredients:[{name:'Kuzu Kıyması',qty:200,unit:'gr',emoji:'🥩'},{name:'Lavaş',qty:1,unit:'adet',emoji:'🫓'}]},
-    "Pizza Margherita": { category:'pizza', emoji:'🍕', ingredients:[{name:'Un',qty:300,unit:'gr',emoji:'🌾'},{name:'Mozzarella',qty:150,unit:'gr',emoji:'🧀'}]},
-    "Hamburger": { category:'fast', emoji:'🍔', ingredients:[{name:'Köfte',qty:150,unit:'gr',emoji:'🥩'},{name:'Ekmek',qty:1,unit:'adet',emoji:'🍞'}]},
-    "Cola": { category:'icecek', emoji:'🥤', ingredients:[{name:'Cola',qty:330,unit:'ml',emoji:'🥤'}]},
-    "Şalgam": { category:'icecek', emoji:'🧃', ingredients:[{name:'Şalgam',qty:330,unit:'ml',emoji:'🧃'}]}
+    "Lahmacun": { category:'lahmacun', imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', ingredients:[{name:'Un',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200'},{name:'Kıyma',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1587332278433-702cdfd5d95e?w=200'}]},
+    "Adana Dürüm": { category:'durum', imageUrl:'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=200', ingredients:[{name:'Kuzu Kıyması',qty:200,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1587332278433-702cdfd5d95e?w=200'},{name:'Lavaş',qty:1,unit:'adet',imageUrl:'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200'}]},
+    "Pizza Margherita": { category:'pizza', imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', ingredients:[{name:'Un',qty:300,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200'},{name:'Mozzarella',qty:150,unit:'gr',imageUrl:'https://images.unsplash.com/photo-1550583727-2a5c4b1b8209?w=200'}]}
   };
   localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
 }
@@ -376,21 +459,70 @@ let currentCategoryPath = [];
 if (CATEGORIES.length === 0) {
   // Initialize with default categories
   CATEGORIES = [
-    { id: 'kahvalti', name: 'Kahvaltı', emoji: '🥐', parentId: null },
-    { id: 'corba', name: 'Çorba', emoji: '🥣', parentId: null },
-    { id: 'ana', name: 'Ana Yemek', emoji: '🍽️', parentId: null },
-    { id: 'pide', name: 'Pide', emoji: '🥙', parentId: null },
-    { id: 'lahmacun', name: 'Lahmacun', emoji: '🥙', parentId: null },
-    { id: 'pizza', name: 'Pizza', emoji: '🍕', parentId: null },
-    { id: 'durum', name: 'Dürüm', emoji: '🌯', parentId: null },
-    { id: 'fast', name: 'Fast Food', emoji: '🍔', parentId: null },
-    { id: 'icecek', name: 'İçecek', emoji: '🥤', parentId: null },
-    { id: 'tatli', name: 'Tatlı', emoji: '🍨', parentId: null },
-    { id: 'garnitur', name: 'Garnitür', emoji: '🍟', parentId: null },
-    { id: 'deniz', name: 'Deniz', emoji: '🐟', parentId: null },
-    { id: 'vegan', name: 'Vejetaryen', emoji: '🥗', parentId: null }
+    { id: 'kahvalti', name: 'Kahvaltı', imageUrl: 'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200' },
+    { id: 'corba', name: 'Çorba', imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200' },
+    { id: 'ana', name: 'Ana Yemek', imageUrl: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=200' },
+    { id: 'pide', name: 'Pide', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200' },
+    { id: 'lahmacun', name: 'Lahmacun', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200' },
+    { id: 'pizza', name: 'Pizza', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200' },
+    { id: 'durum', name: 'Dürüm', imageUrl: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=200' },
+    { id: 'fast', name: 'Fast Food', imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200' },
+    { id: 'icecek', name: 'İçecek', imageUrl: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=200' }
   ];
   localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+}
+
+// Kategori istatistik animasyonu
+let categoryStatsIndex = 0;
+let categoryStatsTimer = null;
+
+function startCategoryStatsAnimation() {
+  if (categoryStatsTimer) return;
+  
+  function updateCategoryStats() {
+    const categoryStatsEl = document.getElementById('categoryStats');
+    const categoriesWithProducts = CATEGORIES.filter(cat => {
+      const productCount = Object.values(RECIPES).filter(recipe => recipe.category === cat.id).length;
+      return productCount > 0;
+    });
+    
+    if (categoriesWithProducts.length === 0) {
+      categoryStatsEl.innerHTML = '<div class="category-stat">Henüz kategori bulunmuyor</div>';
+      return;
+    }
+    
+    categoryStatsIndex = (categoryStatsIndex + 1) % categoriesWithProducts.length;
+    const currentCategory = categoriesWithProducts[categoryStatsIndex];
+    const productCount = Object.values(RECIPES).filter(recipe => recipe.category === currentCategory.id).length;
+    
+    // Fade efekti
+    categoryStatsEl.innerHTML = `
+      <div class="category-stat fade">${currentCategory.name} - ${productCount} tarif</div>
+    `;
+    
+    setTimeout(() => {
+      categoryStatsEl.innerHTML = `
+        <div class="category-stat">${currentCategory.name} - ${productCount} tarif</div>
+      `;
+    }, 500);
+  }
+  
+  // Hemen bir kere çalıştır
+  updateCategoryStats();
+  
+  // Her 5 saniyede bir güncelle
+  categoryStatsTimer = setInterval(updateCategoryStats, 5000);
+}
+
+// İstatistikleri güncelle
+function updateSiteStats() {
+  const totalRecipes = Object.keys(RECIPES).length;
+  const totalIngredients = Object.values(RECIPES).reduce((acc, recipe) => acc + (recipe.ingredients ? recipe.ingredients.length : 0), 0);
+  const totalCategories = CATEGORIES.length;
+  
+  document.getElementById('totalRecipes').textContent = totalRecipes;
+  document.getElementById('totalIngredients').textContent = totalIngredients;
+  document.getElementById('totalCategories').textContent = totalCategories;
 }
 
 /* Search Animation */
@@ -458,8 +590,9 @@ searchInput.addEventListener('input', (e)=>{
     matches.slice(0, 10).forEach(m => {
       const item = document.createElement('div');
       item.className = 'search-suggestion-item';
+      const imageUrl = RECIPES[m].imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
       item.innerHTML = `
-        <div class="search-suggestion-emoji">${RECIPES[m].emoji || '🍽️'}</div>
+        <img src="${imageUrl}" class="search-suggestion-image" alt="${m}">
         <div class="search-suggestion-name">${m}</div>
       `;
       item.addEventListener('click', () => {
@@ -561,7 +694,7 @@ function renderCategories(){
     if (currentParentId) {
       const parentCategory = CATEGORIES.find(cat => cat.id === currentParentId);
       if (parentCategory) {
-        document.getElementById('productsTitle').textContent = `Seçilen Kategori: ${parentCategory.name}`;
+        document.getElementById('productsTitle').textContent = `${parentCategory.name} Tarifleri`;
         renderProducts(currentParentId);
         setActiveTab('products');
       }
@@ -572,7 +705,8 @@ function renderCategories(){
   currentCategories.forEach(cat => {
     const d = document.createElement('div'); 
     d.className = 'card-btn';
-    d.innerHTML = `<div class="emoji">${cat.emoji}</div><div class="name">${cat.name}</div>`;
+    const imageUrl = cat.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
+    d.innerHTML = `<img src="${imageUrl}" class="image" alt="${cat.name}"><div class="name">${cat.name}</div>`;
     d.addEventListener('click', () => { 
       // Add to path and show nested categories
       currentCategoryPath.push(cat.id);
@@ -602,7 +736,8 @@ function renderProducts(categoryKey){
     const r = RECIPES[k]; 
     const p = document.createElement('div'); 
     p.className = 'card-btn'; 
-    p.innerHTML = `<div class="emoji">${r.emoji}</div><div class="name">${k}</div>`; 
+    const imageUrl = r.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
+    p.innerHTML = `<img src="${imageUrl}" class="image" alt="${k}"><div class="name">${k}</div>`; 
     p.addEventListener('click', () => { 
       openCalcFor(k); 
       setActiveTab('calc'); 
@@ -625,7 +760,7 @@ function openCalcFor(name){
   document.getElementById('calcSubtitle').textContent = RECIPES[name] && RECIPES[name].category ? RECIPES[name].category : '';
   calcItems = (RECIPES[name] && RECIPES[name].ingredients) ? RECIPES[name].ingredients.map(ing => ({ 
     name: ing.name, 
-    emoji: ing.emoji || '', 
+    imageUrl: ing.imageUrl || '', 
     qty: ing.qty || ing.quantity || 0, 
     unit: ing.unit || 'gr', 
     price: 0, 
@@ -658,9 +793,11 @@ function renderCalcItems(){
       <option value="koli" ${it.priceUnit === 'koli' ? 'selected' : ''}>₺ / koli</option>
     `;
     
+    const imageUrl = it.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
+    
     el.innerHTML = `
       <div class="material-top">
-        <div class="material-emoji">${it.emoji || '🧾'}</div>
+        <img src="${imageUrl}" class="material-image" alt="${it.name}">
         <div class="material-name">${it.name} <span style="color:var(--muted);font-weight:600"> ${it.qty} (${it.unit})</span></div>
       </div>
 
@@ -786,7 +923,7 @@ function saveSnapshot(){
     total, 
     date: new Date().toLocaleString(), 
     items: JSON.parse(JSON.stringify(calcItems)), 
-    emoji: (currentProduct && RECIPES[currentProduct] && RECIPES[currentProduct].emoji) ? RECIPES[currentProduct].emoji : '' 
+    imageUrl: (currentProduct && RECIPES[currentProduct] && RECIPES[currentProduct].imageUrl) ? RECIPES[currentProduct].imageUrl : '' 
   }; 
   
   savedListArr.unshift(snap); 
@@ -809,7 +946,7 @@ function renderSaved(){
     el.className = 'saved-item'; 
     el.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;font-weight:700">
-        <div>${s.emoji ? s.emoji + ' ' : ''}${s.name}</div>
+        <div>${s.name}</div>
         <div style="color:var(--accent1)">${s.total.toFixed(2)} ₺</div>
       </div>
       <div class="small-note">${s.date}</div>
@@ -877,7 +1014,7 @@ async function generatePreviewElement(title, items, total){
       <tbody>
         ${items.map(it => `
           <tr>
-            <td style="padding:6px;border-bottom:1px solid #eee">${it.emoji || ''} ${it.name}</td>
+            <td style="padding:6px;border-bottom:1px solid #eee">${it.name}</td>
             <td style="padding:6px;text-align:right;border-bottom:1px solid #eee">${it.qty} ${it.unit}</td>
             <td style="padding:6px;text-align:right;border-bottom:1px solid #eee">${(it.calculated || 0).toFixed(2)} ₺</td>
           </tr>
@@ -1047,12 +1184,21 @@ function updateCategorySelects() {
 
 function addCategory() {
   const name = document.getElementById('newCategoryName').value.trim();
-  const emoji = document.getElementById('newCategoryEmoji').value.trim() || '📁';
-  const parentId = document.getElementById('parentCategorySelect').value || null;
+  const imageUrl = document.getElementById('newCategoryImage').value.trim();
   
   if (!name) {
     alert('Kategori adı gerekli!');
     return;
+  }
+  
+  // Resim URL'si kontrolü
+  if (!imageUrl) {
+    document.getElementById('categoryImageWarning').style.display = 'block';
+    document.getElementById('newCategoryImage').classList.add('input-warning');
+    return;
+  } else {
+    document.getElementById('categoryImageWarning').style.display = 'none';
+    document.getElementById('newCategoryImage').classList.remove('input-warning');
   }
   
   // Basit ID oluştur
@@ -1063,10 +1209,12 @@ function addCategory() {
     })
     .replace(/[^a-z0-9]/g, '_');
   
+  const parentId = document.getElementById('parentCategorySelect').value || null;
+  
   const newCategory = {
     id: categoryId,
     name: name,
-    emoji: emoji,
+    imageUrl: imageUrl,
     parentId: parentId
   };
   
@@ -1075,18 +1223,19 @@ function addCategory() {
   
   // Clear inputs
   document.getElementById('newCategoryName').value = '';
-  document.getElementById('newCategoryEmoji').value = '';
+  document.getElementById('newCategoryImage').value = '';
   
   // Update UI
   renderCategories();
   updateCategorySelects();
+  renderCategoriesList();
   
   alert('Kategori eklendi!');
 }
 
 function addProduct() {
   const name = document.getElementById('newProductName').value.trim();
-  const emoji = document.getElementById('newProductEmoji').value.trim() || '🍽️';
+  const imageUrl = document.getElementById('newProductImage').value.trim();
   const category = document.getElementById('productCategorySelect').value;
   
   if (!name || !category) {
@@ -1094,10 +1243,20 @@ function addProduct() {
     return;
   }
   
+  // Resim URL'si kontrolü
+  if (!imageUrl) {
+    document.getElementById('productImageWarning').style.display = 'block';
+    document.getElementById('newProductImage').classList.add('input-warning');
+    return;
+  } else {
+    document.getElementById('productImageWarning').style.display = 'none';
+    document.getElementById('newProductImage').classList.remove('input-warning');
+  }
+  
   // Add to RECIPES
   RECIPES[name] = {
     category: category,
-    emoji: emoji,
+    imageUrl: imageUrl,
     ingredients: []
   };
   
@@ -1109,12 +1268,134 @@ function addProduct() {
   
   // Clear inputs
   document.getElementById('newProductName').value = '';
-  document.getElementById('newProductEmoji').value = '';
+  document.getElementById('newProductImage').value = '';
   
   // Update UI
   renderProducts(null);
+  renderProductsList();
   
   alert('Ürün eklendi!');
+}
+
+function renderProductsList() {
+  const container = document.getElementById('productsList');
+  const productsCount = document.getElementById('productsCount');
+  
+  container.innerHTML = '';
+  productsCount.textContent = Object.keys(RECIPES).length;
+  
+  Object.keys(RECIPES).forEach(productName => {
+    const product = RECIPES[productName];
+    const productItem = document.createElement('div');
+    productItem.className = 'saved-item';
+    productItem.style.flexDirection = 'row';
+    productItem.style.justifyContent = 'space-between';
+    productItem.style.alignItems = 'center';
+    
+    const hasImage = product.imageUrl && product.imageUrl.trim() !== '';
+    
+    productItem.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px">
+        ${hasImage ? `<img src="${product.imageUrl}" style="width:24px;height:24px;object-fit:cover;border-radius:4px" alt="${productName}">` : ''}
+        <div>${productName}</div>
+        ${!hasImage ? '<div style="color:#ff6b6b;font-size:10px">Resim URL giriniz</div>' : ''}
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="dev-btn-secondary edit-product">Düzenle</button>
+        <button class="dev-btn-secondary delete-product">Sil</button>
+      </div>
+    `;
+    
+    container.appendChild(productItem);
+    
+    // Edit button event
+    productItem.querySelector('.edit-product').addEventListener('click', () => {
+      document.getElementById('newProductName').value = productName;
+      document.getElementById('newProductImage').value = product.imageUrl || '';
+      document.getElementById('productCategorySelect').value = product.category;
+      
+      // Scroll to product form
+      document.getElementById('newProductName').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Delete button event
+    productItem.querySelector('.delete-product').addEventListener('click', () => {
+      if (confirm(`${productName} ürününü silmek istediğinizden emin misiniz?`)) {
+        delete RECIPES[productName];
+        localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+        updateProductNames();
+        renderProducts(null);
+        renderProductsList();
+        alert('Ürün silindi!');
+      }
+    });
+  });
+}
+
+function renderCategoriesList() {
+  const container = document.getElementById('categoriesList');
+  const categoriesCount = document.getElementById('categoriesCount');
+  
+  container.innerHTML = '';
+  categoriesCount.textContent = CATEGORIES.length;
+  
+  CATEGORIES.forEach(category => {
+    const categoryItem = document.createElement('div');
+    categoryItem.className = 'saved-item';
+    categoryItem.style.flexDirection = 'row';
+    categoryItem.style.justifyContent = 'space-between';
+    categoryItem.style.alignItems = 'center';
+    
+    const hasImage = category.imageUrl && category.imageUrl.trim() !== '';
+    
+    categoryItem.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px">
+        ${hasImage ? `<img src="${category.imageUrl}" style="width:24px;height:24px;object-fit:cover;border-radius:4px" alt="${category.name}">` : ''}
+        <div>${category.name}</div>
+        ${!hasImage ? '<div style="color:#ff6b6b;font-size:10px">Resim URL giriniz</div>' : ''}
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="dev-btn-secondary edit-category">Düzenle</button>
+        <button class="dev-btn-secondary delete-category">Sil</button>
+      </div>
+    `;
+    
+    container.appendChild(categoryItem);
+    
+    // Edit button event
+    categoryItem.querySelector('.edit-category').addEventListener('click', () => {
+      document.getElementById('newCategoryName').value = category.name;
+      document.getElementById('newCategoryImage').value = category.imageUrl || '';
+      document.getElementById('parentCategorySelect').value = category.parentId || '';
+      
+      // Scroll to category form
+      document.getElementById('newCategoryName').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Delete button event
+    categoryItem.querySelector('.delete-category').addEventListener('click', () => {
+      if (confirm(`${category.name} kategorisini silmek istediğinizden emin misiniz?`)) {
+        // Kategoriye ait ürünleri de sil
+        Object.keys(RECIPES).forEach(productName => {
+          if (RECIPES[productName].category === category.id) {
+            delete RECIPES[productName];
+          }
+        });
+        
+        // Kategoriyi sil
+        CATEGORIES = CATEGORIES.filter(c => c.id !== category.id);
+        localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+        localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+        
+        updateProductNames();
+        renderCategories();
+        renderProducts(null);
+        renderCategoriesList();
+        renderProductsList();
+        alert('Kategori ve bağlı ürünler silindi!');
+      }
+    });
+  });
 }
 
 function quickAddProducts() {
@@ -1139,61 +1420,50 @@ function quickAddProducts() {
     
     if (line.startsWith('+')) {
       // Category line
-      const emojiAndName = line.substring(1).trim();
-      const emojiMatch = emojiAndName.match(/^(\p{Emoji})?\s*(.+)$/u);
-      if (emojiMatch) {
-        const emoji = emojiMatch[1] || '📁';
-        const name = emojiMatch[2].trim();
-        
-        // Basit kategori ID oluştur
-        const categoryId = name.toLowerCase()
-          .replace(/[ğüşıöç]/g, function(match) {
-            const map = {'ğ':'g','ü':'u','ş':'s','ı':'i','ö':'o','ç':'c'};
-            return map[match];
-          })
-          .replace(/[^a-z0-9]/g, '_');
-        
-        const newCategory = {
-          id: categoryId,
-          name: name,
-          emoji: emoji,
-          parentId: selectedCategory || null
-        };
-        
-        CATEGORIES.push(newCategory);
-        currentCategory = categoryId;
-        addedCategories++;
-      }
+      const name = line.substring(1).trim();
+      
+      // Basit kategori ID oluştur
+      const categoryId = name.toLowerCase()
+        .replace(/[ğüşıöç]/g, function(match) {
+          const map = {'ğ':'g','ü':'u','ş':'s','ı':'i','ö':'o','ç':'c'};
+          return map[match];
+        })
+        .replace(/[^a-z0-9]/g, '_');
+      
+      const newCategory = {
+        id: categoryId,
+        name: name,
+        imageUrl: '',
+        parentId: selectedCategory || null
+      };
+      
+      CATEGORIES.push(newCategory);
+      currentCategory = categoryId;
+      addedCategories++;
     } else if (line.startsWith('-')) {
       // Product line
-      const emojiAndName = line.substring(1).trim();
-      const emojiMatch = emojiAndName.match(/^(\p{Emoji})?\s*(.+)$/u);
-      if (emojiMatch) {
-        const emoji = emojiMatch[1] || '🍽️';
-        const name = emojiMatch[2].trim();
-        
-        if (!currentCategory) {
-          alert('Lütfen önce bir kategori ekleyin veya mevcut bir kategori seçin!');
-          return;
-        }
-        
-        RECIPES[name] = {
-          category: currentCategory,
-          emoji: emoji,
-          ingredients: []
-        };
-        
-        currentProduct = name;
-        addedProducts++;
+      const name = line.substring(1).trim();
+      
+      if (!currentCategory) {
+        alert('Lütfen önce bir kategori ekleyin veya mevcut bir kategori seçin!');
+        return;
       }
+      
+      RECIPES[name] = {
+        category: currentCategory,
+        imageUrl: '',
+        ingredients: []
+      };
+      
+      currentProduct = name;
+      addedProducts++;
     } else if (line && currentProduct) {
       // Ingredient line
-      const ingredientMatch = line.match(/^(\p{Emoji})?\s*([^:]+):\s*(\d+(\.\d+)?)\s*(\S+)$/u);
+      const ingredientMatch = line.match(/^([^:]+):\s*(\d+(\.\d+)?)\s*(\S+)$/);
       if (ingredientMatch) {
-        const emoji = ingredientMatch[1] || '';
-        const name = ingredientMatch[2].trim();
-        const qty = parseFloat(ingredientMatch[3]);
-        const unit = ingredientMatch[5].trim();
+        const name = ingredientMatch[1].trim();
+        const qty = parseFloat(ingredientMatch[2]);
+        const unit = ingredientMatch[4].trim();
         
         if (RECIPES[currentProduct]) {
           if (!RECIPES[currentProduct].ingredients) {
@@ -1201,7 +1471,6 @@ function quickAddProducts() {
           }
           RECIPES[currentProduct].ingredients.push({
             name: name,
-            emoji: emoji,
             qty: qty,
             unit: unit
           });
@@ -1228,6 +1497,8 @@ function quickAddProducts() {
   renderCategories();
   renderProducts(null);
   updateCategorySelects();
+  renderProductsList();
+  renderCategoriesList();
   
   alert(`${addedCategories} kategori, ${addedProducts} ürün ve ${addedIngredients} malzeme eklendi!`);
 }
@@ -1291,6 +1562,9 @@ function importAllData() {
         renderProducts(null);
         renderSaved();
         updateDevStats();
+        renderProductsList();
+        renderCategoriesList();
+        updateSiteStats();
         
         alert('Veriler başarıyla içe aktarıldı!');
       } catch (err) {
@@ -1312,11 +1586,35 @@ function resetData() {
 }
 
 // wiring tabs and init
-document.getElementById('tabCategories').addEventListener('click', () => setActiveTab('categories'));
-document.getElementById('tabProducts').addEventListener('click', () => setActiveTab('products'));
+document.getElementById('tabCategories').addEventListener('click', () => {
+  setActiveTab('categories');
+  // Kategorilere geçerken kategori yolunu sıfırla
+  currentCategoryPath = [];
+  renderCategories();
+});
+
+document.getElementById('tabProducts').addEventListener('click', () => {
+  setActiveTab('products');
+  // Tüm tarifleri göster
+  document.getElementById('productsTitle').textContent = 'Tüm Tarifler';
+  renderProducts(null);
+});
+
 document.getElementById('tabCalc').addEventListener('click', () => setActiveTab('calc'));
 document.getElementById('tabSaved').addEventListener('click', () => { setActiveTab('saved'); renderSaved(); });
-document.getElementById('tabDev').addEventListener('click', () => { setActiveTab('dev'); updateDevStats(); });
+document.getElementById('tabDev').addEventListener('click', () => { 
+  setActiveTab('dev'); 
+  updateDevStats(); 
+  renderProductsList();
+  renderCategoriesList();
+});
+
+// Admin girişi için avatar'a tıklama
+document.getElementById('userAvatar').addEventListener('click', () => {
+  if (!isAdmin) {
+    showAdminLoginModal();
+  }
+});
 
 document.getElementById('addMaterialBtn').addEventListener('click', () => { 
   document.getElementById('addModal').style.display = 'flex'; 
@@ -1335,7 +1633,7 @@ document.getElementById('confirmAdd').addEventListener('click', () => {
   const price = parseFloat(document.getElementById('addPrice').value || 0);
   const priceUnit = document.getElementById('addPriceUnit').value;
   const koliSize = parseFloat(document.getElementById('addKoliSize').value || 1);
-  calcItems.push({ name, emoji: '', qty, unit, price, priceUnit, koliSize, calculated: 0 });
+  calcItems.push({ name, imageUrl: '', qty, unit, price, priceUnit, koliSize, calculated: 0 });
   document.getElementById('addModal').style.display = 'none';
   renderCalcItems();
 });
@@ -1376,7 +1674,45 @@ document.getElementById('exportAllDataBtn').addEventListener('click', exportAllD
 document.getElementById('importAllDataBtn').addEventListener('click', importAllData);
 document.getElementById('resetDataBtn').addEventListener('click', resetData);
 
+// Admin login modal event listeners
+document.getElementById('closeAdminLoginModal').addEventListener('click', () => {
+  document.getElementById('adminLoginModal').style.display = 'none';
+});
+
+document.getElementById('confirmAdminLogin').addEventListener('click', () => {
+  const password = document.getElementById('adminPassword').value;
+  // Basit bir şifre kontrolü (gerçek uygulamada daha güvenli bir yöntem kullanılmalı)
+  if (password === 'developer123') {
+    localStorage.setItem('maliq_admin', 'true');
+    isAdmin = true;
+    document.getElementById('adminLoginModal').style.display = 'none';
+    setupUserInfo();
+  } else {
+    alert('Geçersiz şifre!');
+  }
+});
+
+document.getElementById('cancelAdminLogin').addEventListener('click', () => {
+  document.getElementById('adminLoginModal').style.display = 'none';
+});
+
+// Resim URL inputlarını dinle
+document.getElementById('newCategoryImage').addEventListener('input', function() {
+  if (this.value.trim()) {
+    this.classList.remove('input-warning');
+    document.getElementById('categoryImageWarning').style.display = 'none';
+  }
+});
+
+document.getElementById('newProductImage').addEventListener('input', function() {
+  if (this.value.trim()) {
+    this.classList.remove('input-warning');
+    document.getElementById('productImageWarning').style.display = 'none';
+  }
+});
+
 // Initialize
+setupUserInfo();
 updateVisitorStats();
 updateProductNames();
 renderCategories();
@@ -1384,6 +1720,14 @@ renderProducts(null);
 setActiveTab('categories');
 renderSaved();
 updateDevStats();
+updateSiteStats();
+startCategoryStatsAnimation();
+
+// Geliştirici modu aktifse listeleri render et
+if (isAdmin) {
+  renderProductsList();
+  renderCategoriesList();
+}
 </script>
 </body>
 </html>
