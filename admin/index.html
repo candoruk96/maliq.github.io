@@ -1,39 +1,20 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MALIQ Admin</title>
-    
-    <!-- Decap CMS Script -->
     <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <!-- CONFIG YOLUNU BURADA BELİRT -->
+    <link 
+        href="https://candoruk96.github.io/maliq.github.io/config.yml" 
+        type="text/yaml" 
+        rel="cms-config-url"
+    >
 </head>
 <body>
-    <!-- Basit bir yükleme mesajı -->
-    <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
-        <h2>MALIQ Admin Paneli Yükleniyor...</h2>
-        <p>Eğer bu mesaj uzun süre görünürse, sayfayı yenileyin.</p>
-    </div>
-
     <script>
-        console.log('Sayfa yüklendi, CMS kontrol ediliyor...');
-        
-        // CMS'in yüklenmesini bekleyelim
-        setTimeout(function() {
-            if (typeof CMS !== 'undefined') {
-                console.log('CMS bulundu, başlatılıyor...');
-                CMS.init();
-                console.log('CMS başlatıldı');
-                
-                // Yükleme mesajını gizle
-                document.querySelector('div').style.display = 'none';
-            } else {
-                console.error('CMS tanımlı değil!');
-                document.querySelector('div').innerHTML = 
-                    '<h2 style="color: red;">Hata: CMS yüklenemedi</h2>' +
-                    '<p>Lütfen sayfayı yenileyin veya console hatalarını kontrol edin.</p>';
-            }
-        }, 1000);
+        CMS.init();
     </script>
 </body>
 </html>
