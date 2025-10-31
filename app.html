@@ -92,6 +92,9 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
 
 .logout-btn{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600}
 
+.koli-input-container{display:none;align-items:center;gap:6px;margin-top:4px}
+.koli-input-container.show{display:flex}
+
 @media (max-width: 480px) {
   .container{padding:8px}
   .tab{padding:8px;font-size:11px}
@@ -269,12 +272,17 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
       </div>
       <div style="display:flex;flex-direction:column;gap:6px">
         <input id="addName" class="input-small" placeholder="Malzeme adı" />
+        <input id="addImage" class="input-small" placeholder="Malzeme resim URL (opsiyonel)" />
         <div style="display:flex;gap:6px">
           <input id="addQty" type="number" class="input-small" value="100" />
           <select id="addUnit" class="unit-select">
             <option value="gr">gr</option><option value="kg">kg</option><option value="ml">ml</option>
             <option value="lt">lt</option><option value="adet">adet</option><option value="koli">koli</option>
           </select>
+        </div>
+        <div id="koliContainer" class="koli-input-container">
+          <span class="small-note">Koli adeti:</span>
+          <input id="addKoliAdet" type="number" class="input-small" value="1" min="1" style="width:80px" />
         </div>
         <div style="display:flex;gap:6px">
           <input id="addPrice" type="number" class="input-small" placeholder="Fiyat" step="0.01" />
@@ -346,9 +354,9 @@ if (Object.keys(RECIPES).length === 0) {
       category:'kahvalti-tabaklari', 
       imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200', 
       ingredients:[
-        {name:'Peynir',qty:100,unit:'gr'},
-        {name:'Zeytin',qty:50,unit:'gr'},
-        {name:'Bal',qty:30,unit:'gr'}
+        {name:'Peynir',qty:100,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1559561729-0788b8b1b30a?w=200'},
+        {name:'Zeytin',qty:50,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1597327746125-4ec3764f8b4e?w=200'},
+        {name:'Bal',qty:30,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=200'}
       ]
     },
     
@@ -357,8 +365,8 @@ if (Object.keys(RECIPES).length === 0) {
       category:'yumurta-cesitleri', 
       imageUrl:'https://images.unsplash.com/photo-1580013759032-c96505e24c1f?w=200', 
       ingredients:[
-        {name:'Yumurta',qty:3,unit:'adet'},
-        {name:'Sucuk',qty:100,unit:'gr'}
+        {name:'Yumurta',qty:3,unit:'adet', imageUrl:'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=200'},
+        {name:'Sucuk',qty:100,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1594047452120-1d0c4c4c63b6?w=200'}
       ]
     },
     
@@ -367,8 +375,8 @@ if (Object.keys(RECIPES).length === 0) {
       category:'pide', 
       imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', 
       ingredients:[
-        {name:'Un',qty:150,unit:'gr'},
-        {name:'Kıyma',qty:150,unit:'gr'}
+        {name:'Un',qty:150,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=200'},
+        {name:'Kıyma',qty:150,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1594047452120-1d0c4c4c63b6?w=200'}
       ]
     },
     
@@ -377,9 +385,9 @@ if (Object.keys(RECIPES).length === 0) {
       category:'pizza', 
       imageUrl:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200', 
       ingredients:[
-        {name:'Pizza Hamuru',qty:200,unit:'gr'},
-        {name:'Mozzarella',qty:150,unit:'gr'},
-        {name:'Domates Sos',qty:50,unit:'gr'}
+        {name:'Pizza Hamuru',qty:200,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=200'},
+        {name:'Mozzarella',qty:150,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1559561729-0788b8b1b30a?w=200'},
+        {name:'Domates Sos',qty:50,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200'}
       ]
     }
   };
@@ -600,7 +608,9 @@ function openCalcFor(name){
     unit: ing.unit || 'gr', 
     price: 0, 
     priceUnit: 'kg', 
-    calculated: 0 
+    calculated: 0,
+    imageUrl: ing.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200',
+    koliAdet: ing.koliAdet || 1
   })) : [];
   renderCalcItems();
 }
@@ -621,6 +631,7 @@ function renderCalcItems(){
     
     el.innerHTML = `
       <div class="material-top">
+        <img src="${it.imageUrl}" class="material-image" alt="${it.name}">
         <div class="material-name">${it.name} <span style="color:var(--muted);font-weight:600"> ${it.qty} (${it.unit})</span></div>
       </div>
       <div class="row-controls">
@@ -640,9 +651,33 @@ function renderCalcItems(){
           <div class="cost-amount" id="cost_${idx}">0.00 ₺</div>
         </div>
       </div>
+      <div id="koliContainer_${idx}" class="koli-input-container">
+        <span class="small-note">Koli adeti:</span>
+        <input type="number" id="koliAdet_${idx}" class="input-small" value="${it.koliAdet || 1}" min="1" style="width:80px" />
+      </div>
     `;
     
     container.appendChild(el);
+
+    // Birim seçimi değiştiğinde koli adet input'unu göster/gizle
+    const unitSelect = document.getElementById(`unit_${idx}`);
+    const koliContainer = document.getElementById(`koliContainer_${idx}`);
+    
+    if (unitSelect.value === 'koli') {
+      koliContainer.classList.add('show');
+    } else {
+      koliContainer.classList.remove('show');
+    }
+    
+    unitSelect.addEventListener('change', function() {
+      if (this.value === 'koli') {
+        koliContainer.classList.add('show');
+      } else {
+        koliContainer.classList.remove('show');
+      }
+      it.unit = this.value;
+      calculateRow(idx);
+    });
 
     document.getElementById(`qty_${idx}`).addEventListener('input', e => { 
       it.qty = parseFloat(e.target.value || 0); 
@@ -658,6 +693,15 @@ function renderCalcItems(){
       it.priceUnit = e.target.value; 
       calculateRow(idx); 
     });
+    
+    document.getElementById(`koliAdet_${idx}`).addEventListener('input', e => { 
+      it.koliAdet = parseFloat(e.target.value || 1); 
+      calculateRow(idx); 
+    });
+    
+    // Başlangıç değerlerini ayarla
+    document.getElementById(`unit_${idx}`).value = it.unit;
+    document.getElementById(`priceUnit_${idx}`).value = it.priceUnit;
   });
   
   document.getElementById('totalRow').style.display = 'flex';
@@ -668,6 +712,7 @@ function calculateRow(idx){
   const it = calcItems[idx]; 
   const qty = parseFloat(it.qty || 0); 
   const price = parseFloat(it.price || 0);
+  const koliAdet = parseFloat(it.koliAdet || 1);
   
   // Birim dönüşümü
   let conversionRate = 1;
@@ -675,6 +720,12 @@ function calculateRow(idx){
     conversionRate = 1000;
   } else if (it.unit === 'kg' && it.priceUnit === 'gr') {
     conversionRate = 0.001;
+  } else if (it.unit === 'koli' && it.priceUnit === 'koli') {
+    // Koli için koli adeti ile çarp
+    it.calculated = (price * qty * koliAdet);
+    document.getElementById('cost_' + idx).textContent = it.calculated.toFixed(2) + ' ₺';
+    calculateTotal();
+    return;
   }
   
   it.calculated = (price * qty) / conversionRate;
@@ -914,7 +965,8 @@ function quickAddProducts() {
           RECIPES[currentProduct].ingredients.push({
             name: name,
             qty: qty,
-            unit: unit
+            unit: unit,
+            imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'
           });
           addedIngredients++;
         }
@@ -1055,14 +1107,46 @@ document.getElementById('closeAddModal').addEventListener('click', () => {
   document.getElementById('addModal').style.display = 'none'; 
 });
 
+// Koli birimi seçildiğinde koli adet input'unu göster
+document.getElementById('addUnit').addEventListener('change', function() {
+  const koliContainer = document.getElementById('koliContainer');
+  if (this.value === 'koli') {
+    koliContainer.classList.add('show');
+  } else {
+    koliContainer.classList.remove('show');
+  }
+});
+
 document.getElementById('confirmAdd').addEventListener('click', () => {
   const name = document.getElementById('addName').value || 'Yeni Malzeme';
+  const imageUrl = document.getElementById('addImage').value || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
   const qty = parseFloat(document.getElementById('addQty').value || 0);
   const unit = document.getElementById('addUnit').value;
   const price = parseFloat(document.getElementById('addPrice').value || 0);
   const priceUnit = document.getElementById('addPriceUnit').value;
-  calcItems.push({ name, qty, unit, price, priceUnit, calculated: 0 });
+  const koliAdet = unit === 'koli' ? parseFloat(document.getElementById('addKoliAdet').value || 1) : 1;
+  
+  calcItems.push({ 
+    name, 
+    qty, 
+    unit, 
+    price, 
+    priceUnit, 
+    calculated: 0,
+    imageUrl,
+    koliAdet
+  });
+  
   document.getElementById('addModal').style.display = 'none';
+  // Modal alanlarını temizle
+  document.getElementById('addName').value = '';
+  document.getElementById('addImage').value = '';
+  document.getElementById('addQty').value = '100';
+  document.getElementById('addUnit').value = 'gr';
+  document.getElementById('addPrice').value = '';
+  document.getElementById('addPriceUnit').value = 'kg';
+  document.getElementById('koliContainer').classList.remove('show');
+  
   renderCalcItems();
 });
 
