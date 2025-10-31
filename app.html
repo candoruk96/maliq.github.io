@@ -319,18 +319,52 @@ let calcItems = [];
 let currentCategoryPath = [];
 
 // Varsayılan veriler
+// Varsayılan veriler
 if (CATEGORIES.length === 0) {
   CATEGORIES = [
+    // Ana Kategoriler
     { id: 'kahvalti', name: 'Kahvaltı', imageUrl: 'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200' },
     { id: 'corba', name: 'Çorba', imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200' },
-    { id: 'ana', name: 'Ana Yemek', imageUrl: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=200' },
-    { id: 'pide', name: 'Pide', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200' }
+    { id: 'ana-yemek', name: 'Ana Yemek', imageUrl: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=200' },
+    { id: 'fast-food', name: 'Fast Food', imageUrl: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=200' },
+    
+    // Kahvaltı Alt Kategorileri
+    { id: 'kahvalti-tabaklari', name: 'Kahvaltı Tabakları', imageUrl: 'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200', parentId: 'kahvalti' },
+    { id: 'yumurta-cesitleri', name: 'Yumurta Çeşitleri', imageUrl: 'https://images.unsplash.com/photo-1580013759032-c96505e24c1f?w=200', parentId: 'kahvalti' },
+    
+    // Fast Food Alt Kategorileri
+    { id: 'pide', name: 'Pide', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', parentId: 'fast-food' },
+    { id: 'durum', name: 'Dürüm', imageUrl: 'https://images.unsplash.com/photo-1555949969-eea032c0dccb?w=200', parentId: 'fast-food' },
+    { id: 'pizza', name: 'Pizza', imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200', parentId: 'fast-food' }
   ];
   localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+}
 }
 
 if (Object.keys(RECIPES).length === 0) {
   RECIPES = {
+    // Kahvaltı Tabakları
+    "Serpme Kahvaltı": { 
+      category:'kahvalti-tabaklari', 
+      imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200', 
+      ingredients:[
+        {name:'Peynir',qty:100,unit:'gr'},
+        {name:'Zeytin',qty:50,unit:'gr'},
+        {name:'Bal',qty:30,unit:'gr'}
+      ]
+    },
+    
+    // Yumurta Çeşitleri
+    "Sucuklu Yumurta": { 
+      category:'yumurta-cesitleri', 
+      imageUrl:'https://images.unsplash.com/photo-1580013759032-c96505e24c1f?w=200', 
+      ingredients:[
+        {name:'Yumurta',qty:3,unit:'adet'},
+        {name:'Sucuk',qty:100,unit:'gr'}
+      ]
+    },
+    
+    // Pide Çeşitleri
     "Lahmacun": { 
       category:'pide', 
       imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', 
@@ -338,9 +372,21 @@ if (Object.keys(RECIPES).length === 0) {
         {name:'Un',qty:150,unit:'gr'},
         {name:'Kıyma',qty:150,unit:'gr'}
       ]
+    },
+    
+    // Pizza Çeşitleri
+    "Margarita Pizza": { 
+      category:'pizza', 
+      imageUrl:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200', 
+      ingredients:[
+        {name:'Pizza Hamuru',qty:200,unit:'gr'},
+        {name:'Mozzarella',qty:150,unit:'gr'},
+        {name:'Domates Sos',qty:50,unit:'gr'}
+      ]
     }
   };
   localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+}
 }
 
 // Kullanıcı bilgisi
@@ -390,20 +436,47 @@ function renderCategories(){
   container.innerHTML = '';
   
   const currentParentId = currentCategoryPath.length > 0 ? currentCategoryPath[currentCategoryPath.length - 1] : null;
-  const currentCategories = CATEGORIES.filter(cat => !cat.parentId || cat.parentId === currentParentId);
+  
+  // Ana kategorileri göster (parentId'si olmayanlar)
+  const currentCategories = CATEGORIES.filter(cat => {
+    if (currentParentId) {
+      return cat.parentId === currentParentId;
+    } else {
+      return !cat.parentId;
+    }
+  });
+  
+  // Eğer alt kategori yoksa ve ana kategorideysek, bu kategorideki ürünleri göster
+  if (currentCategories.length === 0 && currentParentId) {
+    renderProducts(currentParentId);
+    setActiveTab('products');
+    document.getElementById('productsTitle').textContent = currentParentId + ' Tarifleri';
+    return;
+  }
   
   currentCategories.forEach(cat => {
     const d = document.createElement('div'); 
     d.className = 'card-btn';
     d.innerHTML = `<img src="${cat.imageUrl}" class="image" alt="${cat.name}"><div class="name">${cat.name}</div>`;
     d.addEventListener('click', () => { 
-      currentCategoryPath.push(cat.id);
-      showNestedCategories(cat.id);
+      // Alt kategorileri kontrol et
+      const subCategories = CATEGORIES.filter(subCat => subCat.parentId === cat.id);
+      if (subCategories.length > 0) {
+        // Alt kategori varsa onları göster
+        currentCategoryPath.push(cat.id);
+        renderCategories();
+      } else {
+        // Alt kategori yoksa bu kategorideki ürünleri göster
+        renderProducts(cat.id);
+        setActiveTab('products');
+        document.getElementById('productsTitle').textContent = cat.name + ' Tarifleri';
+      }
     });
     container.appendChild(d);
   });
   
   updateBreadcrumb();
+}
 }
 
 function showNestedCategories(parentId) {
@@ -962,7 +1035,57 @@ document.getElementById('confirmQuickAdd').addEventListener('click', quickAddPro
 document.getElementById('exportDataBtn').addEventListener('click', exportAllData);
 document.getElementById('importDataBtn').addEventListener('click', importAllData);
 document.getElementById('resetDataBtn').addEventListener('click', resetData);
+// Arama animasyonu
+const searchTerms = ['Lahmacun', 'Sucuklu Yumurta', 'Mantı', 'Kebap', 'Pizza', 'Döner', 'Baklava', 'Künefe'];
+let currentSearchTermIndex = 0;
+let currentCharIndex = 0;
+let isDeleting = false;
+let typingSpeed = 100;
 
+function typeSearchTerm() {
+  const searchOverlay = document.getElementById('searchOverlay');
+  const currentTerm = searchTerms[currentSearchTermIndex];
+  
+  if (isDeleting) {
+    // Silme işlemi
+    searchOverlay.textContent = currentTerm.substring(0, currentCharIndex - 1);
+    currentCharIndex--;
+    typingSpeed = 50;
+  } else {
+    // Yazma işlemi
+    searchOverlay.textContent = currentTerm.substring(0, currentCharIndex + 1);
+    currentCharIndex++;
+    typingSpeed = 100;
+  }
+  
+  // Yazma/silme tamamlandı mı kontrol et
+  if (!isDeleting && currentCharIndex === currentTerm.length) {
+    // Yazma tamamlandı, biraz bekle ve silmeye başla
+    typingSpeed = 1500;
+    isDeleting = true;
+  } else if (isDeleting && currentCharIndex === 0) {
+    // Silme tamamlandı, sonraki terime geç
+    isDeleting = false;
+    currentSearchTermIndex = (currentSearchTermIndex + 1) % searchTerms.length;
+    typingSpeed = 500;
+  }
+  
+  setTimeout(typeSearchTerm, typingSpeed);
+}
+
+// Arama input'una odaklanınca animasyonu gizle
+document.getElementById('searchInput').addEventListener('focus', function() {
+  document.getElementById('searchOverlay').classList.add('fade');
+});
+
+// Arama input'undan çıkınca animasyonu göster
+document.getElementById('searchInput').addEventListener('blur', function() {
+  if (!this.value) {
+    document.getElementById('searchOverlay').classList.remove('fade');
+  }
+});
+  
+// Initialize
 // Initialize
 function updateSiteStats() {
   document.getElementById('totalRecipes').textContent = Object.keys(RECIPES).length;
@@ -976,10 +1099,14 @@ renderProducts(null);
 setActiveTab('categories');
 updateSiteStats();
 
+// Arama animasyonunu başlat
+setTimeout(typeSearchTerm, 1000);
+
 if (isAdmin) {
   renderProductsManagementPanel();
   renderCategoriesManagementPanel();
   updateDevStats();
+}
 }
 </script>
 </body>
