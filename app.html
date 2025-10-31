@@ -319,7 +319,6 @@ let calcItems = [];
 let currentCategoryPath = [];
 
 // Varsayılan veriler
-// Varsayılan veriler
 if (CATEGORIES.length === 0) {
   CATEGORIES = [
     // Ana Kategoriler
@@ -338,7 +337,6 @@ if (CATEGORIES.length === 0) {
     { id: 'pizza', name: 'Pizza', imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200', parentId: 'fast-food' }
   ];
   localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
-}
 }
 
 if (Object.keys(RECIPES).length === 0) {
@@ -387,12 +385,61 @@ if (Object.keys(RECIPES).length === 0) {
   };
   localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
 }
-}
 
 // Kullanıcı bilgisi
 const urlParams = new URLSearchParams(window.location.search);
 const isAdmin = urlParams.get('admin') === 'true' || localStorage.getItem('maliq_admin') === 'true';
 const userData = JSON.parse(localStorage.getItem('maliq_user') || '{}');
+
+// Arama animasyonu
+const searchTerms = ['Lahmacun', 'Sucuklu Yumurta', 'Mantı', 'Kebap', 'Pizza', 'Döner', 'Baklava', 'Künefe'];
+let currentSearchTermIndex = 0;
+let currentCharIndex = 0;
+let isDeleting = false;
+let typingSpeed = 100;
+
+function typeSearchTerm() {
+  const searchOverlay = document.getElementById('searchOverlay');
+  const currentTerm = searchTerms[currentSearchTermIndex];
+  
+  if (isDeleting) {
+    // Silme işlemi
+    searchOverlay.textContent = currentTerm.substring(0, currentCharIndex - 1);
+    currentCharIndex--;
+    typingSpeed = 50;
+  } else {
+    // Yazma işlemi
+    searchOverlay.textContent = currentTerm.substring(0, currentCharIndex + 1);
+    currentCharIndex++;
+    typingSpeed = 100;
+  }
+  
+  // Yazma/silme tamamlandı mı kontrol et
+  if (!isDeleting && currentCharIndex === currentTerm.length) {
+    // Yazma tamamlandı, biraz bekle ve silmeye başla
+    typingSpeed = 1500;
+    isDeleting = true;
+  } else if (isDeleting && currentCharIndex === 0) {
+    // Silme tamamlandı, sonraki terime geç
+    isDeleting = false;
+    currentSearchTermIndex = (currentSearchTermIndex + 1) % searchTerms.length;
+    typingSpeed = 500;
+  }
+  
+  setTimeout(typeSearchTerm, typingSpeed);
+}
+
+// Arama input'una odaklanınca animasyonu gizle
+document.getElementById('searchInput').addEventListener('focus', function() {
+  document.getElementById('searchOverlay').classList.add('fade');
+});
+
+// Arama input'undan çıkınca animasyonu göster
+document.getElementById('searchInput').addEventListener('blur', function() {
+  if (!this.value) {
+    document.getElementById('searchOverlay').classList.remove('fade');
+  }
+});
 
 // UI Fonksiyonları
 function setupUserInfo() {
@@ -450,7 +497,8 @@ function renderCategories(){
   if (currentCategories.length === 0 && currentParentId) {
     renderProducts(currentParentId);
     setActiveTab('products');
-    document.getElementById('productsTitle').textContent = currentParentId + ' Tarifleri';
+    const category = CATEGORIES.find(c => c.id === currentParentId);
+    document.getElementById('productsTitle').textContent = (category ? category.name : currentParentId) + ' Tarifleri';
     return;
   }
   
@@ -476,7 +524,6 @@ function renderCategories(){
   });
   
   updateBreadcrumb();
-}
 }
 
 function showNestedCategories(parentId) {
@@ -525,6 +572,11 @@ function renderProducts(categoryKey){
   const container = document.getElementById('productsGrid'); 
   container.innerHTML = '';
   const keys = Object.keys(RECIPES).filter(k => !categoryKey || RECIPES[k].category === categoryKey);
+  
+  if (keys.length === 0) {
+    container.innerHTML = '<div class="small-note">Bu kategoride henüz tarif bulunmuyor.</div>';
+    return;
+  }
   
   keys.forEach(k => { 
     const r = RECIPES[k]; 
@@ -782,7 +834,7 @@ function addProduct() {
   if (!name || !imageUrl) return alert('Lütfen tüm alanları doldurun!');
   
   RECIPES[name] = {
-    category: 'ana',
+    category: 'ana-yemek',
     imageUrl: imageUrl,
     ingredients: []
   };
@@ -1035,57 +1087,7 @@ document.getElementById('confirmQuickAdd').addEventListener('click', quickAddPro
 document.getElementById('exportDataBtn').addEventListener('click', exportAllData);
 document.getElementById('importDataBtn').addEventListener('click', importAllData);
 document.getElementById('resetDataBtn').addEventListener('click', resetData);
-// Arama animasyonu
-const searchTerms = ['Lahmacun', 'Sucuklu Yumurta', 'Mantı', 'Kebap', 'Pizza', 'Döner', 'Baklava', 'Künefe'];
-let currentSearchTermIndex = 0;
-let currentCharIndex = 0;
-let isDeleting = false;
-let typingSpeed = 100;
 
-function typeSearchTerm() {
-  const searchOverlay = document.getElementById('searchOverlay');
-  const currentTerm = searchTerms[currentSearchTermIndex];
-  
-  if (isDeleting) {
-    // Silme işlemi
-    searchOverlay.textContent = currentTerm.substring(0, currentCharIndex - 1);
-    currentCharIndex--;
-    typingSpeed = 50;
-  } else {
-    // Yazma işlemi
-    searchOverlay.textContent = currentTerm.substring(0, currentCharIndex + 1);
-    currentCharIndex++;
-    typingSpeed = 100;
-  }
-  
-  // Yazma/silme tamamlandı mı kontrol et
-  if (!isDeleting && currentCharIndex === currentTerm.length) {
-    // Yazma tamamlandı, biraz bekle ve silmeye başla
-    typingSpeed = 1500;
-    isDeleting = true;
-  } else if (isDeleting && currentCharIndex === 0) {
-    // Silme tamamlandı, sonraki terime geç
-    isDeleting = false;
-    currentSearchTermIndex = (currentSearchTermIndex + 1) % searchTerms.length;
-    typingSpeed = 500;
-  }
-  
-  setTimeout(typeSearchTerm, typingSpeed);
-}
-
-// Arama input'una odaklanınca animasyonu gizle
-document.getElementById('searchInput').addEventListener('focus', function() {
-  document.getElementById('searchOverlay').classList.add('fade');
-});
-
-// Arama input'undan çıkınca animasyonu göster
-document.getElementById('searchInput').addEventListener('blur', function() {
-  if (!this.value) {
-    document.getElementById('searchOverlay').classList.remove('fade');
-  }
-});
-  
-// Initialize
 // Initialize
 function updateSiteStats() {
   document.getElementById('totalRecipes').textContent = Object.keys(RECIPES).length;
@@ -1106,7 +1108,6 @@ if (isAdmin) {
   renderProductsManagementPanel();
   renderCategoriesManagementPanel();
   updateDevStats();
-}
 }
 </script>
 </body>
