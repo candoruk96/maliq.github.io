@@ -98,6 +98,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
   .categories-grid{grid-template-columns:repeat(3,1fr);gap:6px}
   .products-grid{grid-template-columns:repeat(2,1fr);gap:6px}
   .row-controls{flex-direction:column;gap:8px}
+  .card-btn .image{width:36px;height:36px}
 }
 </style>
 </head>
@@ -272,13 +273,14 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0411
           <input id="addQty" type="number" class="input-small" value="100" />
           <select id="addUnit" class="unit-select">
             <option value="gr">gr</option><option value="kg">kg</option><option value="ml">ml</option>
-            <option value="lt">lt</option><option value="adet">adet</option>
+            <option value="lt">lt</option><option value="adet">adet</option><option value="koli">koli</option>
           </select>
         </div>
         <div style="display:flex;gap:6px">
           <input id="addPrice" type="number" class="input-small" placeholder="Fiyat" step="0.01" />
           <select id="addPriceUnit" class="unit-select">
             <option value="kg">₺ / kg</option><option value="gr">₺ / gr</option><option value="adet">₺ / adet</option>
+            <option value="koli">₺ / koli</option>
           </select>
         </div>
         <div style="display:flex;gap:6px">
@@ -501,10 +503,15 @@ function renderCalcItems(){
           <input type="number" id="qty_${idx}" class="input-small" value="${it.qty}" style="width:80px" />
           <select id="unit_${idx}" class="unit-select">
             <option value="gr">gr</option><option value="kg">kg</option><option value="adet">adet</option>
+            <option value="koli">koli</option>
           </select>
         </div>
         <div class="right-controls">
           <input type="number" id="price_${idx}" class="input-small" placeholder="Fiyat (TL)" style="width:100px" />
+          <select id="priceUnit_${idx}" class="unit-select">
+            <option value="kg">₺ / kg</option><option value="gr">₺ / gr</option><option value="adet">₺ / adet</option>
+            <option value="koli">₺ / koli</option>
+          </select>
           <div class="cost-amount" id="cost_${idx}">0.00 ₺</div>
         </div>
       </div>
@@ -521,6 +528,11 @@ function renderCalcItems(){
       it.price = parseFloat(e.target.value || 0); 
       calculateRow(idx); 
     });
+    
+    document.getElementById(`priceUnit_${idx}`).addEventListener('change', e => { 
+      it.priceUnit = e.target.value; 
+      calculateRow(idx); 
+    });
   });
   
   document.getElementById('totalRow').style.display = 'flex';
@@ -531,8 +543,18 @@ function calculateRow(idx){
   const it = calcItems[idx]; 
   const qty = parseFloat(it.qty || 0); 
   const price = parseFloat(it.price || 0);
-  it.calculated = price * qty;
+  
+  // Birim dönüşümü
+  let conversionRate = 1;
+  if (it.unit === 'gr' && it.priceUnit === 'kg') {
+    conversionRate = 1000;
+  } else if (it.unit === 'kg' && it.priceUnit === 'gr') {
+    conversionRate = 0.001;
+  }
+  
+  it.calculated = (price * qty) / conversionRate;
   document.getElementById('cost_' + idx).textContent = it.calculated.toFixed(2) + ' ₺';
+  calculateTotal();
 }
 
 function calculateTotal(){ 
@@ -541,6 +563,7 @@ function calculateTotal(){
     t += parseFloat(it.calculated || 0); 
   }); 
   document.getElementById('totalCost').textContent = t.toFixed(2) + ' ₺'; 
+  return t;
 }
 
 function saveSnapshot(){ 
@@ -912,7 +935,8 @@ document.getElementById('confirmAdd').addEventListener('click', () => {
   const qty = parseFloat(document.getElementById('addQty').value || 0);
   const unit = document.getElementById('addUnit').value;
   const price = parseFloat(document.getElementById('addPrice').value || 0);
-  calcItems.push({ name, qty, unit, price, calculated: 0 });
+  const priceUnit = document.getElementById('addPriceUnit').value;
+  calcItems.push({ name, qty, unit, price, priceUnit, calculated: 0 });
   document.getElementById('addModal').style.display = 'none';
   renderCalcItems();
 });
