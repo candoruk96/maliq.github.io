@@ -1,0 +1,1267 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MALIQ — Akıllı Maliyet Hesaplayıcınız</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --bg:#061322; --card:#071526; --accent1:#06b6d4; --accent2:#7c3aed; --muted:#9fb0c6;
+  --surface: rgba(255,255,255,0.02); --btn-grad: linear-gradient(90deg,var(--accent1),var(--accent2));
+  --radius:12px; --font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+}
+*{box-sizing:border-box;font-family:var(--font)}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#04111a);color:#eaf4ff}
+body {
+  padding-bottom: 70px; /* Alt navigasyon için alan */
+  overflow-x: hidden;
+}
+
+.container{max-width:720px;margin:0 auto;padding:10px}
+.header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.brand{display:flex;gap:8px;align-items:center}
+.logo img{width:40px;height:40px;border-radius:8px}
+.title{font-weight:800;font-size:16px}
+.subtitle{font-size:11px;color:var(--muted);margin-top:-2px}
+.search-wrap-centered{width:100%;display:flex;justify-content:center;margin:6px 0 10px 0;position:relative}
+.search{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:var(--surface);border:1px solid rgba(255,255,255,0.03);width:100%;max-width:680px;position:relative}
+.search input{flex:1;background:transparent;border:0;color:inherit;padding:6px 10px;font-size:14px;outline:none}
+.search-overlay{position:absolute;left:50%;top:48%;transform:translate(-50%,-4px);pointer-events:none;color:rgba(255,255,255,0.92);font-size:14px;transition:opacity .22s,transform .22s;white-space:nowrap}
+.search-overlay.fade{opacity:0;transform:translate(-50%,-12px)}
+
+.section{background:var(--card);border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,0.03);margin-bottom:10px}
+
+.card-btn{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:10px;border-radius:10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;min-height:70px}
+.card-btn .image{width:40px;height:40px;object-fit:cover;border-radius:8px}
+.card-btn .name{font-weight:800;font-size:12px;color:inherit}
+.card-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(3,10,30,0.45)}
+
+.categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:520px){.categories-grid{grid-template-columns:repeat(4,1fr)}}
+.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+@media(min-width:520px){.products-grid{grid-template-columns:repeat(3,1fr)}}
+
+.calc-grid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.material-item{background:var(--surface);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:6px}
+.material-top{display:flex;align-items:center;gap:6px}
+.material-image{width:32px;height:32px;object-fit:cover;border-radius:6px}
+.row-controls{display:flex;gap:6px;align-items:center;flex-wrap:nowrap;justify-content:space-between}
+.left-controls{display:flex;gap:8px;align-items:center;min-width:0}
+.right-controls{display:flex;gap:6px;align-items:center;justify-content:flex-end;min-width:220px;flex-shrink:0}
+.input-small{padding:6px;border-radius:8px;border:0;background:rgba(255,255,255,0.02);color:inherit;font-size:13px}
+.unit-select{padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:13px}
+.cost-amount{font-weight:900;color:var(--accent1);min-width:70px;text-align:right;font-size:13px}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:linear-gradient(90deg, rgba(6,182,212,0.04), rgba(124,58,237,0.02));font-weight:900;margin-top:6px;font-size:14px}
+.total-row .cost-amount{font-size:18px}
+.saved-list{display:flex;flex-direction:column;gap:6px}
+.saved-item{background:var(--surface);padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:13px;display:flex;flex-direction:column;gap:4px}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:60}
+.modal-content{background:var(--card);padding:10px;border-radius:8px;width:95%;max-width:400px}
+.btn-primary{padding:8px 12px;border-radius:10px;background:var(--btn-grad);color:#021026;border:0;font-weight:800;cursor:pointer;font-size:13px}
+.btn-ghost{padding:6px 10px;border-radius:10px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-size:12px}
+.footer{margin-top:10px;text-align:center;color:var(--muted);font-size:11px}
+.small-note{color:var(--muted);font-size:12px}
+
+.dev-tools{display:none}
+.dev-section{background:var(--surface);padding:10px;border-radius:10px;margin-bottom:10px}
+.dev-section-title{font-weight:800;margin-bottom:6px;color:var(--accent1);font-size:14px}
+.dev-controls{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.dev-input{flex:1;min-width:150px}
+.dev-btn{padding:6px 10px;border-radius:8px;background:var(--btn-grad);color:#021026;border:0;font-weight:600;cursor:pointer;font-size:12px}
+.dev-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.dev-stat{background:var(--surface);padding:8px;border-radius:8px;text-align:center}
+.dev-stat-value{font-weight:800;font-size:16px;color:var(--accent1)}
+.dev-stat-label{font-size:11px;color:var(--muted)}
+
+.management-panel{max-height:300px;overflow-y:auto;border:1px solid rgba(255,255,255,0.03);border-radius:8px;padding:6px}
+.management-item{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.management-item:last-child{border-bottom:none}
+.management-item-image{width:32px;height:32px;object-fit:cover;border-radius:4px}
+.management-item-name{flex:1;font-size:13px}
+.management-item-url{flex:2;padding:4px;border-radius:4px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit;font-size:12px}
+.management-item-actions{display:flex;gap:4px}
+
+.site-stats{display:flex;justify-content:space-around;margin:12px 0;padding:6px;background:var(--surface);border-radius:8px}
+.stat-item{text-align:center}
+.stat-value{font-weight:800;font-size:14px;color:var(--accent1)}
+.stat-label{font-size:9px;color:var(--muted)}
+
+.breadcrumb{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:13px;flex-wrap:wrap}
+.breadcrumb-item{cursor:pointer;color:var(--muted)}
+.breadcrumb-item:hover{color:var(--accent1)}
+
+.logout-btn{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:#ff6b6b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600}
+
+.koli-input-container{display:none;align-items:center;gap:6px;margin-top:4px}
+.koli-input-container.show{display:flex}
+
+/* Mobil Navigasyon */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border-top: 1px solid rgba(255,255,255,0.03);
+  display: flex;
+  padding: 8px;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 50px;
+}
+
+.nav-item i {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.nav-item.active {
+  color: var(--accent1);
+  background: rgba(6,182,212,0.1);
+}
+
+.nav-item span {
+  font-weight: 600;
+}
+
+/* Mobil Uyumlu Düzenlemeler */
+@media (max-width: 480px) {
+  .container{padding:8px}
+  .categories-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .products-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .row-controls{flex-direction:column;gap:8px}
+  .card-btn .image{width:36px;height:36px}
+  .right-controls{min-width:auto;width:100%;justify-content:space-between}
+  .cost-amount{min-width:auto}
+}
+
+/* iOS Safari için özel stiller */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-row">
+      <div class="brand">
+        <div class="logo"><img src="https://i.hizliresim.com/sis5uti.png" alt="logo"></div>
+        <div>
+          <div class="title">Akıllı Maliyet Hesaplayıcınız</div>
+          <div class="subtitle">Maliq sizin 1 porsiyonunuzun maliyetini hesaplar.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center" id="userAvatar">M</div>
+        <div style="font-weight:700;font-size:13px" id="userName">Misafir 000001</div>
+        <button class="logout-btn" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Çıkış
+        </button>
+      </div>
+    </div>
+
+    <div class="search-wrap-centered">
+      <div class="search">
+        <input id="searchInput" placeholder="" autocomplete="off" />
+        <div id="searchOverlay" class="search-overlay">Lahmacun</div>
+      </div>
+    </div>
+
+    <div class="site-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="totalRecipes">0</div>
+        <div class="stat-label">Yemek Tarifi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalIngredients">0</div>
+        <div class="stat-label">Malzeme Çeşidi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalCategories">0</div>
+        <div class="stat-label">Kategori</div>
+      </div>
+    </div>
+
+    <main>
+      <section id="screenCategories" class="section">
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px">Yemek Çeşitleri</div>
+        <div id="breadcrumb" class="breadcrumb"></div>
+        <div id="categoriesGrid" class="categories-grid"></div>
+      </section>
+
+      <section id="screenProducts" class="section" style="display:none">
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px" id="productsTitle">Tüm Tarifler</div>
+        <div id="productsGrid" class="products-grid"></div>
+      </section>
+
+      <section id="screenCalc" class="section" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div>
+            <div style="font-weight:900;font-size:14px" id="calcTitle">Hesaplama</div>
+            <div id="calcSubtitle" class="small-note"></div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input id="calcName" class="input-small" placeholder="Ürün adı" style="width:100px" />
+            <button id="clearBtn" class="btn-ghost">Temizle</button>
+          </div>
+        </div>
+
+        <div id="materialsList" class="calc-grid"></div>
+
+        <div class="total-row" id="totalRow" style="display:none">
+          <div>Toplam Maliyet</div>
+          <div id="totalCost" class="cost-amount">0.00 ₺</div>
+        </div>
+
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <button id="addMaterialBtn" class="btn-ghost">+ Malzeme Ekle</button>
+          <button id="saveBtn" class="btn-primary">Kaydet</button>
+        </div>
+      </section>
+
+      <section id="screenSaved" class="section" style="display:none">
+        <div style="font-weight:900;margin-bottom:6px;font-size:14px">Maliyet Tablom</div>
+        <div id="savedList" class="saved-list"></div>
+      </section>
+
+      <section id="screenDev" class="section dev-tools" style="display:none">
+        <div style="font-weight:900;margin-bottom:12px;color:var(--accent1);font-size:18px;text-align:center">GELİŞTİRİCİ SEÇENEKLERİ</div>
+        
+        <div class="dev-section">
+          <div class="dev-section-title">İstatistikler</div>
+          <div class="dev-stats">
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalProducts">0</div>
+              <div class="dev-stat-label">Toplam Ürün</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalCats">0</div>
+              <div class="dev-stat-label">Toplam Kategori</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalMats">0</div>
+              <div class="dev-stat-label">Toplam Malzeme</div>
+            </div>
+            <div class="dev-stat">
+              <div class="dev-stat-value" id="totalSaves">0</div>
+              <div class="dev-stat-label">Kayıtlı Hesaplama</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dev-section">
+          <div class="dev-section-title">Kategori Yönetimi</div>
+          <div class="dev-controls">
+            <input type="text" id="newCategoryName" class="dev-input input-small" placeholder="Kategori Adı">
+            <input type="text" id="newCategoryImage" class="dev-input input-small" placeholder="Resim URL">
+            <button id="addCategoryBtn" class="dev-btn">Kategori Ekle</button>
+          </div>
+        </div>
+        
+        <div class="dev-section">
+          <div class="dev-section-title">Ürün Yönetimi</div>
+          <div class="dev-controls">
+            <input type="text" id="newProductName" class="dev-input input-small" placeholder="Ürün Adı">
+            <input type="text" id="newProductImage" class="dev-input input-small" placeholder="Resim URL">
+            <button id="addProductBtn" class="dev-btn">Ürün Ekle</button>
+          </div>
+        </div>
+
+        <div class="dev-section">
+          <div class="dev-section-title">Toplu İçerik Ekleme</div>
+          <div class="dev-controls">
+            <button id="quickAddBtn" class="dev-btn">Hızlı Ürün Ekle</button>
+            <button id="exportDataBtn" class="dev-btn">Verileri Dışa Aktar</button>
+            <button id="importDataBtn" class="dev-btn">Verileri İçe Aktar</button>
+            <button id="resetDataBtn" class="dev-btn" style="background:#ff6b6b">Verileri Sıfırla</button>
+          </div>
+        </div>
+
+        <div class="dev-section">
+          <div class="dev-section-title">Ürün Yönetim Paneli</div>
+          <div id="productsManagementPanel" class="management-panel"></div>
+        </div>
+
+        <div class="dev-section">
+          <div class="dev-section-title">Kategori Yönetim Paneli</div>
+          <div id="categoriesManagementPanel" class="management-panel"></div>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer">CAN&D Şirketinin ürünüdür. Tüm hakları saklıdır © CAN&D</div>
+  </div>
+
+  <!-- Mobil Navigasyon -->
+  <div class="mobile-nav">
+    <div class="nav-item active" data-tab="categories">
+      <i class="fas fa-layer-group"></i>
+      <span>KATEGORİLER</span>
+    </div>
+    <div class="nav-item" data-tab="products">
+      <i class="fas fa-utensils"></i>
+      <span>TARİFLER</span>
+    </div>
+    <div class="nav-item" data-tab="calc">
+      <i class="fas fa-calculator"></i>
+      <span>HESAPLAMA</span>
+    </div>
+    <div class="nav-item" data-tab="saved">
+      <i class="fas fa-save"></i>
+      <span>KAYITLAR</span>
+    </div>
+    <div class="nav-item dev-nav" data-tab="dev" style="display:none">
+      <i class="fas fa-code"></i>
+      <span>GELİŞTİRİCİ</span>
+    </div>
+  </div>
+
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:900">Malzeme Ekle</div>
+        <button id="closeAddModal" class="btn-ghost">Kapat</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <input id="addName" class="input-small" placeholder="Malzeme adı" />
+        <input id="addImage" class="input-small" placeholder="Malzeme resim URL (opsiyonel)" />
+        <div style="display:flex;gap:6px">
+          <input id="addQty" type="number" class="input-small" value="100" />
+          <select id="addUnit" class="unit-select">
+            <option value="gr">gr</option><option value="kg">kg</option><option value="ml">ml</option>
+            <option value="lt">lt</option><option value="adet">adet</option><option value="koli">koli</option>
+          </select>
+        </div>
+        <div id="koliContainer" class="koli-input-container">
+          <span class="small-note">Koli adeti:</span>
+          <input id="addKoliAdet" type="number" class="input-small" value="1" min="1" style="width:80px" />
+        </div>
+        <div style="display:flex;gap:6px">
+          <input id="addPrice" type="number" class="input-small" placeholder="Fiyat" step="0.01" />
+          <select id="addPriceUnit" class="unit-select">
+            <option value="kg">₺ / kg</option><option value="gr">₺ / gr</option><option value="adet">₺ / adet</option>
+            <option value="koli">₺ / koli</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button id="confirmAdd" class="btn-primary">Ekle</button>
+          <button id="cancelAdd" class="btn-ghost">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quickAddModal" class="modal">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:900">Hızlı Ürün Ekle</div>
+        <button id="closeQuickAddModal" class="btn-ghost">Kapat</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="small-note">+ işareti kategori, - işareti ürün ekler. Malzemeleri ürün altına yazın.</div>
+        <div class="small-note" style="color:var(--accent1)">Örnek:<br>+ YUMURTA ÇEŞİTLERİ<br>- Sucuklu Yumurta<br>Sucuk: 120 gr<br>Yumurta: 3 adet</div>
+        <textarea id="quickProductsText" class="input-small" placeholder="Buraya verileri yapıştırın..." rows="12" style="resize:vertical"></textarea>
+        <div style="display:flex;gap:6px">
+          <button id="confirmQuickAdd" class="btn-primary">Ekle</button>
+          <button id="cancelQuickAdd" class="btn-ghost">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Data
+let RECIPES = JSON.parse(localStorage.getItem('maliq_recipes') || '{}');
+let CATEGORIES = JSON.parse(localStorage.getItem('maliq_categories') || '[]');
+let savedListArr = JSON.parse(localStorage.getItem('maliq_saved')||'[]');
+let currentProduct = null;
+let calcItems = [];
+let currentCategoryPath = [];
+
+// Varsayılan veriler
+if (CATEGORIES.length === 0) {
+  CATEGORIES = [
+    // Ana Kategoriler
+    { id: 'kahvalti', name: 'Kahvaltı', imageUrl: 'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200' },
+    { id: 'corba', name: 'Çorba', imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=200' },
+    { id: 'ana-yemek', name: 'Ana Yemek', imageUrl: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=200' },
+    { id: 'fast-food', name: 'Fast Food', imageUrl: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=200' },
+    
+    // Kahvaltı Alt Kategorileri
+    { id: 'kahvalti-tabaklari', name: 'Kahvaltı Tabakları', imageUrl: 'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200', parentId: 'kahvalti' },
+    { id: 'yumurta-cesitleri', name: 'Yumurta Çeşitleri', imageUrl: 'https://images.unsplash.com/photo-1580013759032-c96505e24c1f?w=200', parentId: 'kahvalti' },
+    
+    // Fast Food Alt Kategorileri
+    { id: 'pide', name: 'Pide', imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', parentId: 'fast-food' },
+    { id: 'durum', name: 'Dürüm', imageUrl: 'https://images.unsplash.com/photo-1555949969-eea032c0dccb?w=200', parentId: 'fast-food' },
+    { id: 'pizza', name: 'Pizza', imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200', parentId: 'fast-food' }
+  ];
+  localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+}
+
+if (Object.keys(RECIPES).length === 0) {
+  RECIPES = {
+    // Kahvaltı Tabakları
+    "Serpme Kahvaltı": { 
+      category:'kahvalti-tabaklari', 
+      imageUrl:'https://images.unsplash.com/photo-1558961360-f8ddc22e6d43?w=200', 
+      ingredients:[
+        {name:'Peynir',qty:100,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1559561729-0788b8b1b30a?w=200'},
+        {name:'Zeytin',qty:50,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1597327746125-4ec3764f8b4e?w=200'},
+        {name:'Bal',qty:30,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=200'}
+      ]
+    },
+    
+    // Yumurta Çeşitleri
+    "Sucuklu Yumurta": { 
+      category:'yumurta-cesitleri', 
+      imageUrl:'https://images.unsplash.com/photo-1580013759032-c96505e24c1f?w=200', 
+      ingredients:[
+        {name:'Yumurta',qty:3,unit:'adet', imageUrl:'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=200'},
+        {name:'Sucuk',qty:100,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1594047452120-1d0c4c4c63b6?w=200'}
+      ]
+    },
+    
+    // Pide Çeşitleri
+    "Lahmacun": { 
+      category:'pide', 
+      imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', 
+      ingredients:[
+        {name:'Un',qty:150,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=200'},
+        {name:'Kıyma',qty:150,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1594047452120-1d0c4c4c63b6?w=200'}
+      ]
+    },
+    
+    // Pizza Çeşitleri
+    "Margarita Pizza": { 
+      category:'pizza', 
+      imageUrl:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200', 
+      ingredients:[
+        {name:'Pizza Hamuru',qty:200,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=200'},
+        {name:'Mozzarella',qty:150,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1559561729-0788b8b1b30a?w=200'},
+        {name:'Domates Sos',qty:50,unit:'gr', imageUrl:'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200'}
+      ]
+    }
+  };
+  localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+}
+
+// Kullanıcı bilgisi
+const urlParams = new URLSearchParams(window.location.search);
+const isAdmin = urlParams.get('admin') === 'true' || localStorage.getItem('maliq_admin') === 'true';
+const userData = JSON.parse(localStorage.getItem('maliq_user') || '{}');
+
+// Arama animasyonu
+const searchTerms = ['Lahmacun', 'Sucuklu Yumurta', 'Mantı', 'Kebap', 'Pizza', 'Döner', 'Baklava', 'Künefe'];
+let currentSearchTermIndex = 0;
+let currentCharIndex = 0;
+let isDeleting = false;
+let typingSpeed = 100;
+
+function typeSearchTerm() {
+  const searchOverlay = document.getElementById('searchOverlay');
+  const currentTerm = searchTerms[currentSearchTermIndex];
+  
+  if (isDeleting) {
+    // Silme işlemi
+    searchOverlay.textContent = currentTerm.substring(0, currentCharIndex - 1);
+    currentCharIndex--;
+    typingSpeed = 50;
+  } else {
+    // Yazma işlemi
+    searchOverlay.textContent = currentTerm.substring(0, currentCharIndex + 1);
+    currentCharIndex++;
+    typingSpeed = 100;
+  }
+  
+  // Yazma/silme tamamlandı mı kontrol et
+  if (!isDeleting && currentCharIndex === currentTerm.length) {
+    // Yazma tamamlandı, biraz bekle ve silmeye başla
+    typingSpeed = 1500;
+    isDeleting = true;
+  } else if (isDeleting && currentCharIndex === 0) {
+    // Silme tamamlandı, sonraki terime geç
+    isDeleting = false;
+    currentSearchTermIndex = (currentSearchTermIndex + 1) % searchTerms.length;
+    typingSpeed = 500;
+  }
+  
+  setTimeout(typeSearchTerm, typingSpeed);
+}
+
+// Arama input'una odaklanınca animasyonu gizle
+document.getElementById('searchInput').addEventListener('focus', function() {
+  document.getElementById('searchOverlay').classList.add('fade');
+});
+
+// Arama input'undan çıkınca animasyonu göster
+document.getElementById('searchInput').addEventListener('blur', function() {
+  if (!this.value) {
+    document.getElementById('searchOverlay').classList.remove('fade');
+  }
+});
+
+// UI Fonksiyonları
+function setupUserInfo() {
+  if (isAdmin) {
+    document.getElementById('userName').textContent = 'Geliştirici';
+    document.getElementById('userAvatar').textContent = 'G';
+    document.querySelector('.dev-tools').style.display = 'block';
+    document.querySelector('.dev-nav').style.display = 'flex';
+  } else {
+    const guestId = localStorage.getItem('maliq_guest_id') || '000001';
+    document.getElementById('userName').textContent = 'Misafir ' + guestId;
+    document.getElementById('userAvatar').textContent = 'M';
+  }
+}
+
+function setActiveTab(tab){
+  // Tüm sekmeleri gizle
+  document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+  
+  // Tüm navigasyon öğelerini pasif yap
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  
+  // Aktif olanı göster
+  if(tab === 'categories') {
+    document.getElementById('screenCategories').style.display = 'block';
+    document.querySelector('.nav-item[data-tab="categories"]').classList.add('active');
+  } else if(tab === 'products') {
+    document.getElementById('screenProducts').style.display = 'block';
+    document.querySelector('.nav-item[data-tab="products"]').classList.add('active');
+  } else if(tab === 'calc') {
+    document.getElementById('screenCalc').style.display = 'block';
+    document.querySelector('.nav-item[data-tab="calc"]').classList.add('active');
+  } else if(tab === 'saved') {
+    document.getElementById('screenSaved').style.display = 'block';
+    document.querySelector('.nav-item[data-tab="saved"]').classList.add('active');
+  } else if(tab === 'dev') {
+    document.getElementById('screenDev').style.display = 'block';
+    document.querySelector('.nav-item[data-tab="dev"]').classList.add('active');
+  }
+}
+
+function renderCategories(){
+  const container = document.getElementById('categoriesGrid'); 
+  container.innerHTML = '';
+  
+  const currentParentId = currentCategoryPath.length > 0 ? currentCategoryPath[currentCategoryPath.length - 1] : null;
+  
+  // Ana kategorileri göster (parentId'si olmayanlar)
+  const currentCategories = CATEGORIES.filter(cat => {
+    if (currentParentId) {
+      return cat.parentId === currentParentId;
+    } else {
+      return !cat.parentId;
+    }
+  });
+  
+  // Eğer alt kategori yoksa ve ana kategorideysek, bu kategorideki ürünleri göster
+  if (currentCategories.length === 0 && currentParentId) {
+    renderProducts(currentParentId);
+    setActiveTab('products');
+    const category = CATEGORIES.find(c => c.id === currentParentId);
+    document.getElementById('productsTitle').textContent = (category ? category.name : currentParentId) + ' Tarifleri';
+    return;
+  }
+  
+  currentCategories.forEach(cat => {
+    const d = document.createElement('div'); 
+    d.className = 'card-btn';
+    d.innerHTML = `<img src="${cat.imageUrl}" class="image" alt="${cat.name}"><div class="name">${cat.name}</div>`;
+    d.addEventListener('click', () => { 
+      // Alt kategorileri kontrol et
+      const subCategories = CATEGORIES.filter(subCat => subCat.parentId === cat.id);
+      if (subCategories.length > 0) {
+        // Alt kategori varsa onları göster
+        currentCategoryPath.push(cat.id);
+        renderCategories();
+      } else {
+        // Alt kategori yoksa bu kategorideki ürünleri göster
+        renderProducts(cat.id);
+        setActiveTab('products');
+        document.getElementById('productsTitle').textContent = cat.name + ' Tarifleri';
+      }
+    });
+    container.appendChild(d);
+  });
+  
+  updateBreadcrumb();
+}
+
+function showNestedCategories(parentId) {
+  renderCategories();
+}
+
+function updateBreadcrumb() {
+  const breadcrumbEl = document.getElementById('breadcrumb');
+  breadcrumbEl.innerHTML = '';
+  
+  if (currentCategoryPath.length === 0) {
+    breadcrumbEl.style.display = 'none';
+    return;
+  }
+  
+  breadcrumbEl.style.display = 'flex';
+  
+  const homeItem = document.createElement('div');
+  homeItem.className = 'breadcrumb-item';
+  homeItem.textContent = 'Ana Sayfa';
+  homeItem.addEventListener('click', () => {
+    currentCategoryPath = [];
+    renderCategories();
+  });
+  breadcrumbEl.appendChild(homeItem);
+  
+  currentCategoryPath.forEach((catId, index) => {
+    const separator = document.createElement('div');
+    separator.className = 'breadcrumb-separator';
+    separator.textContent = '›';
+    breadcrumbEl.appendChild(separator);
+    
+    const catItem = document.createElement('div');
+    catItem.className = 'breadcrumb-item';
+    const category = CATEGORIES.find(c => c.id === catId);
+    catItem.textContent = category ? category.name : 'Kategori';
+    catItem.addEventListener('click', () => {
+      currentCategoryPath = currentCategoryPath.slice(0, index + 1);
+      showNestedCategories(catId);
+    });
+    breadcrumbEl.appendChild(catItem);
+  });
+}
+
+function renderProducts(categoryKey){
+  const container = document.getElementById('productsGrid'); 
+  container.innerHTML = '';
+  const keys = Object.keys(RECIPES).filter(k => !categoryKey || RECIPES[k].category === categoryKey);
+  
+  if (keys.length === 0) {
+    container.innerHTML = '<div class="small-note">Bu kategoride henüz tarif bulunmuyor.</div>';
+    return;
+  }
+  
+  keys.forEach(k => { 
+    const r = RECIPES[k]; 
+    const p = document.createElement('div'); 
+    p.className = 'card-btn'; 
+    p.innerHTML = `<img src="${r.imageUrl}" class="image" alt="${k}"><div class="name">${k}</div>`; 
+    p.addEventListener('click', () => { 
+      openCalcFor(k); 
+      setActiveTab('calc'); 
+    }); 
+    container.appendChild(p); 
+  });
+}
+
+function openCalcFor(name){
+  currentProduct = name;
+  document.getElementById('calcTitle').textContent = name;
+  calcItems = (RECIPES[name] && RECIPES[name].ingredients) ? RECIPES[name].ingredients.map(ing => ({ 
+    name: ing.name, 
+    qty: ing.qty || 0, 
+    unit: ing.unit || 'gr', 
+    price: 0, 
+    priceUnit: 'kg', 
+    calculated: 0,
+    imageUrl: ing.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200',
+    koliAdet: ing.koliAdet || 1
+  })) : [];
+  renderCalcItems();
+}
+
+function renderCalcItems(){
+  const container = document.getElementById('materialsList'); 
+  container.innerHTML = '';
+  
+  if(!calcItems.length){ 
+    container.innerHTML = '<div class="small-note">Ürün seçin veya malzeme ekleyin</div>'; 
+    document.getElementById('totalRow').style.display = 'none'; 
+    return; 
+  }
+  
+  calcItems.forEach((it, idx) => {
+    const el = document.createElement('div'); 
+    el.className = 'material-item';
+    
+    el.innerHTML = `
+      <div class="material-top">
+        <img src="${it.imageUrl}" class="material-image" alt="${it.name}">
+        <div class="material-name">${it.name} <span style="color:var(--muted);font-weight:600"> ${it.qty} (${it.unit})</span></div>
+      </div>
+      <div class="row-controls">
+        <div class="left-controls">
+          <input type="number" id="qty_${idx}" class="input-small" value="${it.qty}" style="width:80px" />
+          <select id="unit_${idx}" class="unit-select">
+            <option value="gr">gr</option><option value="kg">kg</option><option value="adet">adet</option>
+            <option value="koli">koli</option>
+          </select>
+        </div>
+        <div class="right-controls">
+          <input type="number" id="price_${idx}" class="input-small" placeholder="Fiyat (TL)" style="width:100px" />
+          <select id="priceUnit_${idx}" class="unit-select">
+            <option value="kg">₺ / kg</option><option value="gr">₺ / gr</option><option value="adet">₺ / adet</option>
+            <option value="koli">₺ / koli</option>
+          </select>
+          <div class="cost-amount" id="cost_${idx}">0.00 ₺</div>
+        </div>
+      </div>
+      <div id="koliContainer_${idx}" class="koli-input-container">
+        <span class="small-note">Koli adeti:</span>
+        <input type="number" id="koliAdet_${idx}" class="input-small" value="${it.koliAdet || 1}" min="1" style="width:80px" />
+      </div>
+    `;
+    
+    container.appendChild(el);
+
+    // Birim seçimi değiştiğinde koli adet input'unu göster/gizle
+    const unitSelect = document.getElementById(`unit_${idx}`);
+    const koliContainer = document.getElementById(`koliContainer_${idx}`);
+    
+    if (unitSelect.value === 'koli') {
+      koliContainer.classList.add('show');
+    } else {
+      koliContainer.classList.remove('show');
+    }
+    
+    unitSelect.addEventListener('change', function() {
+      if (this.value === 'koli') {
+        koliContainer.classList.add('show');
+      } else {
+        koliContainer.classList.remove('show');
+      }
+      it.unit = this.value;
+      calculateRow(idx);
+    });
+
+    document.getElementById(`qty_${idx}`).addEventListener('input', e => { 
+      it.qty = parseFloat(e.target.value || 0); 
+      calculateRow(idx); 
+    });
+    
+    document.getElementById(`price_${idx}`).addEventListener('input', e => { 
+      it.price = parseFloat(e.target.value || 0); 
+      calculateRow(idx); 
+    });
+    
+    document.getElementById(`priceUnit_${idx}`).addEventListener('change', e => { 
+      it.priceUnit = e.target.value; 
+      calculateRow(idx); 
+    });
+    
+    document.getElementById(`koliAdet_${idx}`).addEventListener('input', e => { 
+      it.koliAdet = parseFloat(e.target.value || 1); 
+      calculateRow(idx); 
+    });
+    
+    // Başlangıç değerlerini ayarla
+    document.getElementById(`unit_${idx}`).value = it.unit;
+    document.getElementById(`priceUnit_${idx}`).value = it.priceUnit;
+  });
+  
+  document.getElementById('totalRow').style.display = 'flex';
+  calculateTotal();
+}
+
+function calculateRow(idx){
+  const it = calcItems[idx]; 
+  const qty = parseFloat(it.qty || 0); 
+  const price = parseFloat(it.price || 0);
+  const koliAdet = parseFloat(it.koliAdet || 1);
+  
+  // Birim dönüşümü
+  let conversionRate = 1;
+  if (it.unit === 'gr' && it.priceUnit === 'kg') {
+    conversionRate = 1000;
+  } else if (it.unit === 'kg' && it.priceUnit === 'gr') {
+    conversionRate = 0.001;
+  } else if (it.unit === 'koli' && it.priceUnit === 'koli') {
+    // Koli için koli adeti ile çarp
+    it.calculated = (price * qty * koliAdet);
+    document.getElementById('cost_' + idx).textContent = it.calculated.toFixed(2) + ' ₺';
+    calculateTotal();
+    return;
+  }
+  
+  it.calculated = (price * qty) / conversionRate;
+  document.getElementById('cost_' + idx).textContent = it.calculated.toFixed(2) + ' ₺';
+  calculateTotal();
+}
+
+function calculateTotal(){ 
+  let t = 0; 
+  calcItems.forEach(it => { 
+    t += parseFloat(it.calculated || 0); 
+  }); 
+  document.getElementById('totalCost').textContent = t.toFixed(2) + ' ₺'; 
+  return t;
+}
+
+function saveSnapshot(){ 
+  const name = (document.getElementById('calcName').value || currentProduct || 'İsimsiz Ürün').trim(); 
+  const total = calculateTotal(); 
+  const snap = { 
+    name, 
+    total, 
+    date: new Date().toLocaleString(), 
+    items: JSON.parse(JSON.stringify(calcItems))
+  }; 
+  savedListArr.unshift(snap); 
+  localStorage.setItem('maliq_saved', JSON.stringify(savedListArr)); 
+  alert('Kaydedildi.'); 
+}
+
+function renderSaved(){ 
+  const savedListEl = document.getElementById('savedList'); 
+  savedListEl.innerHTML = ''; 
+  
+  savedListArr.forEach((s, i) => { 
+    const el = document.createElement('div'); 
+    el.className = 'saved-item'; 
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;font-weight:700">
+        <div>${s.name}</div>
+        <div style="color:var(--accent1)">${s.total.toFixed(2)} ₺</div>
+      </div>
+      <div class="small-note">${s.date}</div>
+    `;
+    savedListEl.appendChild(el); 
+  }); 
+}
+
+// Geliştirici Fonksiyonları
+function updateDevStats() {
+  document.getElementById('totalProducts').textContent = Object.keys(RECIPES).length;
+  document.getElementById('totalCats').textContent = CATEGORIES.length;
+  document.getElementById('totalMats').textContent = Object.values(RECIPES).reduce((acc, recipe) => acc + (recipe.ingredients ? recipe.ingredients.length : 0), 0);
+  document.getElementById('totalSaves').textContent = savedListArr.length;
+}
+
+function renderProductsManagementPanel() {
+  const container = document.getElementById('productsManagementPanel');
+  container.innerHTML = '';
+  
+  Object.keys(RECIPES).forEach(productName => {
+    const product = RECIPES[productName];
+    const item = document.createElement('div');
+    item.className = 'management-item';
+    item.innerHTML = `
+      <img src="${product.imageUrl}" class="management-item-image">
+      <div class="management-item-name">${productName}</div>
+      <input type="text" class="management-item-url" value="${product.imageUrl}">
+      <div class="management-item-actions">
+        <button class="dev-btn update-product">Güncelle</button>
+        <button class="dev-btn delete-product">Sil</button>
+      </div>
+    `;
+    
+    item.querySelector('.update-product').addEventListener('click', () => {
+      const url = item.querySelector('.management-item-url').value;
+      RECIPES[productName].imageUrl = url;
+      localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+      alert('Güncellendi!');
+    });
+    
+    item.querySelector('.delete-product').addEventListener('click', () => {
+      if (confirm('Silinsin mi?')) {
+        delete RECIPES[productName];
+        localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+        renderProductsManagementPanel();
+        renderProducts(null);
+      }
+    });
+    
+    container.appendChild(item);
+  });
+}
+
+function renderCategoriesManagementPanel() {
+  const container = document.getElementById('categoriesManagementPanel');
+  container.innerHTML = '';
+  
+  CATEGORIES.forEach(category => {
+    const item = document.createElement('div');
+    item.className = 'management-item';
+    item.innerHTML = `
+      <img src="${category.imageUrl}" class="management-item-image">
+      <div class="management-item-name">${category.name}</div>
+      <input type="text" class="management-item-url" value="${category.imageUrl}">
+      <div class="management-item-actions">
+        <button class="dev-btn update-category">Güncelle</button>
+        <button class="dev-btn delete-category">Sil</button>
+      </div>
+    `;
+    
+    item.querySelector('.update-category').addEventListener('click', () => {
+      const url = item.querySelector('.management-item-url').value;
+      category.imageUrl = url;
+      localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+      renderCategories();
+      alert('Güncellendi!');
+    });
+    
+    item.querySelector('.delete-category').addEventListener('click', () => {
+      if (confirm('Silinsin mi?')) {
+        CATEGORIES = CATEGORIES.filter(c => c.id !== category.id);
+        localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+        renderCategoriesManagementPanel();
+        renderCategories();
+      }
+    });
+    
+    container.appendChild(item);
+  });
+}
+
+function addCategory() {
+  const name = document.getElementById('newCategoryName').value;
+  const imageUrl = document.getElementById('newCategoryImage').value;
+  if (!name || !imageUrl) return alert('Lütfen tüm alanları doldurun!');
+  
+  const newCategory = {
+    id: name.toLowerCase().replace(/ /g, '_'),
+    name: name,
+    imageUrl: imageUrl
+  };
+  
+  CATEGORIES.push(newCategory);
+  localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+  document.getElementById('newCategoryName').value = '';
+  document.getElementById('newCategoryImage').value = '';
+  renderCategories();
+  renderCategoriesManagementPanel();
+  updateDevStats();
+  alert('Kategori eklendi!');
+}
+
+function addProduct() {
+  const name = document.getElementById('newProductName').value;
+  const imageUrl = document.getElementById('newProductImage').value;
+  if (!name || !imageUrl) return alert('Lütfen tüm alanları doldurun!');
+  
+  RECIPES[name] = {
+    category: 'ana-yemek',
+    imageUrl: imageUrl,
+    ingredients: []
+  };
+  
+  localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+  document.getElementById('newProductName').value = '';
+  document.getElementById('newProductImage').value = '';
+  renderProductsManagementPanel();
+  renderProducts(null);
+  updateDevStats();
+  alert('Ürün eklendi!');
+}
+
+// Toplu Ekleme Fonksiyonları
+function quickAddProducts() {
+  const text = document.getElementById('quickProductsText').value.trim();
+  if (!text) {
+    alert('Lütfen ürün verilerini girin!');
+    return;
+  }
+  
+  const lines = text.split('\n');
+  let currentCategory = null;
+  let currentProduct = null;
+  let addedCategories = 0;
+  let addedProducts = 0;
+  let addedIngredients = 0;
+  
+  lines.forEach(line => {
+    line = line.trim();
+    if (!line) return;
+    
+    if (line.startsWith('+')) {
+      // Kategori satırı
+      const name = line.substring(1).trim();
+      const categoryId = name.toLowerCase().replace(/ /g, '_');
+      
+      let existingCategory = CATEGORIES.find(cat => cat.id === categoryId);
+      if (!existingCategory) {
+        const newCategory = {
+          id: categoryId,
+          name: name,
+          imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'
+        };
+        CATEGORIES.push(newCategory);
+        addedCategories++;
+      }
+      currentCategory = categoryId;
+      currentProduct = null;
+      
+    } else if (line.startsWith('-')) {
+      // Ürün satırı
+      const name = line.substring(1).trim();
+      if (!currentCategory) {
+        alert('Lütfen önce bir kategori ekleyin!');
+        return;
+      }
+      
+      RECIPES[name] = {
+        category: currentCategory,
+        imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200',
+        ingredients: []
+      };
+      
+      currentProduct = name;
+      addedProducts++;
+      
+    } else if (line && currentProduct) {
+      // Malzeme satırı
+      const ingredientMatch = line.match(/^([^:]+):\s*(\d+(\.\d+)?)\s*(\S+)$/);
+      if (ingredientMatch) {
+        const name = ingredientMatch[1].trim();
+        const qty = parseFloat(ingredientMatch[2]);
+        const unit = ingredientMatch[4].trim();
+        
+        if (RECIPES[currentProduct]) {
+          RECIPES[currentProduct].ingredients.push({
+            name: name,
+            qty: qty,
+            unit: unit,
+            imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200'
+          });
+          addedIngredients++;
+        }
+      }
+    }
+  });
+  
+  // LocalStorage'a kaydet
+  localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+  localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+  
+  // UI'yı güncelle
+  document.getElementById('quickAddModal').style.display = 'none';
+  document.getElementById('quickProductsText').value = '';
+  
+  renderCategories();
+  renderProducts(null);
+  renderProductsManagementPanel();
+  renderCategoriesManagementPanel();
+  updateDevStats();
+  updateSiteStats();
+  
+  alert(`${addedCategories} kategori, ${addedProducts} ürün ve ${addedIngredients} malzeme eklendi!`);
+}
+
+function exportAllData() {
+  const data = {
+    categories: CATEGORIES,
+    recipes: RECIPES,
+    saved: savedListArr,
+    exportDate: new Date().toISOString()
+  };
+  
+  const dataStr = JSON.stringify(data, null, 2);
+  const dataBlob = new Blob([dataStr], {type: 'application/json'});
+  
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'maliq_backup_' + new Date().toISOString().split('T')[0] + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function importAllData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(event) {
+      try {
+        const data = JSON.parse(event.target.result);
+        
+        if (confirm('Mevcut verilerin üzerine yazılacak. Emin misiniz?')) {
+          if (data.categories) {
+            CATEGORIES = data.categories;
+            localStorage.setItem('maliq_categories', JSON.stringify(CATEGORIES));
+          }
+          
+          if (data.recipes) {
+            RECIPES = data.recipes;
+            localStorage.setItem('maliq_recipes', JSON.stringify(RECIPES));
+          }
+          
+          if (data.saved) {
+            savedListArr = data.saved;
+            localStorage.setItem('maliq_saved', JSON.stringify(savedListArr));
+          }
+          
+          // UI'yı yenile
+          renderCategories();
+          renderProducts(null);
+          renderProductsManagementPanel();
+          renderCategoriesManagementPanel();
+          updateDevStats();
+          updateSiteStats();
+          
+          alert('Veriler başarıyla içe aktarıldı!');
+        }
+      } catch (err) {
+        alert('Dosya okunamadı: ' + err.message);
+      }
+    };
+    
+    reader.readAsText(file);
+  };
+  
+  input.click();
+}
+
+function resetData() {
+  if (confirm('TÜM veriler sıfırlanacak. Bu işlem geri alınamaz! Emin misiniz?')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+// Event Listeners
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    const tab = this.getAttribute('data-tab');
+    setActiveTab(tab);
+    
+    // Özel durumlar
+    if (tab === 'saved') {
+      renderSaved();
+    } else if (tab === 'dev') {
+      updateDevStats();
+    }
+  });
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  if (confirm('Çıkış yapmak istediğinizden emin misiniz?')) {
+    localStorage.removeItem('maliq_user');
+    localStorage.removeItem('maliq_admin');
+    window.location.href = 'index.html';
+  }
+});
+
+document.getElementById('addMaterialBtn').addEventListener('click', () => { 
+  document.getElementById('addModal').style.display = 'flex'; 
+});
+
+document.getElementById('closeAddModal').addEventListener('click', () => { 
+  document.getElementById('addModal').style.display = 'none'; 
+});
+
+// Koli birimi seçildiğinde koli adet input'unu göster
+document.getElementById('addUnit').addEventListener('change', function() {
+  const koliContainer = document.getElementById('koliContainer');
+  if (this.value === 'koli') {
+    koliContainer.classList.add('show');
+  } else {
+    koliContainer.classList.remove('show');
+  }
+});
+
+document.getElementById('confirmAdd').addEventListener('click', () => {
+  const name = document.getElementById('addName').value || 'Yeni Malzeme';
+  const imageUrl = document.getElementById('addImage').value || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200';
+  const qty = parseFloat(document.getElementById('addQty').value || 0);
+  const unit = document.getElementById('addUnit').value;
+  const price = parseFloat(document.getElementById('addPrice').value || 0);
+  const priceUnit = document.getElementById('addPriceUnit').value;
+  const koliAdet = unit === 'koli' ? parseFloat(document.getElementById('addKoliAdet').value || 1) : 1;
+  
+  calcItems.push({ 
+    name, 
+    qty, 
+    unit, 
+    price, 
+    priceUnit, 
+    calculated: 0,
+    imageUrl,
+    koliAdet
+  });
+  
+  document.getElementById('addModal').style.display = 'none';
+  // Modal alanlarını temizle
+  document.getElementById('addName').value = '';
+  document.getElementById('addImage').value = '';
+  document.getElementById('addQty').value = '100';
+  document.getElementById('addUnit').value = 'gr';
+  document.getElementById('addPrice').value = '';
+  document.getElementById('addPriceUnit').value = 'kg';
+  document.getElementById('koliContainer').classList.remove('show');
+  
+  renderCalcItems();
+});
+
+document.getElementById('saveBtn').addEventListener('click', () => saveSnapshot());
+document.getElementById('clearBtn').addEventListener('click', () => { 
+  if(confirm('Temizlensin mi?')){ 
+    calcItems = []; 
+    renderCalcItems(); 
+  } 
+});
+
+// Geliştirici Event Listeners
+document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
+document.getElementById('addProductBtn').addEventListener('click', addProduct);
+document.getElementById('quickAddBtn').addEventListener('click', () => {
+  document.getElementById('quickAddModal').style.display = 'flex';
+});
+document.getElementById('closeQuickAddModal').addEventListener('click', () => {
+  document.getElementById('quickAddModal').style.display = 'none';
+});
+document.getElementById('confirmQuickAdd').addEventListener('click', quickAddProducts);
+document.getElementById('exportDataBtn').addEventListener('click', exportAllData);
+document.getElementById('importDataBtn').addEventListener('click', importAllData);
+document.getElementById('resetDataBtn').addEventListener('click', resetData);
+
+// Initialize
+function updateSiteStats() {
+  document.getElementById('totalRecipes').textContent = Object.keys(RECIPES).length;
+  document.getElementById('totalIngredients').textContent = Object.values(RECIPES).reduce((acc, recipe) => acc + (recipe.ingredients ? recipe.ingredients.length : 0), 0);
+  document.getElementById('totalCategories').textContent = CATEGORIES.length;
+}
+
+setupUserInfo();
+renderCategories();
+renderProducts(null);
+setActiveTab('categories');
+updateSiteStats();
+
+// Arama animasyonunu başlat
+setTimeout(typeSearchTerm, 1000);
+
+if (isAdmin) {
+  renderProductsManagementPanel();
+  renderCategoriesManagementPanel();
+  updateDevStats();
+}
+</script>
+</body>
+</html>
